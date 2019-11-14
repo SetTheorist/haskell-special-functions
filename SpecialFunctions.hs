@@ -1,4 +1,6 @@
-module SpecialFunctions where
+--module SpecialFunctions where
+
+import Control.Monad
 
 type Value = Double
 
@@ -58,6 +60,8 @@ sf_expm1 x = kahan_sum $ ixiter 2 x $ \n t -> t*x/((#)n)
 
 ----------------------------------------
 sf_log = log
+
+sf_sqrt = sqrt
 
 ----------------------------------------
 -- cos(x)
@@ -227,5 +231,48 @@ steeds (a1:as) (b0:b1:bs) =
             in if (cn==cn_1) then cn else (recur cn delcn dn as bs)
             --in cn:(recur cn delcn dn as bs)
 
+----------------------------------------
+-- not perfect, but workable for now
 
+sf_erf :: Value -> Value
+sf_erf z 
+    | z<(-1)    = -sf_erf(-z)
+    | z<1       = erf_series z
+    | otherwise = 1 - sf_erfc z
 
+sf_erfc :: Value -> Value
+sf_erfc z 
+    | z<(-1)    = 2-(sf_erfc (-z))
+    | z<1       = 1-(sf_erf z)
+    | z<10      = erfc_cf_pos1 z
+    | otherwise = erfc_asymp_pos z
+
+erf_series z =
+    let z2 = z^2
+        rts = ixiter 1 z $ \n t -> (-t)*z2/(#)n
+        terms = map (\(n,t)->t/(#)(2*n+1)) $ zip [0..] rts
+    in (2/sf_sqrt pi)  * kahan_sum terms
+
+erfc_asymp_pos z =
+    let z2 = z^2
+        iz2 = 1/2/z2
+        terms = ixiter 1 (1/z) $ \n t -> (-t*iz2)*(#)(2*n-1)
+        tterms = tk terms
+    in (sf_exp (-z2))/(sqrt pi) * kahan_sum tterms
+    where tk (a:b:cs) = if (abs a)<(abs b) then [a] else a:(tk$b:cs)
+
+erfc_cf_pos1 z = 
+    let z2 = z^2
+        as = z:[1/2,1..]
+        bs = 0:cycle [z2,1]
+        cf = steeds as bs
+    in sf_exp(-z2) / (sqrt pi) * cf
+
+{--
+main :: IO ()
+main = do
+    forM_ [-20,-19.99..20] $ \x -> do
+        let ex = sf_erf x
+        let cx = sf_erfc x
+        putStr $ (show x)++" "++(show ex)++" "++(show cx)++"\n"
+--}
