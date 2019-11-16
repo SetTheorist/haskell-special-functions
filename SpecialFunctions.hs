@@ -4,6 +4,7 @@ module SpecialFunctions
     , module Bessel
     , module Erf
     , module Exp
+    , module ExpInt
     , module Gamma
     , module Quad
     , module Trig
@@ -14,6 +15,7 @@ import Airy
 import Bessel
 import Erf
 import Exp
+import ExpInt
 import Gamma
 import Quad
 import Trig
