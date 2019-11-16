@@ -9,12 +9,11 @@ data Quad = Quad { hi_::Double, lo_::Double }
   deriving (Eq,Ord,Read)
 
 pi_q :: Quad
-pi_q =
-  stoq "3.14159265358979323846264338327950288419716939937510"
-
+pi_q = stoq "3.14159265358979323846264338327950288419716939937510"
 eulergamma_q :: Quad
-eulergamma_q =
-  stoq "0.57721566490153286060651209008240243104215933593992"
+eulergamma_q = stoq "0.57721566490153286060651209008240243104215933593992"
+ln2_q :: Quad
+ln2_q = stoq "0.69314718055994530941723212145817656807"
 
 rawshow (Quad hi lo) =
   "{"++(show hi)++" "++(show lo)++"}"
@@ -154,6 +153,19 @@ qddivide !(Quad !xhi !xlo) !y =
      let !c = (((xhi-uu)-u)+xlo)/y
      in qtsum xdy c $ \ !hi !lo ->
         Quad hi lo
+
+-- basic implementation: range-reduce & series
+qexp q
+  | q<0 = 1/(qexp (-q))
+  | otherwise =
+    let !nd = q / ln2_q
+        !nn = floor.hi_ $ nd
+        !r = q - ln2_q * (fromIntegral nn)
+        !s = sm r 0.0 1.0 1
+    in Quad (scaleFloat nn $ hi_ s) (scaleFloat nn $ lo_ s)
+  where sm !r !s !t !n
+          | s+t==s = s
+          | otherwise = sm r (s+t) (t*r/(fromIntegral n)) (n+1)
 
 instance Num Quad where
   (+) = qqadd
