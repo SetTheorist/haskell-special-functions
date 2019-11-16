@@ -1,22 +1,47 @@
 {-# Language BangPatterns #-}
 
---module Quad where
-import System.Environment(getArgs)
+module Quad where
+--import System.Environment(getArgs)
 
-import Data.Char(intToDigit)
+import Data.Char(digitToInt,intToDigit)
 
 data Quad = Quad { hi_::Double, lo_::Double }
   deriving (Eq,Ord,Read)
 
+pi_q :: Quad
+pi_q =
+  stoq "3.14159265358979323846264338327950288419716939937510"
+
+eulergamma_q :: Quad
+eulergamma_q =
+  stoq "0.57721566490153286060651209008240243104215933593992"
+
 rawshow (Quad hi lo) =
   "{"++(show hi)++" "++(show lo)++"}"
 
+--quick and dirty for now
+stoq :: String -> Quad
+stoq [] = make (0.0/0.0) (0.0/0.0)
+stoq ('-':as) = -(stoq as)
+stoq ('+':as) = stoq as
+stoq as = bef (make 0 0) as
+  where bef q [] = q
+        bef q ('.':as) = aft q 0 as
+        bef q ('e':as) = scale10 (read as) q
+        bef q (a:as) =
+          let !q' = (q*10) `qdadd` (fromIntegral.digitToInt$a)
+          in bef q' as
+        aft q n [] = (scale10 n q)
+        aft q n ('e':as) = scale10 (n-(read as)) q
+        aft q n (a:as) =
+          let !q' = (q*10) `qdadd` (fromIntegral.digitToInt$a)
+          in aft q' (n+1) as
 
-scale :: Int -> Quad -> Quad
-scale !b !q
-  | b==0 = q
-  | b>0  = qddivide (scale (b-1) q) 10
-  | b<0  = qdprod   (scale (b+1) q) 10
+scale10 :: Int -> Quad -> Quad
+scale10 !b !q
+  | b>0  = qddivide (scale10 (b-1) q) 10
+  | b<0  = qdprod   (scale10 (b+1) q) 10
+  | otherwise = q
 digs !n !p !q
   | n==0 = []
   | otherwise =
@@ -29,11 +54,14 @@ fixshow n q@(Quad hi lo)
   | otherwise = 
     let !b  = logBase 10 hi
         !fb = floor b
-        !q' = scale fb q
+        !q' = scale10 fb q
     in (digs 34 True q')++"e"++(show fb)
 
 instance Show Quad where
   show = fixshow 33
+
+--instance Read Quad where
+--  read = stoq
 
 --make a b = qtsum a b Quad
 make :: Double -> Double -> Quad
@@ -142,12 +170,13 @@ instance Fractional Quad where
   --recip :: a -> a
   -- TODO: fix for lower-order bits
   fromRational r = make (fromRational r) 0
-       
 
+{--
 main :: IO ()
 main = do
   args <- getArgs
   let l = length args
   let s = foldl (\q x->(flip qdadd) x q) (make 0.0 0.0) $ [fromInteger (333323*n)|n<-[1..10000000]]
   putStrLn . show $ s
+--}
 
