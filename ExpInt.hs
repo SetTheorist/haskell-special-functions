@@ -44,36 +44,23 @@ sf_expint_en n z | z<=1.0    = expint_en__series n z
 
 expint_en__1 :: Value -> Value
 expint_en__1 z =
-    let r0 = -euler_gamma - (sf_log z)
-        tterms = ixiter 2 (z) $ \k t -> -t*z/(#)k
-        terms = map (\(t,k)->t/(#)k) $ zip tterms [1..]
-    in kahan_sum (r0:terms)
+  let r0 = -euler_gamma - (sf_log z)
+      tterms = ixiter 2 (z) $ \k t -> -t*z/(#)k
+      terms = map (\(t,k)->t/(#)k) $ zip tterms [1..]
+  in kahan_sum (r0:terms)
 
+-- assume n>=2, x<=1
 expint_en__series :: Int -> Value -> Value
-expint_en__series = undefined
+expint_en__series n z =
+  let n' = (#)n
+      res = (-(sf_log z) + (sf_digamma n')) * (-z)^^(n-1)/(#)(factorial$n-1) + 1/(n'-1)
+      terms' = ixiter 2 (-z) (\m t -> -t*z/(#)m)
+      terms = map (\(m,t)->(-t)/(#)(m-(n-1))) $ filter ((/=(n-1)).fst) $ zip [1..] terms'
+  in kahan_sum (res:terms)
 
 expint_en__contfrac :: Int -> Value -> Value
 expint_en__contfrac = undefined
 {--
-# assume n>=2, x<=1
-function res = sf_expint_en_series(z,n)
-  res = (-log(z) + sf_digamma(n)) * (-z)^(n-1)/factorial(n-1) + 1.0/(n-1);
-  m = 1;
-  term = 1.0;
-  old_res = 0.0;
-  do
-    term *= -z/m;
-    if (m==n-1)
-      ++m;
-      continue;
-    endif
-    old_res = res;
-    res -= term / (m - (n-1));
-    ++m;
-    if (m>999) break; endif
-  until (res == old_res);
-endfunction
-
 # assume n>=2, z>1
 function res = sf_expint_en_contfrac(z,n)
   zeta = 1e-100;
