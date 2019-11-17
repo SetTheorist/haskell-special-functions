@@ -22,6 +22,15 @@ kahan_sum terms = k 0.0 0.0 terms
          then sum
          else (k x err' terms)
 
+
+-- kadd value oldsum olderr ---> newsum newerr
+kadd :: Value -> Value -> Value -> (Value -> Value -> a) -> a
+kadd t s e k =
+  let y = t - e
+      s' = s + y
+      e' = (s' - s) - y
+  in k s' e'
+
 ixiter :: (Enum ix) => ix -> a -> (ix->a->a) -> [a]
 ixiter i x f = x:(ixiter (succ i) (f i x) f)
 

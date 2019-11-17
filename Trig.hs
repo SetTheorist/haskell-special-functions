@@ -58,6 +58,7 @@ sf_cosh = cosh
 
 -- hyperbolic sine function
 sf_sinh = sinh
+sf_asinh = asinh
 
 -- hyperbolic secant function
 sf_sech z = 1/sf_cosh z
