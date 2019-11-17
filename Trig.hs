@@ -72,3 +72,11 @@ sf_gud x = sf_asin(sf_tanh x)
 -- = 2*sf_atan(sf_tanh(x/2))
 -- = sf_atan(sf_sinh(x))
 
+-- Compute the inverse Gudermannian function
+sf_agud z = sf_asinh (sf_tan z)
+-- = sf_log(abs((1+sf_sin(z))/sf_cos(z)))
+-- = sf_log(abs((1+sf_sin(z))/(1-sf_sin(z))))/2
+-- = sf_log(abs(sf_tan(z) + sf_sec(z))
+-- = sf_log(abs(sf_tan(pi/4 + z/2)))
+-- = sf_atanh(sf_sin(z))
+
