@@ -1,5 +1,6 @@
 module SpecialFunctions
     ( module SpecialFunctions
+    , module AGM
     , module Airy
     , module Bessel
     , module Erf
@@ -12,6 +13,7 @@ module SpecialFunctions
     ) where
 
 import Airy
+import AGM
 import Bessel
 import Erf
 import Exp

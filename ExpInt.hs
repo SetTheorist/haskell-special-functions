@@ -49,7 +49,7 @@ expint_en__1 z =
       terms = map (\(t,k)->t/(#)k) $ zip tterms [1..]
   in kahan_sum (r0:terms)
 
--- assume n>=2, x<=1
+-- assume n>=2, z<=1
 expint_en__series :: Int -> Value -> Value
 expint_en__series n z =
   let n' = (#)n
@@ -58,31 +58,29 @@ expint_en__series n z =
       terms = map (\(m,t)->(-t)/(#)(m-(n-1))) $ filter ((/=(n-1)).fst) $ zip [1..] terms'
   in kahan_sum (res:terms)
 
+-- assume n>=2, z>1
+-- modified Lentz algorithm
 expint_en__contfrac :: Int -> Value -> Value
-expint_en__contfrac = undefined
-{--
-# assume n>=2, z>1
-function res = sf_expint_en_contfrac(z,n)
-  zeta = 1e-100;
-  eps = 5e-16;
-  # modified Lentz algorithm
-  fj = zeta;
-  Cj = fj;
-  Dj = 0;
-  j = 1;
-  do
-    if (j==1) aj=1; else aj=-(j-1)*(n+j-2); endif
-    bj = z + n + 2*(j-1);
-    Dj = bj + aj*Dj; if (Dj==0.0) Dj=zeta; endif
-    Cj = bj + aj/Cj; if (Cj==0.0) Cj=zeta; endif
-    Dj = 1/Dj;
-    Delta = Cj*Dj;
-    fj = fj*Delta;
-    ++j;
-    if (j>999) break; endif
-  until (abs(Delta-1)<eps)
-  res = fj * sf_exp(-z);
-endfunction
---}
-
+expint_en__contfrac n z =
+  let fj = zeta
+      cj = fj
+      dj = 0
+      j = 1
+      n' = (#)n
+  in lentz j cj dj fj
+  where
+    zeta = 1e-100
+    eps = 5e-16
+    nz x = if x==0 then zeta else x
+    lentz j cj dj fj =
+      let aj = (#) $ if j==1 then 1 else -(j-1)*(n+j-2)
+          bj = z + (#)(n + 2*(j-1))
+          dj' = nz $ bj + aj*dj
+          cj' = nz $ bj + aj/cj
+          dji = 1/dj'
+          delta = cj'*dji
+          fj' = fj*delta
+      in if (abs$delta-1)<eps
+         then fj' * sf_exp(-z)
+         else lentz (j+1) cj' dji fj'
 
