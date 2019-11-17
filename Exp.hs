@@ -1,6 +1,7 @@
 module Exp (
     sf_exp,
     sf_expm1,
+    sf_exp_m1vx,
     sf_log,
     --sf_log1p,
 ) where
@@ -30,9 +31,27 @@ test__sf_exp = do
 -- exp(x)-1
 sf_expm1 :: Value -> Value 
 -- exp(-x)-1 = -exp(-x)*(exp(x)-1)
-sf_expm1 x | isInfinite x = if x<0 then -1 else (1.0/0.0)
-sf_expm1 x | x<0 = -sf_exp x * sf_expm1 (-x)
-sf_expm1 x = kahan_sum $ ixiter 2 x $ \n t -> t*x/((#)n)
+sf_expm1 x | isInfinite x = if x<0 then -1 else (1/0)
+           | x<0      = -sf_exp x * sf_expm1 (-x)
+           |otherwise = kahan_sum $ ixiter 2 x $ \n t -> t*x/((#)n)
+
+----------------------------------------
+-- (exp(x)-1)/x
+sf_exp_m1vx :: Value -> Value
+sf_exp_m1vx x
+  | isInfinite x = if x<0 then 0 else (1/0)
+  | x/=x = x
+  | abs(x)>(1/2) = (sf_exp x - 1)/x -- inaccurate for some complex points
+  | otherwise =
+      let x2 = x^2
+      in 2/(2 - x + x2/6/(1
+          + x2/(4*(2*3-3)*(2*3-1))/(1
+          + x2/(4*(2*4-3)*(2*4-1))/(1
+          + x2/(4*(2*5-3)*(2*5-1))/(1
+          + x2/(4*(2*6-3)*(2*6-1))/(1
+          + x2/(4*(2*7-3)*(2*7-1))/(1
+          + x2/(4*(2*8-3)*(2*8-1))/(1
+          ))))))));
 
 ----------------------------------------
 sf_log = log
