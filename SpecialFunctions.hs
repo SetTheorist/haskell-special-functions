@@ -7,6 +7,7 @@ module SpecialFunctions
     , module Exp
     , module ExpInt
     , module Gamma
+    , module Probability
     , module Quad
     , module Trig
     , module Util
@@ -19,6 +20,7 @@ import Erf
 import Exp
 import ExpInt
 import Gamma
+import Probability
 import Quad
 import Trig
 import Util
