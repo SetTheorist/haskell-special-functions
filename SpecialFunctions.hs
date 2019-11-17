@@ -11,6 +11,7 @@ module SpecialFunctions
     , module Quad
     , module Trig
     , module Util
+    , module Zeta
     ) where
 
 import Airy
@@ -24,4 +25,5 @@ import Probability
 import Quad
 import Trig
 import Util
+import Zeta
 
