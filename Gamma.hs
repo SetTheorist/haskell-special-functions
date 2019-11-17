@@ -1,6 +1,7 @@
 module Gamma (
     euler_gamma,
     factorial,
+    sf_beta,
     sf_gamma,
     sf_invgamma,
     sf_lngamma,
@@ -20,6 +21,12 @@ factorial :: (Integral a) => a -> a
 factorial 0 = 1
 factorial 1 = 1
 factorial n = n * (factorial $ n-1)
+
+
+----------------------------------------
+-- beta function B(a,b)
+sf_beta :: Value -> Value -> Value
+sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 
 ----------------------------------------
 -- gamma function

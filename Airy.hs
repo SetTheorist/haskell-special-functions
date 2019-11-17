@@ -1,4 +1,7 @@
-module Airy where
+module Airy (
+    sf_airy_ai,
+    sf_airy_bi,
+) where
 
 import Gamma
 import Util

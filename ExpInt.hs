@@ -37,6 +37,8 @@ expint_ei__asymp z =
 
 
 sf_expint_en :: Int -> Value -> Value
+sf_expint_en n z | z<0 = (0/0) -- TODO: confirm this
+                 | z==0 = (1/(#)(n-1)) -- TODO: confirm this
 sf_expint_en 0 z = sf_exp(-z) / z
 sf_expint_en 1 z = expint_en__1 z
 sf_expint_en n z | z<=1.0    = expint_en__series n z
@@ -53,7 +55,7 @@ expint_en__1 z =
 expint_en__series :: Int -> Value -> Value
 expint_en__series n z =
   let n' = (#)n
-      res = (-(sf_log z) + (sf_digamma n')) * (-z)^^(n-1)/(#)(factorial$n-1) + 1/(n'-1)
+      res = (-(sf_log z) + (sf_digamma n')) * (-z)^(n-1)/(#)(factorial$n-1) + 1/(n'-1)
       terms' = ixiter 2 (-z) (\m t -> -t*z/(#)m)
       terms = map (\(m,t)->(-t)/(#)(m-(n-1))) $ filter ((/=(n-1)).fst) $ zip [1..] terms'
   in kahan_sum (res:terms)

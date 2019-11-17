@@ -1,4 +1,9 @@
-module Exp where
+module Exp (
+    sf_exp,
+    sf_expm1,
+    sf_log,
+    --sf_log1p,
+) where
 
 import Control.Monad
 

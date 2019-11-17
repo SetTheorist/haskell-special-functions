@@ -1,4 +1,7 @@
-module Erf where
+module Erf (
+    sf_erf,
+    sf_erfc,
+) where
 
 import Exp
 import Util
