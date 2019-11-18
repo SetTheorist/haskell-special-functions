@@ -9,6 +9,7 @@ module SpecialFunctions
     , module Gamma
     , module Probability
     , module Quad
+    , module Spence
     , module Trig
     , module Util
     , module Zeta
@@ -23,6 +24,7 @@ import ExpInt
 import Gamma
 import Probability
 import Quad
+import Spence
 import Trig
 import Util
 import Zeta
