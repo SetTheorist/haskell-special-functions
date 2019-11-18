@@ -7,6 +7,7 @@ module SpecialFunctions
     , module Exp
     , module ExpInt
     , module Gamma
+    , module Lommel
     , module Probability
     , module Quad
     , module Spence
@@ -22,6 +23,7 @@ import Erf
 import Exp
 import ExpInt
 import Gamma
+import Lommel
 import Probability
 import Quad
 import Spence
