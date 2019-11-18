@@ -1,3 +1,5 @@
+{-# Language BangPatterns #-}
+
 module Erf (
     sf_erf,
     sf_erfc,
@@ -40,13 +42,11 @@ erfc_asymp_pos z =
 
 -- alternative styling:
 erfc_asymp_pos' z =
-    let z2 = z^2
-        iz2 = 1/(2*z2)
-        terms = ixiter 1 (1/z) $ \n t -> (-t*iz2)*(#)(2*n-1)
-    in (sf_exp (-z2))/(sqrt pi) * ks 0 0 terms
-    where ks s e (t:t':ts) = kadd t s e $ if abs(t')>abs(t)
-                                          then (\s _ -> s)
-                                          else (\s e -> ks s e (t':ts))
+    let !z2 = z^2
+        !iz2 = 1/(2*z2)
+        !terms = ixiter 1 (1/z) $ \ !n !t -> (-t*iz2)*(#)(2*n-1)
+    in (sf_exp (-z2))/(sqrt pi) * ks terms 0 0
+    where ks (t:t':ts) !s !e = kadd t s e $ if abs(t')>abs(t) then const else ks (t':ts)
 
 erfc_cf_pos1 z = 
     let z2 = z^2

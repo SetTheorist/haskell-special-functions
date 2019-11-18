@@ -2,6 +2,7 @@
 
 module Exp (
     sf_exp,
+    sf_expn,
     sf_exp_m1,
     sf_exp_m1vx,
     sf_exp_men,
@@ -101,6 +102,22 @@ exp_menx__contfrac n z =
       in if (abs(deltaj-1)<eps)
          then 1/(1-z/fj')
          else lentz (j+1) dji cj' fj'
+
+----------------------------------------
+
+
+-- Compute initial part of series for exponential, $\sum_(k=0)^n z^k/k!$ 
+-- ($n=0,1,2,...$)
+sf_expn :: Int -> Value -> Value
+sf_expn n z 
+  | isInfinite z = if z>0 then (1/0) else (if (odd n) then (-1/0) else (1/0))
+  | z/=z = z
+  | otherwise = expn__series n z
+
+-- TODO: just call sf_exp when possible
+-- TODO: better handle large -ve values!
+expn__series :: Int -> Value -> Value
+expn__series n z = kahan_sum $ take (n+1) $ ixiter 1 1.0 $ \k t -> t*z/(#)k
 
 ----------------------------------------
 
