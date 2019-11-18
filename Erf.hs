@@ -1,6 +1,8 @@
 module Erf (
     sf_erf,
     sf_erfc,
+    erfc_asymp_pos,
+    erfc_asymp_pos',
 ) where
 
 import Exp
@@ -20,7 +22,7 @@ sf_erfc z
     | z<(-1)    = 2-(sf_erfc (-z))
     | z<1       = 1-(sf_erf z)
     | z<10      = erfc_cf_pos1 z
-    | otherwise = erfc_asymp_pos z
+    | otherwise = erfc_asymp_pos z -- TODO: hangs for very large input
 
 erf_series z =
     let z2 = z^2
@@ -35,6 +37,16 @@ erfc_asymp_pos z =
         tterms = tk terms
     in (sf_exp (-z2))/(sqrt pi) * kahan_sum tterms
     where tk (a:b:cs) = if (abs a)<(abs b) then [a] else a:(tk$b:cs)
+
+-- alternative styling:
+erfc_asymp_pos' z =
+    let z2 = z^2
+        iz2 = 1/(2*z2)
+        terms = ixiter 1 (1/z) $ \n t -> (-t*iz2)*(#)(2*n-1)
+    in (sf_exp (-z2))/(sqrt pi) * ks 0 0 terms
+    where ks s e (t:t':ts) = kadd t s e $ if abs(t')>abs(t)
+                                          then (\s _ -> s)
+                                          else (\s e -> ks s e (t':ts))
 
 erfc_cf_pos1 z = 
     let z2 = z^2
