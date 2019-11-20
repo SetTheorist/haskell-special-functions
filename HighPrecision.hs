@@ -41,9 +41,9 @@ two_sum !a !b !k =
 --   (if round-to-even tiebreaking fp arithmetic is used)
 grow_expansion :: [Double] -> Double -> [Double]
 grow_expansion !es !b = iter b es
-  where iter !q ![]     = [q]
+  where iter !q ![]     = q:[]
         iter !q (!e:es) = two_sum q e $ \ !qi !hi ->
-          hi ^:^ (iter qi es)
+          hi:(iter qi es)
 
 -- requires es, fs non-overlapping increasing-magnitude expansions
 -- returns n+m-term non-overlapping increasing-magnitude expansion
@@ -52,11 +52,11 @@ grow_expansion !es !b = iter b es
 --   (if round-to-even tiebreaking fp arithmetic is used)
 expansion_sum :: [Double] -> [Double] -> [Double]
 expansion_sum !es !fs = iter [] es fs
-  where iter !xs ![] ![] = reverse xs
-        iter !xs (!h:hs) ![] = iter (h ^:^ xs) hs []
-        iter !xs !hs (!f:fs) =
+  where iter !xs ![]     ![]     = reverse xs
+        iter !xs (!h:hs) ![]     = iter (h:xs) hs []
+        iter !xs !hs     (!f:fs) =
           let (!hi:hs') = grow_expansion hs f
-          in iter (hi ^:^ xs) hs' fs
+          in iter (hi:xs) hs' fs
 
 {--
 -- TODO: not sure about this...
@@ -113,7 +113,7 @@ scale_expansion !(e:es) !b = two_product e b $ \ q2 h1 -> h1:(iter q2 es)
           two_product e b       $ \ !tti  !ti   ->
           two_sum q2i2 ti       $ \ !q2i1 !h2i2 ->
           fast_two_sum tti q2i1 $ \ !q2i  !h2i1 ->
-          h2i2 ^:^ (h2i1 ^:^ (iter q2i es))
+          h2i2:(h2i1:(iter q2i es))
 
 -- produces non-overlapping (non-adjacent if round-to-even)
 -- largest component hn approximates h with error < ulp(un)
@@ -127,7 +127,7 @@ compress !es =
     iterdown !q ![] = q^:^[]
     iterdown !q (!f:fs) =
       fast_two_sum q f $ \ !qq' !q' ->
-      qq' ^:^ iterdown q' fs
+      qq':iterdown q' fs
     iterup q ![] = q^:^[]
     iterup q (!gi:gs) =
       fast_two_sum q gi $ \ !qq' !q' ->
@@ -143,23 +143,35 @@ multiply_expansions !es (!f:fs) =
 
 ----------------------------------------
 
-data High = High ![Double]
+data High = High Int ![Double]
   deriving (Show,Eq,Ord)
 
+make_high n hs = High n $ reverse $ take n $ reverse $ (take n (repeat 0.0))++hs
+
+high_sum n hs = make_high n $ foldl grow_expansion [] hs
+
 (+^) :: High -> Double -> High
-(High es) +^ d = High $ grow_expansion es d
+(High n es) +^ d = make_high n $ compress $ grow_expansion es d
+
+(-^) :: High -> Double -> High
+(High n es) -^ d = make_high n $ compress $ grow_expansion es (-d)
 
 (*^) :: High -> Double -> High
-(High es) *^ d = High $ scale_expansion es d
+(High n es) *^ d = make_high n $ compress $ scale_expansion es d
+
+-- (/^) :: High -> Double -> High
+-- (High n es) /^ d = make_high n $ compress $ ...
+
+showdigs (High n es) = undefined
 
 instance Num High where
-  (High h1) + (High h2) = High $ expansion_sum h1 h2
-  --(High h1) - (High h2) :: a -> a -> a
-  (High h1) * (High h2) = High $ multiply_expansions h1 h2
-  negate (High h1) = High $ map negate h1
-  abs h@(High h1) = if last h1 < 0 then (negate h) else h
-  signum (High h1) = High [signum $ last h1]
-  fromInteger k = High [fromInteger k]
+  (High n1 h1) + (High n2 h2) = make_high (max n1 n2) $ compress $ expansion_sum h1 h2
+  (High n1 h1) - (High n2 h2) = make_high (max n1 n2) $ compress $ expansion_sum h1 (map negate h2)
+  (High n1 h1) * (High n2 h2) = make_high (max n1 n2) $ compress $ multiply_expansions h1 h2
+  negate (High n1 h1) = make_high n1 $ map negate h1
+  abs h@(High n1 h1) = if last h1 < 0 then (negate h) else h
+  signum (High n1 h1) = make_high n1 $ [signum $ last h1]
+  fromInteger k = High 1 [fromInteger k]
 
 {--
 instance Fractional High where
