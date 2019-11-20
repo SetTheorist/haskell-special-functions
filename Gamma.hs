@@ -11,17 +11,12 @@ module Gamma (
 where
 
 import Exp
+import Numbers(factorial)
 import Trig
 import Util
 
 euler_gamma :: (Floating a) => a
 euler_gamma = 0.577215664901532860606512090082402431042159335939923598805767234884867726777664670936947063291746749
-
-factorial :: (Integral a) => a -> a
-factorial 0 = 1
-factorial 1 = 1
-factorial n = n * (factorial $ n-1)
-
 
 ----------------------------------------
 -- beta function B(a,b)
