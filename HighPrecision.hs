@@ -206,6 +206,17 @@ showraw (High n es) = "High "++(show n)++" "++(show es)
 
 ----------------------------------------
 
+hsqrt h@(High n es) =
+  let x0 = make_high n [1/sqrt(last es)]
+  in h * (iter x0)
+  where
+    iter x =
+      let x' = (make_high 1 [0.5])*x*(3 - h*x^2)
+      in if x==x' then x
+         else iter x'
+
+----------------------------------------
+
 instance Num High where
   (High n1 h1) + (High n2 h2) = make_high (max n1 n2) $ compress $ expansion_sum h1 h2
   (High n1 h1) - (High n2 h2) = make_high (max n1 n2) $ compress $ expansion_sum h1 (map negate h2)
