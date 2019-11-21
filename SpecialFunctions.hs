@@ -3,6 +3,7 @@ module SpecialFunctions
     , module AGM
     , module Airy
     , module Bessel
+    , module Elliptic
     , module Erf
     , module Exp
     , module ExpInt
@@ -20,6 +21,7 @@ module SpecialFunctions
 import Airy
 import AGM
 import Bessel
+import Elliptic
 import Erf
 import Exp
 import ExpInt
