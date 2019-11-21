@@ -8,6 +8,8 @@ Jonathan Richard Shewchuk (October 1, 1997)
 
 module HighPrecision where
 
+import Data.Ratio
+
 ----------------------------------------
 
 -- requires that |a|>=|b|
@@ -143,8 +145,21 @@ multiply_expansions !es (!f:fs) =
 
 ----------------------------------------
 
+-- newton based inversion
+-- (using only multiply and add)
+hinv h@(High n hs) =
+  let x0 = 1/(last hs)
+  in iter (make_high n [x0])
+  where
+    iter x =
+      let x' = x*(2-h*x)
+      in if x==x' then x
+         else iter x'
+
+----------------------------------------
+
 data High = High Int ![Double]
-  deriving (Show,Eq,Ord)
+  deriving (Eq,Ord)
 
 make_high n hs = High n $ reverse $ take n $ reverse $ (take n (repeat 0.0))++hs
 
@@ -162,7 +177,34 @@ high_sum n hs = make_high n $ foldl grow_expansion [] hs
 -- (/^) :: High -> Double -> High
 -- (High n es) /^ d = make_high n $ compress $ ...
 
-showdigs (High n es) = undefined
+----------------------------------------
+
+d2r :: Double -> Rational
+d2r d = let (m,e) = decodeFloat d
+        in (fromIntegral m)*2^^e 
+hs2r :: [Double] -> Rational
+hs2r es = iter 0 es
+  where iter r [] = r
+        iter r (e:es) = iter (r+(d2r e)) es
+
+-- quick and dirty
+showdigs (High n es) =
+  let f = hs2r es
+      (q,r) = (numerator f) `quotRem` (denominator f)
+  in (show q) ++ (digs (denominator f) (n*16) r ['.'])
+  where digs d _ 0 a = reverse a
+        digs d 0 _ a = reverse a
+        digs d n r a =
+          let r10 = 10*r
+              (q',r') = (10*r) `quotRem` d
+          in digs d (n-1) r' ((show q')++a)
+
+instance Show High where
+  show = showdigs
+
+showraw (High n es) = "High "++(show n)++" "++(show es)
+
+----------------------------------------
 
 instance Num High where
   (High n1 h1) + (High n2 h2) = make_high (max n1 n2) $ compress $ expansion_sum h1 h2
@@ -171,14 +213,10 @@ instance Num High where
   negate (High n1 h1) = make_high n1 $ map negate h1
   abs h@(High n1 h1) = if last h1 < 0 then (negate h) else h
   signum (High n1 h1) = make_high n1 $ [signum $ last h1]
-  fromInteger k = High 1 [fromInteger k]
+  fromInteger k = High 1 [fromInteger k] -- TODO: fix this
 
-{--
 instance Fractional High where
-  (/) :: a -> a -> a
-  recip :: a -> a
-  fromRational :: Rational -> a
---}
-
-
+  --(/) :: a -> a -> a
+  recip h = hinv h
+  fromRational r = make_high 2 [fromRational r] -- TODO: fix this
 
