@@ -20,45 +20,47 @@ euler_gamma = 0.5772156649015328606065120900824024310421593359399235988057672348
 
 ----------------------------------------
 -- beta function B(a,b)
-sf_beta :: Value -> Value -> Value
+sf_beta :: (Value v) => v -> v -> v
 sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 
 ----------------------------------------
 -- gamma function
 -- $$\Gamma(z) = \int_0^\infty e^{-t}t^{z}\frac{dz}{z}$$
-sf_gamma :: Value -> Value
+sf_gamma :: (Value v) => v -> v
 sf_gamma x =
   let (x',t) = redup x 1
       lngx = lngamma_asymp x'
   in t * (sf_exp lngx)
   where redup x t
-          | x>15 = (x,t)
+          | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t/x)
 
 -- $$\frac{1}{\Gamma(z)}$$
-sf_invgamma :: Value -> Value
+sf_invgamma :: (Value v) => v -> v
 sf_invgamma x =
   let (x',t) = redup x 1
       lngx = lngamma_asymp x'
   in t * (sf_exp$ -lngx)
   where redup x t
-          | x>15 = (x,t)
+          | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t*x)
 
 -- log-gamma function
 -- $$\ln\Gamma(z)$$
-sf_lngamma :: Value -> Value
+sf_lngamma :: (Value v) => v -> v
 sf_lngamma x =
   let (x',t) = redup x 0
       lngx = lngamma_asymp x'
   in t + lngx
   where redup x t
-          | x>15 = (x,t)
+          | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t-sf_log x)
 
+lngamma_asymp :: (Value v) => v -> v
 lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (kahan_sum terms)
   where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
 
+bernoulli_b :: (Value v) => Int -> v
 bernoulli_b 1 = -1/2
 bernoulli_b k | k`mod`2==1 = 0
 bernoulli_b 0 = 1
@@ -72,6 +74,7 @@ bernoulli_b 14 = 7/6
 bernoulli_b 16 = -3617/510
 bernoulli_b 18 = 43867/798
 bernoulli_b 20 = -174611/330
+bernoulli_b _ = undefined
 
 {--
 sf_gamma :: Value -> Value
@@ -93,19 +96,20 @@ spouge_approx a z' =
 
 ----------------------------------------
 
-sf_digamma :: Value -> Value
+sf_digamma :: (Value v) => v -> v
 --sf_digamma n | is_nonposint n = Inf
-sf_digamma z | (abs z)>10 = digamma__asympt z
-             | otherwise  = digamma__series z
+sf_digamma z | (rabs z)>10 = digamma__asympt z
+             | otherwise   = digamma__series z
 
 
-digamma__series :: Value -> Value
+digamma__series :: (Value v) => v -> v
 digamma__series z =
   let res = -euler_gamma - (1/z)
       terms = map (\k->z/((#)k*(z+(#)k))) [1..]
       corrs = map (correction.(#)) [1..]
   in summer res res terms corrs
   where
+    summer :: (Value v) => v -> v -> [v] -> [v] -> v
     summer res sum (t:terms) (c:corrs) =
       let sum' = sum + t
           res' = sum' + c
@@ -124,10 +128,10 @@ digamma__series z =
 
 -- asymptotic expansion for |arg z|<pi
 -- TODO: this will fail if bernoulli_b table exceeded
-digamma__asympt :: Value -> Value
+digamma__asympt :: (Value v) => v -> v
 digamma__asympt z
-  | z<0.5     = compute (1 - z) $ -pi/(sf_tan(pi*z)) + (sf_log(1-z)) - 1/(2*(1-z))
-  | otherwise = compute z $ (sf_log z) - 1/(2*z)
+  | (re z)<0.5 = compute (1 - z) $ -pi/(sf_tan(pi*z)) + (sf_log(1-z)) - 1/(2*(1-z))
+  | otherwise  = compute z $ (sf_log z) - 1/(2*z)
     where
       compute z res =
         let z_2 = z^^(-2)
@@ -136,7 +140,7 @@ digamma__asympt z
         in sumit res res terms
       sumit res ot (t:terms) =
         let res' = res - t
-        in if res==res' || abs(t)>abs(ot)
+        in if res==res' || (rabs t)>(rabs ot)
            then res
            else sumit res' t terms
 

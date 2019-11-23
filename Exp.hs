@@ -8,8 +8,8 @@ module Exp (
     sf_exp_m1vx,
     sf_exp_men,
     sf_exp_menx,
-    --sf_log,
-    --sf_log_p1,
+    sf_log,
+    sf_log_p1,
 ) where
 
 --import Control.Monad
