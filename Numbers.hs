@@ -13,6 +13,10 @@ lucas_number = undefined
 euler_number :: Int -> Integer
 euler_number = undefined
 
+catalan_number :: Integer -> Integer
+catalan_number 0 = 1
+catalan_number n = 2*(2*n-1)*(catalan_number (n-1))`div`(n+1)
+
 bernoulli_number :: Int -> Rational
 bernoulli_number = undefined
 
@@ -37,4 +41,16 @@ binomial n k
     | k>n`div`2 = binomial n (n-k)
     | otherwise = (product [n-(k-1)..n]) `div` (product [1..k])
 
+
+-- TODO: this is extremely inefficient approach
+stirling_number_first_kind n k = s n k
+  where s n k | k<=0 || n<=0 = 0
+        s n 1 = (-1)^(n-1)*(factorial (n-1))
+        s n k = (s (n-1) (k-1)) - (n-1)*(s (n-1) k)
+
+-- TODO: this is extremely inefficient approach
+stirling_number_second_kind n k = s n k
+  where s n k | k<=0 || n<=0 = 0
+        s n 1 = 1
+        s n k = k*(s (n-1) k) + (s (n-1) (k-1))
 
