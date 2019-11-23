@@ -16,6 +16,7 @@ class (Eq t, Floating t, Fractional t, Num t) => Value t where
   rabs :: t -> Double
   is_inf :: t -> Bool
   is_nan :: t -> Bool
+  fromDouble :: Double -> t
 
 instance Value Double where
   re = id
@@ -23,6 +24,7 @@ instance Value Double where
   rabs = abs
   is_inf = isInfinite
   is_nan = isNaN
+  fromDouble = id
 
 instance Value CDouble where
   re = realPart
@@ -30,6 +32,7 @@ instance Value CDouble where
   rabs = realPart.abs
   is_inf z = (is_inf.re$z) || (is_inf.im$z)
   is_nan z = (is_nan.re$z) || (is_nan.im$z)
+  fromDouble x = x :+ 0
 
 -- TODO: add quad versions also
 
