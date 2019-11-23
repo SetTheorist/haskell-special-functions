@@ -8,6 +8,9 @@ import Util
 sf_cos :: Value -> Value
 sf_cos x = kahan_sum $ ixiter 0 1 $ \n t -> -t*x^2/((#)$2*n+1)/((#)$2*n+2)
 
+sf_acos :: Value -> Value
+sf_acos = acos
+
 -- vercosine function
 sf_vcos :: Value -> Value
 sf_vcos x = 2 * (sf_cos $ x/2)^2
@@ -40,9 +43,15 @@ sf_sec x = 1 / (cos x)
 -- exsecant function
 sf_exsec x = 2 * (sf_sin $ x/2)^2 * (sf_sec x)
 
+-- cosecant function
+sf_csc x = 1 / (sin x)
+
 ----------------------------------------
 -- tangent function
 sf_tan = tan
+
+-- arctangent function
+sf_atan = atan
 
 -- $$\tan z = z/(1- z^2/(3- z^2/(5- z^2/(7- ...))))$$
 -- NB terrible convergence
@@ -55,6 +64,7 @@ sf_cot x = sf_cos(x) / sf_sin(x)
 ----------------------------------------
 -- hyperbolic cosine function
 sf_cosh = cosh
+sf_acosh = acosh
 
 -- hyperbolic sine function
 sf_sinh = sinh
@@ -65,6 +75,7 @@ sf_sech z = 1/sf_cosh z
 
 -- hyperbolic tangent function
 sf_tanh = tanh
+sf_atanh = atanh
 
 ----------------------------------------
 -- Gudermannian function
