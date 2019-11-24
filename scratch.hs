@@ -18,3 +18,11 @@ expts x = map (\n->x^n/(fromIntegral$fac n)) [0..]
 ln1xs :: Double -> [Double]
 ln1xs x = map (\n->x^n/(fromIntegral$n)) [1..]
 
+test__sf_exp :: IO ()
+test__sf_exp = do
+  cs <- readFile "exp_1.dat"
+  let ls = lines cs
+  let ws = map words ls
+  let ns = map (map read) ws :: [[Double]]
+  let re = map (\(x:fx:_)->relerr fx (sf_exp x)) ns
+  mapM_ (putStrLn.show) re
