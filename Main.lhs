@@ -38,6 +38,10 @@
                %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
+\DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\erfc}{erfc}
+\DeclareMathOperator{\Li}{Li}
+
 \title{Computation of Special Functions\\(Haskell)}
 \author{Apollo Hogan}
 \begin{document}
@@ -60,6 +64,9 @@ Special functions.
 
 %\section{Gamma}
 \input{Gamma.lhs}
+
+%\section{Erf}
+\input{Erf.lhs}
 
 %\section{Airy}
 \input{Airy.lhs}
