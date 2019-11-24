@@ -20,24 +20,31 @@ import Trig
 import Util
 \end{code}
 
+\subsubsection{\tt euler\_gamma}
+A constant for Euler's gamma:
+\[ \gamma = \lim_{n\to\infty}\left(\sum_{k=1}^n\frac1n - \ln n\right) \]
 \begin{code}
 euler_gamma :: (Floating a) => a
 euler_gamma = 0.577215664901532860606512090082402431042159335939923598805767234884867726777664670936947063291746749
-
 \end{code}
 
+\subsubsection{\tt sf\_beta a b}
+The Beta integral
+\[ B(a,b) = \int_0^1 t^{a-1}(1-t)^{b-1}\,dt = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)} \]
+implemented in terms of log-gamma
+\[ \verb|sf_beta a b| = e^{\ln\Gamma(a) + \ln\Gamma(b) - \ln\Gamma(a+b)} \]
 \begin{code}
-----------------------------------------
--- beta function B(a,b)
 sf_beta :: (Value v) => v -> v -> v
 sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
-
 \end{code}
 
+\subsubsection{\tt sf\_gamma z}
+The gamma function
+\[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dz}{z} \]
+implemented by using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
+to increase the real part of the argument to be $>15$ and then
+using an asymptotic expansion for log-gamma, \verb|lngamma_asymp|, to evaluate.
 \begin{code}
-----------------------------------------
--- gamma function
--- $$\Gamma(z) = \int_0^\infty e^{-t}t^{z}\frac{dz}{z}$$
 sf_gamma :: (Value v) => v -> v
 sf_gamma x =
   let (x',t) = redup x 1
@@ -46,8 +53,17 @@ sf_gamma x =
   where redup x t
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t/x)
-
 \end{code}
+
+The asymptotic expansion for log-gamma
+\[ \ln\Gamma(z) \sim (z-\frac12)\ln z - z + \frac12\ln(2\pi) + \sum_{k=1}{\infty}\frac{B_{2k}}{2k(2k-1)z^{2k-1}} \]
+where $B_n$ is the $n$'th Bernoulli number.
+\begin{code}
+lngamma_asymp :: (Value v) => v -> v
+lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
+  where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
+\end{code}
+
 
 \begin{code}
 -- $$\frac{1}{\Gamma(z)}$$
@@ -73,13 +89,6 @@ sf_lngamma x =
   where redup x t
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t-sf_log x)
-
-\end{code}
-
-\begin{code}
-lngamma_asymp :: (Value v) => v -> v
-lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
-  where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
 
 \end{code}
 

@@ -17,11 +17,10 @@ as in the computations above the denominator of $\left(\frac{1\pm\sqrt5}{2}\righ
 \begin{code}
 module Fibo (fibonacci) where
 import Data.Ratio
-
 data Q5 = Q5 Rational Rational
   deriving (Eq)
 \end{code}
-The number-theoretic norm, unused for our application.
+The number-theoretic norm $N(a+b\sqrt5)=a^2-5b^2$, though unused in our application.
 \begin{code}
 norm (Q5 ra qa) = ra^2-5*qa^2
 \end{code}
@@ -32,7 +31,7 @@ instance Show Q5 where
   show (Q5 ra qa) = (show ra)++"+"++(show qa)++"*sqrt(5)"
 \end{code}
 
-Implementation of the operations.
+Implementation of the operations for typeclasses \verb|Num| and \verb|Fractional|.
 The \verb|abs| and \verb|signum| functions are unused, so we just give placeholder values.
 \begin{code}
 instance Num Q5 where
@@ -51,6 +50,7 @@ instance Fractional Q5 where
 
 Finally, we define $\phi_{\pm}=\frac12(1\pm\sqrt5)$ and $c_{\pm}=\pm\frac15\sqrt5$ so that
 $f_n = c_+\phi_+^n+c_-\phi_-^n$.
+(We can shortcut and extract the value we want without actually computing the full expression.)
 \begin{code}
 phip = Q5 (1%2) (1%2)
 cp   = Q5 0     (1%5)
