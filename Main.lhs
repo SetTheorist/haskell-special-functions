@@ -35,6 +35,7 @@
                {!}{{\scriptsize!}}1
                {&&}{{$\wedge$}}2               
                {||}{{$\vee$}}2               
+               %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
 \title{Computation of Special Functions\\(Haskell)}

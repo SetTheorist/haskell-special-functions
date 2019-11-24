@@ -1,5 +1,6 @@
 \section{Gamma}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Preamble}
 A basic preamble.
 \begin{code}
@@ -20,6 +21,9 @@ import Trig
 import Util
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Misc}
+
 \subsubsection{\tt euler\_gamma}
 A constant for Euler's gamma:
 \[ \gamma = \lim_{n\to\infty}\left(\sum_{k=1}^n\frac1n - \ln n\right) \]
@@ -38,10 +42,14 @@ sf_beta :: (Value v) => v -> v -> v
 sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 \end{code}
 
-\subsubsection{\tt sf\_gamma z}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gamma}
+
 The gamma function
 \[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dz}{z} \]
-implemented by using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
+
+\subsubsection{\tt sf\_gamma z}
+The gamma function implemented using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
 to increase the real part of the argument to be $>15$ and then
 using an asymptotic expansion for log-gamma, \verb|lngamma_asymp|, to evaluate.
 \begin{code}
@@ -55,8 +63,9 @@ sf_gamma x =
           | otherwise = redup (x+1) (t/x)
 \end{code}
 
+\subsubsection{*\tt lngamma\_asymp z}
 The asymptotic expansion for log-gamma
-\[ \ln\Gamma(z) \sim (z-\frac12)\ln z - z + \frac12\ln(2\pi) + \sum_{k=1}{\infty}\frac{B_{2k}}{2k(2k-1)z^{2k-1}} \]
+\[ \ln\Gamma(z) \sim (z-\frac12)\ln z - z + \frac12\ln(2\pi) + \sum_{k=1}^{\infty}\frac{B_{2k}}{2k(2k-1)z^{2k-1}} \]
 where $B_n$ is the $n$'th Bernoulli number.
 \begin{code}
 lngamma_asymp :: (Value v) => v -> v
@@ -64,9 +73,9 @@ lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
   where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
 \end{code}
 
-
+\subsubsection{\tt sf\_invgamma z}
+The inverse gamma function, $\verb|sf_invgamma z|=\frac{1}{\Gamma(z)}$.
 \begin{code}
--- $$\frac{1}{\Gamma(z)}$$
 sf_invgamma :: (Value v) => v -> v
 sf_invgamma x =
   let (x',t) = redup x 1
@@ -75,12 +84,11 @@ sf_invgamma x =
   where redup x t
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t*x)
-
 \end{code}
 
+\subsubsection{\tt sf\_lngamma z}
+The log-gamma function, $\verb|sf_lngamma z|=\ln\Gamma(z)$.
 \begin{code}
--- log-gamma function
--- $$\ln\Gamma(z)$$
 sf_lngamma :: (Value v) => v -> v
 sf_lngamma x =
   let (x',t) = redup x 0
@@ -92,6 +100,11 @@ sf_lngamma x =
 
 \end{code}
 
+\subsubsection{\tt bernoulli\_b n}
+The Bernoulli numbers,~$B_n$.
+A simple hard-coded table, for now.
+(Should be moved to Numbers module and general, cached,
+implementation done.)
 \begin{code}
 bernoulli_b :: (Value v) => Int -> v
 bernoulli_b 1 = -1/2
@@ -108,39 +121,47 @@ bernoulli_b 16 = -3617/510
 bernoulli_b 18 = 43867/798
 bernoulli_b 20 = -174611/330
 bernoulli_b _ = undefined
-
 \end{code}
 
+\subsubsection*{Spouge's approximation to the gamma function}
+In tests, this gave disappointing results.
 \begin{code}
-{--
-sf_gamma :: Value -> Value
-sf_gamma x = spouge_approx 17 x
--- Spouge's approximation
+-- Spouge's approximation (a=17?)
+spouge_approx :: (Value v) => Int -> v -> v
 spouge_approx a z' =
   let z = z' - 1
-      a' = (#) a
+      a' = (#)a
       res = (z+a')**(z+(1/2)) * sf_exp (-(z+a'))
-      sm = sqrt(2*pi)
-      terms = [(spouge_c k a') / (z+k') | k<-[1..(a-1)], let k' = (#) k]
-      sum = ksum terms
-  in res*sum
+      sm = fromDouble$sf_sqrt(2*pi)
+      terms = [(spouge_c k a') / (z+k') | k<-[1..(a-1)], let k' = (#)k]
+      smm = sm + ksum terms
+  in res*smm
   where
     spouge_c k a = ((if k`mod`2==0 then -1 else 1) / ((#) $ factorial (k-1)))
-                    * (a-((#) k))**(((#) k)-1/2) * sf_exp(a-((#) k))
-
---}
-
+                    * (a-((#)k))**(((#)k)-1/2) * sf_exp(a-((#)k))
 \end{code}
 
-\begin{code}
-----------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Digamma}
 
+The digamma function
+\[ \psi(z) = \frac{d}{dz} \ln\Gamma(z) = \frac{\Gamma'(z)}{\Gamma(z)} \]
+
+\subsubsection{\tt sf\_digamma z}
+We implement with a series expansion for $|z|<=10$ and otherwise with an asymptotic expansion.
+\begin{code}
 sf_digamma :: (Value v) => v -> v
 --sf_digamma n | is_nonposint n = Inf
 sf_digamma z | (rabs z)>10 = digamma__asympt z
              | otherwise   = digamma__series z
+\end{code}
 
-
+The series expansion is the following
+\[ \psi(z) = -\gamma-\frac1z + \sum_{k=1}^\infty \frac{z}{k(k+z)} \]
+but with Euler-Maclaurin correction terms:
+\[ \psi(z) = -\gamma-\frac1z + \sum_{k=1}^n\frac{z}{k(k+z)}
+    + (\ln\frac{k+z}{k} - \frac{z}{2k(k=z)} + \sum_{j=1}^{p}B_{2j}(k^{-2j}-(k+z)^{-2j}) \]
+\begin{code}
 digamma__series :: (Value v) => v -> v
 digamma__series z =
   let res = -euler_gamma - (1/z)
@@ -164,9 +185,14 @@ digamma__series z =
         + bn2*(k^^(-4) - (k+z)^^(-4))
         + bn3*(k^^(-6) - (k+z)^^(-6))
         + bn4*(k^^(-8) - (k+z)^^(-8))
+\end{code}
 
--- asymptotic expansion for |arg z|<pi
--- TODO: this will fail if bernoulli_b table exceeded
+The asymptotic expansion (valid for $|arg z|<\pi$) is the following
+\[ \psi(z) \sim \ln z - \frac{1}{2z} + \sum_{k=1}^\infty\frac{B_{2k}}{2kz^{2k}} \]
+Note that our implementation will fail if the \verb|bernoulli_b| table is exceeded.
+If $\Re z<\frac12$ then we use the reflection identity to ensure $\Re z\geq\frac12$:
+\[ \psi(z) - \psi(1-z) = \frac{-\pi}{\tan(\pi z)} \]
+\begin{code}
 digamma__asympt :: (Value v) => v -> v
 digamma__asympt z
   | (re z)<0.5 = compute (1 - z) $ -pi/(sf_tan(pi*z)) + (sf_log(1-z)) - 1/(2*(1-z))
@@ -175,7 +201,7 @@ digamma__asympt z
       compute z res =
         let z_2 = z^^(-2)
             zs = iterate (*z_2) z_2
-            terms = zipWith (\ n z2n ->z2n*(bernoulli_b(2*n+2))/(#)(2*n+2)) [0..] zs
+            terms = zipWith (\n z2n -> z2n*(bernoulli_b(2*n+2))/(#)(2*n+2)) [0..] zs
         in sumit res res terms
       sumit res ot (t:terms) =
         let res' = res - t
@@ -183,3 +209,4 @@ digamma__asympt z
            then res
            else sumit res' t terms
 \end{code}
+
