@@ -38,7 +38,7 @@ sf_exp !x
   | is_inf x  = if (re x)<0 then 0 else (1/0)
   | is_nan x  = x
   | (re x)<0  = 1/(sf_exp (-x))
-  | otherwise = kahan_sum $ ixiter 1 1.0 $ \n t -> t*x/((#)n)
+  | otherwise = ksum $ ixiter 1 1.0 $ \n t -> t*x/((#)n)
 \end{code}
 
 \subsubsection{\tt sf\_exp\_m1 x}
@@ -54,7 +54,7 @@ sf_exp_m1 !x
   | is_inf x  = if (re x)<0 then -1 else (1/0)
   | is_nan x  = x
   | (re x)<0  = -sf_exp x * sf_exp_m1 (-x)
-  | otherwise = kahan_sum $ ixiter 2 x $ \n t -> t*x/((#)n)
+  | otherwise = ksum $ ixiter 2 x $ \n t -> t*x/((#)n)
 \end{code}
 
 \subsubsection{\tt sf\_exp\_m1vx x}
@@ -85,9 +85,15 @@ sf_exp_m1vx !x
 \end{code}
 
 \subsubsection{\tt sf\_exp\_menx n x}
+Compute the scaled tail of series expansion of the exponential function.
+\[ \verb|sf_exp_menx n x|
+    = \frac{n!}{x^n} \left(e^z - \sum_{k=0}^{n-1}\frac{x^k}{k!}\right)
+    = \frac{n!}{x^n} \sum_{k=n}^{\infty}\frac{x^k}{k!}
+    = n!\sum_{k=0}^{\infty}\frac{x^{k}}{(k+n)!}
+    \]
+We use a continued fraction expansion and using the modified Lentz algorithm for evaluation.
+\[  \]
 \begin{code}
--- Compute scaled tail of series expansion of exponential $(e^z - \sum_(k=0)^(n-1) x^k/k!) / (x^n/n!)$
--- ($n=0, 1, 2, ...$)
 sf_exp_menx :: (Value v) => Int -> v -> v
 sf_exp_menx 0 z = sf_exp z
 sf_exp_menx 1 z = sf_exp_m1vx z
@@ -99,7 +105,6 @@ sf_exp_menx n z
     !zeta = 1e-150
     !eps = 1e-16
     nz !z = if z==0 then zeta else z
-    -- modified Lentz for continued fraction
     exp_menx__contfrac n z =
       let !fj = (#)$ n+1
           !cj = fj
@@ -133,6 +138,7 @@ sf_exp_men :: (Value v) => Int -> v -> v
 sf_exp_men !n !x = (sf_exp_menx n x) * x^n / ((#)$factorial n)
 \end{code}
 
+\subsubsection{\tt sf\_expn n x}
 \begin{code}
 -- Compute initial part of series for exponential, $\sum_(k=0)^n z^k/k!$ 
 -- ($n=0,1,2,...$)
@@ -145,33 +151,43 @@ sf_expn n z
     -- TODO: just call sf_exp when possible
     -- TODO: better handle large -ve values!
     expn__series :: (Value v) => Int -> v -> v
-    expn__series n z = kahan_sum $ take (n+1) $ ixiter 1 1.0 $ \k t -> t*z/(#)k
+    expn__series n z = ksum $ take (n+1) $ ixiter 1 1.0 $ \k t -> t*z/(#)k
+\end{code}
 
-----------------------------------------
 
+\subsection{Logarithm}
+
+\subsubsection{\tt sf\_log x}
+\begin{code}
 sf_log :: (Value v) => v -> v
 sf_log = log
+\end{code}
 
--- log(1+x)
+\subsubsection{\tt sf\_log\_p1 x}
+The accuracy preserving $\verb|sf_log_p1 x|=\ln 1+x$.
+For values close to zero, we use a power series expansion
+\[ \ln(1+x) = 2\sum_{n=0}^\infty \frac{(\frac{x}{x+2})^{2n+1}}{2n+1} \]
+and otherwise just compute it directly.
+\begin{code}
 sf_log_p1 :: (Value v) => v -> v
 sf_log_p1 !z
   | is_nan z = z
   | (rabs z)>0.25 = sf_log (1+z)
-  | otherwise = log_p1__series z
+  | otherwise = series z
   where
-    -- ln(1+x) = 2\sum_{n=0}^\infty (x / x+2)^(2n+1) / 2n+1
-    log_p1__series z =
+    series z =
       let !r = z/(z+2)
           !zr2 = r^2
           !tterms = iterate (*zr2) (r*zr2)
-          !terms = map (\(n,t)->t/((#)$2*n+1)) (zip [1..] tterms)
-      in 2*(kahan_sum (r:terms))
+          !terms = zipWith (\n t -> t/((#)$2*n+1)) [1..] tterms
+      in 2*(ksum (r:terms))
+\end{code}
 
-----------------------------------------
-
--- $$\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ ...)))))))$$
--- NB not bad convergence
---ln_1_z_cf z = steeds (z:(ts 1)) [0..]
---  where ts n = (n^2*z):(n^2*z):(ts (n+1))
+A simple continued fraction implementation for $\ln 1+z$
+\[\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ ...)))))))\]
+Though unused for now, it seems to have decent convergence properties.
+\begin{code}
+ln_1_z_cf z = steeds (z:(ts 1)) [0..]
+  where ts n = (n^2*z):(n^2*z):(ts (n+1))
 \end{code}
 

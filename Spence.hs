@@ -29,5 +29,5 @@ sf_spence z
 spence__series z = 
   let zk = iterate (*z) z
       terms = map (\(t,k)-> -t/(#)k^2) (zip zk [1..])
-  in kahan_sum terms
+  in ksum terms
 

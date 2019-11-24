@@ -31,14 +31,14 @@ erf_series z =
   let z2 = z^2
       rts = ixiter 1 z $ \n t -> (-t)*z2/(#)n
       terms = map (\(n,t)->t/(#)(2*n+1)) $ zip [0..] rts
-  in (2/sf_sqrt pi)  * kahan_sum terms
+  in (2/sf_sqrt pi)  * ksum terms
 
 erfc_asymp_pos z =
   let z2 = z^2
       iz2 = 1/2/z2
       terms = ixiter 1 (1/z) $ \n t -> (-t*iz2)*(#)(2*n-1)
       tterms = tk terms
-  in (sf_exp (-z2))/(sqrt pi) * kahan_sum tterms
+  in (sf_exp (-z2))/(sqrt pi) * ksum tterms
   where tk (a:b:cs) = if (rabs a)<(rabs b) then [a] else a:(tk$b:cs)
 
 -- alternative styling:

@@ -57,7 +57,7 @@ sf_lngamma x =
           | otherwise = redup (x+1) (t-sf_log x)
 
 lngamma_asymp :: (Value v) => v -> v
-lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (kahan_sum terms)
+lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
   where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
 
 bernoulli_b :: (Value v) => Int -> v
@@ -86,7 +86,7 @@ spouge_approx a z' =
       res = (z+a')**(z+(1/2)) * sf_exp (-(z+a'))
       sm = sqrt(2*pi)
       terms = [(spouge_c k a') / (z+k') | k<-[1..(a-1)], let k' = (#) k]
-      sum = kahan_sum terms
+      sum = ksum terms
   in res*sum
   where
     spouge_c k a = ((if k`mod`2==0 then -1 else 1) / ((#) $ factorial (k-1)))

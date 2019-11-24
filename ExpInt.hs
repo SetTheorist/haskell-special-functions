@@ -21,7 +21,7 @@ expint_ei__series :: (Value v) => v -> v
 expint_ei__series z =
   let tterms = ixiter 2 z $ \n t -> t*z/(#)n
       terms = map (\(t,n)->t/(#)n) $ zip tterms [1..]
-      res = kahan_sum terms
+      res = ksum terms
   in if (re z)<0.5
      then sf_log(z * sf_exp(euler_gamma + res))
      else res + sf_log(z) + euler_gamma
@@ -29,7 +29,7 @@ expint_ei__series z =
 expint_ei__asymp :: (Value v) => v -> v
 expint_ei__asymp z =
   let terms = tk $ ixiter 1 1.0 $ \n t -> t/z*(#)n
-      res = kahan_sum terms
+      res = ksum terms
   in res * (sf_exp z) / z
   where tk (a:b:cs) = if (rabs a)<(rabs b) then [a] else a:(tk$b:cs)
 
@@ -49,7 +49,7 @@ expint_en__1 z =
   let r0 = -euler_gamma - (sf_log z)
       tterms = ixiter 2 (z) $ \k t -> -t*z/(#)k
       terms = map (\(t,k)->t/(#)k) $ zip tterms [1..]
-  in kahan_sum (r0:terms)
+  in ksum (r0:terms)
 
 -- assume n>=2, z<=1
 expint_en__series :: (Value v) => Int -> v -> v
@@ -58,7 +58,7 @@ expint_en__series n z =
       res = (-(sf_log z) + (sf_digamma n')) * (-z)^(n-1)/(#)(factorial$n-1) + 1/(n'-1)
       terms' = ixiter 2 (-z) (\m t -> -t*z/(#)m)
       terms = map (\(m,t)->(-t)/(#)(m-(n-1))) $ filter ((/=(n-1)).fst) $ zip [1..] terms'
-  in kahan_sum (res:terms)
+  in ksum (res:terms)
 
 -- assume n>=2, z>1
 -- modified Lentz algorithm

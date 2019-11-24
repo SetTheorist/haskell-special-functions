@@ -24,7 +24,7 @@ airy_ai_series z =
     let z3 = z^3
         aiterms  = ixiter 0 1 $ \n t -> t*z3*((#)$3*n+1)/((#)$(3*n+1)*(3*n+2)*(3*n+3))
         ai'terms = ixiter 0 z $ \n t -> t*z3*((#)$3*n+2)/((#)$(3*n+2)*(3*n+3)*(3*n+4))
-    in ai0 * (kahan_sum aiterms) + ai'0 * (kahan_sum ai'terms)
+    in ai0 * (ksum aiterms) + ai'0 * (ksum ai'terms)
 
 bi0 :: (Value v) => v
 bi0 = 3**(-1/6)/sf_gamma(2/3)
@@ -36,5 +36,5 @@ airy_bi_series z =
     let z3 = z^3
         biterms  = ixiter 0 1 $ \n t -> t*z3*((#)$3*n+1)/((#)$(3*n+1)*(3*n+2)*(3*n+3))
         bi'terms = ixiter 0 z $ \n t -> t*z3*((#)$3*n+2)/((#)$(3*n+2)*(3*n+3)*(3*n+4))
-    in bi0 * (kahan_sum biterms) + bi'0 * (kahan_sum bi'terms)
+    in bi0 * (ksum biterms) + bi'0 * (ksum bi'terms)
 

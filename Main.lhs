@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
 
 %\usepackage{verbatim}
 %\newenvironment{code}{\footnotesize\verbatim}{\endverbatim\normalsize}
@@ -25,6 +26,7 @@
                {\ .}{{$\circ$}}2 {\ .\ }{{$\circ$}}2
                {>>}{{>>}}2 {>>=}{{>>=}}2
                {|}{{$\mid$}}1               
+               {\$}{{\scriptsize\$}}1
     }
 
 \begin{document}

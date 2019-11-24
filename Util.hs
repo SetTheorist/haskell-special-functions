@@ -61,8 +61,8 @@ instance Value CDouble where
 relerr :: (Value v) => v -> v -> (RealKind v)
 relerr !ex !ap = re $! logBase 10 (abs ((ex-ap)/ex))
 
-kahan_sum :: (Value v) => [v] -> v
-kahan_sum terms = k 0 0 terms
+ksum :: (Value v) => [v] -> v
+ksum terms = k 0 0 terms
   where
     k !sum !err [] = sum
     k !sum !err (t:terms) =

@@ -79,7 +79,7 @@ sf_elliptic_pi c k = complete_agm k c
           en1 = (pn1^2 - an1*gn1) / (pn1^2 + an1*gn1)
       in iter pn1 en1 (reverse ans) (reverse gns) [qn1]
 
-    iter pnm1 enm1 [an] [gn] qns = pi/(4*an) * (2 + c/(1-c)*(kahan_sum qns))
+    iter pnm1 enm1 [an] [gn] qns = pi/(4*an) * (2 + c/(1-c)*(ksum qns))
     iter pnm1 enm1 (anm1:an:ans) (gnm1:gn:gns) (qnm1:qns) =
       let pn = (pnm1^2 + anm1*gnm1)/(2*pnm1)
           en = (pn^2 - an*gn) / (pn^2 + an*gn)

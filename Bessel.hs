@@ -26,7 +26,7 @@ bessel_j_series :: (Value v) => v -> v -> v
 bessel_j_series !nu !z = 
   let !z2 = -(z/2)^2
       !terms = ixiter 1 1 $ \n t -> t*z2/((#)n)/(nu+(#)n)
-      !res = kahan_sum terms
+      !res = ksum terms
   in res * (z/2)**nu / sf_gamma (1+nu)
 
 -- asymptotic expansion
