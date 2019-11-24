@@ -60,10 +60,10 @@ sf_exp_m1 !x
 \subsubsection{\tt sf\_exp\_m1vx x}
 Similarly, it is useful to have the scaled variant $\verb|sf_exp_m1vx x| = \frac{e^x-1}{x}$.
 In this case, we use a continued-fraction expansion
-\[ \frac{e^x-1}{x} = \frac{2}{2-x+} \frac{x^2/6}{1+}
-    \frac{x^2/4\cdot3\cdot5}{1+}
-    \frac{x^2/4\cdot5\cdot7}{1+}
-    \frac{x^2/4\cdot7\cdot9}{1+}
+\[ \frac{e^x-1}{x} = \frac{2}{2-x+{}} \frac{x^2/6}{1+{}}
+    \frac{x^2/4\cdot3\cdot5}{1+{}}
+    \frac{x^2/4\cdot5\cdot7}{1+{}}
+    \frac{x^2/4\cdot7\cdot9}{1+{}}
     \cdots \]
 For complex values, simple calculation is inaccurate (when $\Re z\sim 1$).
 \begin{code}
@@ -185,7 +185,7 @@ sf_log_p1 !z
 \end{code}
 
 A simple continued fraction implementation for $\ln 1+z$
-\[\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ ...)))))))\]
+\[\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ \cdots)))))))\]
 Though unused for now, it seems to have decent convergence properties.
 \begin{code}
 ln_1_z_cf z = steeds (z:(ts 1)) [0..]
