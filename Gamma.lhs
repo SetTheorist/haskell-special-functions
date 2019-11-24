@@ -1,3 +1,8 @@
+\section{Gamma}
+
+\subsection{Preamble}
+A basic preamble.
+\begin{code}
 module Gamma (
     euler_gamma,
     factorial,
@@ -9,20 +14,27 @@ module Gamma (
     bernoulli_b,
     )
 where
-
 import Exp
 import Numbers(factorial)
 import Trig
 import Util
+\end{code}
 
+\begin{code}
 euler_gamma :: (Floating a) => a
 euler_gamma = 0.577215664901532860606512090082402431042159335939923598805767234884867726777664670936947063291746749
 
+\end{code}
+
+\begin{code}
 ----------------------------------------
 -- beta function B(a,b)
 sf_beta :: (Value v) => v -> v -> v
 sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 
+\end{code}
+
+\begin{code}
 ----------------------------------------
 -- gamma function
 -- $$\Gamma(z) = \int_0^\infty e^{-t}t^{z}\frac{dz}{z}$$
@@ -35,6 +47,9 @@ sf_gamma x =
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t/x)
 
+\end{code}
+
+\begin{code}
 -- $$\frac{1}{\Gamma(z)}$$
 sf_invgamma :: (Value v) => v -> v
 sf_invgamma x =
@@ -45,6 +60,9 @@ sf_invgamma x =
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t*x)
 
+\end{code}
+
+\begin{code}
 -- log-gamma function
 -- $$\ln\Gamma(z)$$
 sf_lngamma :: (Value v) => v -> v
@@ -56,10 +74,16 @@ sf_lngamma x =
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t-sf_log x)
 
+\end{code}
+
+\begin{code}
 lngamma_asymp :: (Value v) => v -> v
 lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
   where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
 
+\end{code}
+
+\begin{code}
 bernoulli_b :: (Value v) => Int -> v
 bernoulli_b 1 = -1/2
 bernoulli_b k | k`mod`2==1 = 0
@@ -76,6 +100,9 @@ bernoulli_b 18 = 43867/798
 bernoulli_b 20 = -174611/330
 bernoulli_b _ = undefined
 
+\end{code}
+
+\begin{code}
 {--
 sf_gamma :: Value -> Value
 sf_gamma x = spouge_approx 17 x
@@ -94,6 +121,9 @@ spouge_approx a z' =
 
 --}
 
+\end{code}
+
+\begin{code}
 ----------------------------------------
 
 sf_digamma :: (Value v) => v -> v
@@ -143,4 +173,4 @@ digamma__asympt z
         in if res==res' || (rabs t)>(rabs ot)
            then res
            else sumit res' t terms
-
+\end{code}

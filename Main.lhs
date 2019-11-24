@@ -37,7 +37,12 @@
                {||}{{$\vee$}}2               
     }
 
+\title{Computation of Special Functions\\(Haskell)}
+\author{Apollo Hogan}
 \begin{document}
+
+\maketitle
+\tableofcontents
 
 \section{Introduction}
 
@@ -51,6 +56,9 @@ Special functions.
 
 %\section{Exponential, logarithm}
 \input{Exp.lhs}
+
+%\section{Gamma}
+\input{Gamma.lhs}
 
 %\section{Airy}
 \input{Airy.lhs}

@@ -13,6 +13,8 @@ import Util
 
 \subsection{Ai}
 
+
+\subsubsection{\tt sf\_airy\_ai}
 For now, just use a simple series expansion.
 \begin{code}
 sf_airy_ai :: (Value v) => v -> v
@@ -43,6 +45,7 @@ airy_ai_series z =
 
 \subsection{Bi}
 
+\subsubsection{\tt sf\_airy\_bi}
 For now, just use a simple series expansion.
 \begin{code}
 sf_airy_bi :: (Value v) => v -> v
