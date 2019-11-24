@@ -1,6 +1,8 @@
 {-# Language BangPatterns #-}
+{-# Language FlexibleContexts #-}
 {-# Language FlexibleInstances #-}
-{-# Language UndecidableInstances #-}
+{-# Language TypeFamilies #-}
+-- {-# Language UndecidableInstances #-}
 
 module Util where
 
@@ -10,29 +12,44 @@ import Data.Complex
 
 type CDouble = Complex Double
 
-class (Eq t, Floating t, Fractional t, Num t) => Value t where
-  re :: t -> Double
-  im :: t -> Double
-  rabs :: t -> Double
+class (Eq t, Floating t, Fractional t, Num t,
+       Enum (RealKind t), Eq (RealKind t), Floating (RealKind t), Fractional (RealKind t), Num (RealKind t), Ord (RealKind t),
+       Eq (ComplexKind t), Floating (ComplexKind t), Fractional (ComplexKind t), Num (ComplexKind t)
+      ) => Value t where
+  type RealKind t :: *
+  type ComplexKind t :: *
+  re :: t -> (RealKind t)
+  im :: t -> (RealKind t)
+  rabs :: t -> (RealKind t)
   is_inf :: t -> Bool
   is_nan :: t -> Bool
   fromDouble :: Double -> t
+  fromReal :: (RealKind t) -> t
+  toComplex :: t -> (ComplexKind t)
 
 instance Value Double where
+  type RealKind Double = Double
+  type ComplexKind Double = CDouble
   re = id
   im = const 0
   rabs = abs
   is_inf = isInfinite
   is_nan = isNaN
   fromDouble = id
+  fromReal = id
+  toComplex x = x :+ 0
 
 instance Value CDouble where
+  type RealKind CDouble = Double
+  type ComplexKind CDouble = CDouble
   re = realPart
   im = imagPart
   rabs = realPart.abs
   is_inf z = (is_inf.re$z) || (is_inf.im$z)
   is_nan z = (is_nan.re$z) || (is_nan.im$z)
   fromDouble x = x :+ 0
+  fromReal x = x :+ 0
+  toComplex = id
 
 -- TODO: add quad versions also
 
@@ -41,7 +58,7 @@ instance Value CDouble where
 (#) :: (Integral a, Num b) => a -> b
 (#) = fromIntegral
 
-relerr :: (Value v) => v -> v -> Double
+relerr :: (Value v) => v -> v -> (RealKind v)
 relerr !ex !ap = re $! logBase 10 (abs ((ex-ap)/ex))
 
 kahan_sum :: (Value v) => [v] -> v
