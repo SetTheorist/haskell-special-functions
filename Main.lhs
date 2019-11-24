@@ -1,5 +1,7 @@
 \documentclass{article}
 \usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 %\usepackage{verbatim}
 %\newenvironment{code}{\footnotesize\verbatim}{\endverbatim\normalsize}
@@ -43,6 +45,9 @@ Special functions.
 
 %\section{Util}
 \input{Util.lhs}
+
+%\section{Fibo}
+\input{Fibo.lhs}
 
 %\section{Exponential, logarithm}
 \input{Exp.lhs}
