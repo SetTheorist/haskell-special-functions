@@ -5,7 +5,7 @@ import Util
 
 ----------------------------------------
 -- Bessel J(nu,x)
-bessel_j_series :: Value -> Value -> Value
+bessel_j_series :: (Value v) => v -> v -> v
 bessel_j_series nu z = 
   let z2 = -(z/2)^2
       terms = ixiter 1 1 $ \n t -> t*z2/((#) n)/(nu+(#) n)

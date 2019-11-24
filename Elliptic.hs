@@ -9,21 +9,21 @@ import Util
 
 ----------------------------------------
 
-two23 :: Value
+two23 :: Double
 !two23 = 0.62996052494743658238
 
 ----------------------------------------
 
 -- Compute the Burlisch's elliptic integral $cel(k_c,p,a,b)$
 -- TODO: UNTESTED!
-sf_elliptic_cel :: Value -> Value -> Value -> Value -> Value
+sf_elliptic_cel :: Double -> Double -> Double -> Double -> Double
 sf_elliptic_cel kc p a b = a * (sf_elliptic_rf 0 (kc^2) 1) + (b-p*a)/3 * (sf_elliptic_rj 0 (kc^2) 1 p)
 
 ----------------------------------------
 
 -- Compute the Burlisch's elliptic integral $el_1(x,k_c)$
 -- TODO: UNTESTED!
-sf_elliptic_el1 :: Value -> Value -> Value
+sf_elliptic_el1 :: Double -> Double -> Double
 sf_elliptic_el1 x kc =
   --sf_elliptic_f (atan x) (sf_sqrt(1-kc^2))
   let r = 1/x^2
@@ -33,7 +33,7 @@ sf_elliptic_el1 x kc =
 
 -- Compute the Burlisch's elliptic integral $el_2(x,k_c,a,b)$
 -- TODO: UNTESTED!
-sf_elliptic_el2 :: Value -> Value -> Value -> Value -> Value
+sf_elliptic_el2 :: Double -> Double -> Double -> Double -> Double
 sf_elliptic_el2 x kc a b =
   let r = 1/x^2
   in a * (sf_elliptic_el1 x kc) + (b-a)/3 * (sf_elliptic_rd r  (r+kc^2) (r+1))
@@ -42,7 +42,7 @@ sf_elliptic_el2 x kc a b =
 
 -- Compute the Burlisch's elliptic integral $el_3(x,k_c,p)$
 -- TODO: UNTESTED!
-sf_elliptic_el3 :: Value -> Value -> Value -> Value
+sf_elliptic_el3 :: Double -> Double -> Double -> Double
 sf_elliptic_el3 x kc p =
   -- sf_elliptic_pi(atan(x), 1-p, sf_sqrt(1-kc.^2));
   let r = 1/x^2
@@ -52,7 +52,7 @@ sf_elliptic_el3 x kc p =
 
 -- Compute the complete elliptic integral of the first kind $K(k)$
 -- TODO: UNTESTED!
-sf_elliptic_k :: Value -> Value
+sf_elliptic_k :: Double -> Double
 sf_elliptic_k k =
   let an = sf_agm' 1.0 (sf_sqrt $ 1.0-k^2)
   in pi/(2*an)
@@ -65,7 +65,7 @@ sf_elliptic_k k =
 -- for real values only 0<k<1, 0<c<1
 -- qua = quad(@(t)(1.0/(1-c*sf_sin(t)^2)/sqrt(1.0 - k^2*sf_sin(t)^2)), 0, phi)
 -- TODO: mostly untested
-sf_elliptic_pi :: Value -> Value -> Value
+sf_elliptic_pi :: Double -> Double -> Double
 sf_elliptic_pi c k = complete_agm k c
   where
     -- -\infty < k^2 < 1
@@ -86,7 +86,7 @@ sf_elliptic_pi c k = complete_agm k c
           qn = qnm1 * enm1/2
       in iter pn en (an:ans) (gn:gns) (qn:qnm1:qns)
 
-sf_elliptic_pi_ic :: Value -> Value -> Value -> Value
+sf_elliptic_pi_ic :: Double -> Double -> Double -> Double
 sf_elliptic_pi_ic 0 c k = 0.0
 sf_elliptic_pi_ic phi c k = gauss_transform k c phi
   where
@@ -111,7 +111,7 @@ sf_elliptic_pi_ic phi c k = gauss_transform k c phi
 -- Compute the symmetric elliptic integral $R_C(x,y)$ for real parameters
 -- x>=0, y!=0
 -- TODO: UNTESTED!
-sf_elliptic_rc :: Value -> Value -> Value
+sf_elliptic_rc :: Double -> Double -> Double
 sf_elliptic_rc x y
   | 0==x && x<y = 1/sf_sqrt(y-x) * sf_acos(sf_sqrt(x/y))
   | 0<x && x<y  = 1/sf_sqrt(y-x) * sf_atan(sf_sqrt((y-x)/x))
@@ -128,7 +128,7 @@ sf_elliptic_rc x y
 -- Compute the symmetric elliptic integral $R_D(x,y,z)$
 -- x,y,z>0
 -- TODO: UNTESTED!
-sf_elliptic_rd :: Value -> Value -> Value -> Value
+sf_elliptic_rd :: Double -> Double -> Double -> Double
 sf_elliptic_rd x y z = let (x',s) = (iter x y z 0.0) in (x'**(-3/2) + s)
   where
     iter x y z s =
@@ -196,7 +196,7 @@ sf_elliptic_rg x y z
 -- Compute the symmetric elliptic integral $R_J(x,y,z,p)$
 -- x,y,z>0
 -- TODO: UNTESTED!
-sf_elliptic_rj :: Value -> Value -> Value -> Value -> Value
+sf_elliptic_rj :: Double -> Double -> Double -> Double -> Double
 sf_elliptic_rj x y z p =
   let (x',smm,scale) = iter x y z p 0.0 1.0
   in scale*x'**(-3/2) + smm
@@ -227,7 +227,7 @@ sf_elliptic_rj x y z p =
 
 -- Compute the complete elliptic integral of the second kind $E(k)$ or $E(phi, k)$
 -- TODO: UNTESTED!
-sf_elliptic_e :: Value -> Value
+sf_elliptic_e :: Double -> Double
 sf_elliptic_e phi =
   let k = phi
       (as,bs,cs') = sf_agm 1.0 (sqrt (1.0 - k^20))
@@ -237,7 +237,7 @@ sf_elliptic_e phi =
 
 -- Compute the incomplete elliptic integral of the second kind $E(k)$ or $E(phi, k)$
 -- TODO: UNTESTED!
-sf_elliptic_e_ic :: Value -> Value -> Value
+sf_elliptic_e_ic :: Double -> Double -> Double
 sf_elliptic_e_ic phi k 
   | k==1 = sf_sin phi
   | k==0 = phi
@@ -256,7 +256,7 @@ sf_elliptic_e_ic phi k
 -- Compute the (incomplete) elliptic integral of the first kind
 -- $ F(phi, k) = \int_0^\phi d\theta / sqrt(1-k^2*\sin^2(theta)) $
 -- TODO: UNTESTED!
-sf_elliptic_f :: Value -> Value -> Value
+sf_elliptic_f :: Double -> Double -> Double
 sf_elliptic_f phi k 
   | k==0 = phi
   | k==1 = sf_log((1 + (sf_sin phi)) / (1 - (sf_sin phi))) / 2

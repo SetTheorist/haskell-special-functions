@@ -5,19 +5,23 @@ module Spence (
 import Exp
 import Util
 
--- Compute Spence's integral.
 
+pi2_6 :: (Value v) => v
 pi2_6 = pi^2/6
-sf_spence :: Value -> Value
+
+-- Compute Spence's integral.
+-- TODO: UNTESTED
+-- TODO: verify, especially, complex cases
+sf_spence :: (Value v) => v -> v
 sf_spence z
-  | z/=z  = z
-  | z<0   = 0/0
+  | is_nan z = z
+  | (re z)<0   = 0/0
   | z==0  = pi2_6
-  | z<0.5 =
+  | (rabs z)<0.5 =
       (spence__series z) + (pi2_6 - (sf_log z)*(sf_log (1-z)))
-  | z<1.0 =
+  | (rabs z)<1.0 =
       -(spence__series (1-z))
-  | z<2.5 =
+  | (rabs z)<2.5 =
       (spence__series ((z-1)/z)) - (sf_log z)^2/2
   | otherwise = 
       (spence__series (1/(1-z))) - pi2_6 - (sf_log (z-1))^2/2

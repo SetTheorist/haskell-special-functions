@@ -4,19 +4,19 @@ import Exp
 import Util
 
 class ProbabilityDistribution d where
-    in_support :: d -> Value -> Bool
-    pdf :: d -> Value -> Value
-    cdf :: d -> Value -> Value
-    mean :: d -> Value
-    variance :: d -> Value
-    stddev :: d -> Value
-    skew :: d -> Value
-    kurtosis :: d -> Value
-    moment :: d -> Int -> Value
+    in_support :: d -> Double -> Bool
+    pdf :: d -> Double -> Double
+    cdf :: d -> Double -> Double
+    mean :: d -> Double
+    variance :: d -> Double
+    stddev :: d -> Double
+    skew :: d -> Double
+    kurtosis :: d -> Double
+    moment :: d -> Int -> Double
 
 ----------------------------------------
 
-data Uniform = Uniform Value Value
+data Uniform = Uniform Double Double
 
 instance ProbabilityDistribution Uniform where
     in_support (Uniform a b)   x = a<=x && x<=b
@@ -31,7 +31,7 @@ instance ProbabilityDistribution Uniform where
 
 ----------------------------------------
 
-data Normal = Normal Value Value
+data Normal = Normal Double Double
 
 instance ProbabilityDistribution Normal where
     in_support (Normal m v)   _ = True
