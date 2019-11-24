@@ -7,8 +7,6 @@
 module Erf (
     sf_erf,
     sf_erfc,
-    erfc_asymp_pos,
-    erfc_asymp_pos',
 ) where
 import Exp
 import Util
@@ -102,4 +100,3 @@ erfc_cf_pos2 z =
       cf = steeds as bs
   in sf_exp(-z2) / (sqrt pi) * cf
 \end{code}
-
