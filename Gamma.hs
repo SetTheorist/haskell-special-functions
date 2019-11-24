@@ -136,7 +136,7 @@ digamma__asympt z
       compute z res =
         let z_2 = z^^(-2)
             zs = iterate (*z_2) z_2
-            terms = map (\(n,z2n)->z2n*(bernoulli_b(2*n+2))/(#)(2*n+2)) (zip [0..] zs)
+            terms = zipWith (\ n z2n ->z2n*(bernoulli_b(2*n+2))/(#)(2*n+2)) [0..] zs
         in sumit res res terms
       sumit res ot (t:terms) =
         let res' = res - t

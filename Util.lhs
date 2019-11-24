@@ -122,14 +122,14 @@ This is typically used for power-series or asymptotic expansions.
 ksum :: (Value v) => [v] -> v
 ksum terms = k 0 0 terms
   where
-    k !sum !err [] = sum
-    k !sum !err (t:terms) =
-      let !y = t - err
-          !x = sum + y
-          !err' = (x - sum) - y
-      in if x == sum
-         then sum
-         else k x err' terms
+    k !s !e [] = s
+    k !s !e (t:terms) =
+      let !y = t - e
+          !s' = s + y
+          !e' = (s' - s) - y
+      in if s' == s
+         then s
+         else k s' e' terms
 \end{code}
 
 

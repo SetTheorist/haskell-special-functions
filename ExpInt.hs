@@ -20,7 +20,7 @@ sf_expint_ei z
 expint_ei__series :: (Value v) => v -> v
 expint_ei__series z =
   let tterms = ixiter 2 z $ \n t -> t*z/(#)n
-      terms = map (\(t,n)->t/(#)n) $ zip tterms [1..]
+      terms = zipWith (\ t n ->t/(#)n) tterms [1..]
       res = ksum terms
   in if (re z)<0.5
      then sf_log(z * sf_exp(euler_gamma + res))
@@ -48,7 +48,7 @@ expint_en__1 :: (Value v) => v -> v
 expint_en__1 z =
   let r0 = -euler_gamma - (sf_log z)
       tterms = ixiter 2 (z) $ \k t -> -t*z/(#)k
-      terms = map (\(t,k)->t/(#)k) $ zip tterms [1..]
+      terms = zipWith (\ t k ->t/(#)k) tterms [1..]
   in ksum (r0:terms)
 
 -- assume n>=2, z<=1
