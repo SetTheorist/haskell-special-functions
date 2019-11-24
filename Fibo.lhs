@@ -4,8 +4,9 @@ A silly approach to efficient computation of Fibonacci numbers
 \[ f_n = f_{n-1} + f_{n-2} \qquad f_0=0 \qquad f_1=1 \]
 
 The idea is to use the closed-form solution:
-\[ f_n = \frac{\sqrt5}{5}\left(\frac{1+\sqrt5}{2}\right)^n + \frac{-\sqrt5}{5}\left(\frac{1-\sqrt5}{2}\right)^n \]
-and note that we can work in $\mathbb{Q}[\sqrt5]$ with terms of the form $a+b\sqrt5$ with $a,b\in\mathbb{Q}$. 
+\[ f_n = \frac{1}{\sqrt5}\left(\frac{1+\sqrt5}{2}\right)^n + \frac{-1}{\sqrt5}\left(\frac{1-\sqrt5}{2}\right)^n \]
+and note that we can work in $\mathbb{Q}[\sqrt5]$ with terms of the form $a+b\sqrt5$ with $a,b\in\mathbb{Q}$
+(notice that $\frac{1}{\sqrt5}=\frac{\sqrt5}{5}$.)
 \begin{eqnarray*}\
 (a+b\sqrt5) + (c+d\sqrt5) &=& (a+c)+(b+d)\sqrt5 \\
 (a+b\sqrt5) * (c+d\sqrt5) &=& (ac+5bd)+(ad+bc)\sqrt5
