@@ -52,4 +52,7 @@ Special functions.
 %\section{Exponential, logarithm}
 \input{Exp.lhs}
 
+%\section{Airy}
+\input{Airy.lhs}
+
 \end{document}
