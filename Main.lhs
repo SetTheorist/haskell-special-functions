@@ -64,6 +64,9 @@ Special functions.
 %\section{Airy}
 \input{Airy.lhs}
 
+%\section{Spence}
+\input{Spence.lhs}
+
 %\section{Riemann Zeta}
 \input{Zeta.lhs}
 
