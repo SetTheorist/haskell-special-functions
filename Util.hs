@@ -88,7 +88,6 @@ ixiter i x f = x:(ixiter (succ i) (f i x) f)
 -- Steed's algorithm for evaluation of continued fraction
 -- C = b0 + a1/(b1+ a2/(b2+ ...))
 -- Cn = ...an/bn = An/Bn
---steeds :: [CDouble] -> [CDouble] -> [CDouble]
 steeds :: (Value v) => [v] -> [v] -> v
 steeds (a1:as) (b0:b1:bs) =
     let !c0 = b0
@@ -101,7 +100,7 @@ steeds (a1:as) (b0:b1:bs) =
             let !dn = 1/(dn_1*an+bn)
                 !delcn = (bn*dn - 1)*delcn_1
                 !cn = cn_1 + delcn
-            in if (cn==cn_1) then cn else (recur cn delcn dn as bs)
+            in if (cn==cn_1) || is_nan cn then cn else (recur cn delcn dn as bs)
 
 --------------------------------------------------------------------------------
 

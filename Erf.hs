@@ -19,6 +19,7 @@ sf_erf z
   | (rabs z)<1  = erf_series z
   | otherwise   = 1 - sf_erfc z
 
+-- infinite loop when (re z)==0
 sf_erfc :: (Value v) => v -> v
 sf_erfc z 
   | (re z)<(-1) = 2-(sf_erfc (-z))
