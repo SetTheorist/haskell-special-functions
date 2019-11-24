@@ -71,10 +71,13 @@ Special functions.
 %\section{Airy}
 \input{Airy.lhs}
 
+%\section{Riemann Zeta}
+\input{Zeta.lhs}
+
 %\section{Spence}
 \input{Spence.lhs}
 
-%\section{Riemann Zeta}
-\input{Zeta.lhs}
+%\section{Lommel}
+\input{Lommel.lhs}
 
 \end{document}
