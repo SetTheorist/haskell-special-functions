@@ -64,7 +64,7 @@ erf_series z =
 This asymptotic expansion for $\erfc z$ is valid as $z\to+\infty$:
 \[ \erfc z \sim \frac{e^{-z^2}}{\sqrt\pi}\sum_{n=0}^\infty(-)^n\frac{(1/2)_m}{z^{2m+1}} \]
 where the Pochhammer symbol $(1/2)_m$ is given by:
-\[ \left(\frac12\right)_m = \frac{1\cdot3\cdot5\cdots(2m-1)}{2^m} = \frac{(2m)!}{m!2^(2m)} \]
+\[ \left(\frac12\right)_m = \frac{1\cdot3\cdot5\cdots(2m-1)}{2^m} = \frac{(2m)!}{m!2^{2m}} \]
 TODO: correct the asymptotic term checking (not smallest but pre-smallest term).
 \begin{code}
 erfc_asymp_pos z =
