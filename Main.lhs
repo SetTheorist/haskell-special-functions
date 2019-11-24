@@ -23,10 +23,16 @@
                {\\\\}{{\char`\\\char`\\}}1
                {->}{{$\rightarrow$}}2 {>=}{{$\geq$}}2 {<-}{{$\leftarrow$}}2
                {<=}{{$\leq$}}2 {=>}{{$\Rightarrow$}}2 
-               {\ .}{{$\circ$}}2 {\ .\ }{{$\circ$}}2
+               {\ .}{{$\circ$}}2
                {>>}{{>>}}2 {>>=}{{>>=}}2
-               {|}{{$\mid$}}1               
+               %{\ .\ }{{$\circ$}}2
+               %{|}{{$\mid$}}1               
+               % my modifications:
+               {\ .\ }{{$\circ$}}3
                {\$}{{\scriptsize\$}}1
+               {!}{{\scriptsize!}}1
+               {&&}{{$\wedge$}}2               
+               {||}{{$\vee$}}2               
     }
 
 \begin{document}
@@ -34,6 +40,9 @@
 \section{Introduction}
 
 Special functions.
+
+%\section{Util}
+\input{Util.lhs}
 
 %\section{Exponential, logarithm}
 \input{Exp.lhs}

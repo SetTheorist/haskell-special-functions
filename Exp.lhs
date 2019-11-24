@@ -158,6 +158,7 @@ sf_expn n z
 \subsection{Logarithm}
 
 \subsubsection{\tt sf\_log x}
+We simply use the built-in implementation (from the \verb|Floating| typeclass).
 \begin{code}
 sf_log :: (Value v) => v -> v
 sf_log = log
