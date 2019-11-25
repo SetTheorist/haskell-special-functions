@@ -3,6 +3,14 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 
+\usepackage{marginnote}
+
+\usepackage{xcolor}
+\usepackage{framed}
+% to use titled-frame, must define TFFrameColor and TFTitleColor
+\definecolor{TFFrameColor}{rgb}{0.9,0.9,0.9}
+\definecolor{TFTitleColor}{rgb}{0.0,0.0,0.0}
+
 %\usepackage{verbatim}
 %\newenvironment{code}{\footnotesize\verbatim}{\endverbatim\normalsize}
 
@@ -41,6 +49,7 @@
 \DeclareMathOperator{\agm}{agm}
 \DeclareMathOperator{\Ai}{Ai}
 \DeclareMathOperator{\Bi}{Bi}
+\DeclareMathOperator{\Ei}{Ei}
 \DeclareMathOperator{\erf}{erf}
 \DeclareMathOperator{\erfc}{erfc}
 \DeclareMathOperator{\Li}{Li}
@@ -73,6 +82,9 @@ Special functions.
 
 %\section{Erf}
 \input{Erf.lhs}
+
+%\section{ExpInt}
+\input{ExpInt.lhs}
 
 %\section{AGM}
 \input{AGM.lhs}

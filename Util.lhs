@@ -23,26 +23,29 @@ Next, we define the \verb|Value| typeclass which is useful for defining
 our special functions to work over both real (\verb|Double|) values and over
 complex (\verb|CDouble|) values with uniform implementations.
 This will also make it convenient for handling \verb|Quad| values (later).
+\begin{titled-frame}{{\color{blue}\tt class Value v}\marginnote{\tt Value}}
 \begin{code}
-class (Eq t, Floating t, Fractional t, Num t,
-       Enum (RealKind t), Eq (RealKind t), Floating (RealKind t),
-         Fractional (RealKind t), Num (RealKind t), Ord (RealKind t),
-       Eq (ComplexKind t), Floating (ComplexKind t), Fractional (ComplexKind t),
-         Num (ComplexKind t)
-      ) => Value t where
-  type RealKind t :: *
-  type ComplexKind t :: *
-  re :: t -> (RealKind t)
-  im :: t -> (RealKind t)
-  rabs :: t -> (RealKind t)
-  is_inf :: t -> Bool
-  is_nan :: t -> Bool
-  fromDouble :: Double -> t
-  fromReal :: (RealKind t) -> t
-  toComplex :: t -> (ComplexKind t)
+class (Eq v, Floating v, Fractional v, Num v,
+       Enum (RealKind v), Eq (RealKind v), Floating (RealKind v),
+         Fractional (RealKind v), Num (RealKind v), Ord (RealKind v),
+       Eq (ComplexKind v), Floating (ComplexKind v), Fractional (ComplexKind v),
+         Num (ComplexKind v)
+      ) => Value v where
+  type RealKind v :: *
+  type ComplexKind v :: *
+  re :: v -> (RealKind v)
+  im :: v -> (RealKind v)
+  rabs :: v -> (RealKind v)
+  is_inf :: v -> Bool
+  is_nan :: v -> Bool
+  fromDouble :: Double -> v
+  fromReal :: (RealKind v) -> v
+  toComplex :: v -> (ComplexKind v)
 \end{code}
+\end{titled-frame}
 Both \verb|Double| and \verb|CDouble| are instances of the \verb|Value| typeclass
 in the obvious ways.
+\begin{titled-frame}{{\color{blue}\tt instance Value Double}\marginnote{\tt Value Double}}
 \begin{code}
 instance Value Double where
   type RealKind Double = Double
@@ -55,7 +58,10 @@ instance Value Double where
   fromDouble = id
   fromReal = id
   toComplex x = x :+ 0
-
+\end{code}
+\end{titled-frame}
+\begin{titled-frame}{{\color{blue}\tt instance Value CDouble}\marginnote{\tt Value CDouble}}
+\begin{code}
 instance Value CDouble where
   type RealKind CDouble = Double
   type ComplexKind CDouble = CDouble
@@ -68,6 +74,7 @@ instance Value CDouble where
   fromReal x = x :+ 0
   toComplex = id
 \end{code}
+\end{titled-frame}
 
 TODO: add quad versions also
 
@@ -83,10 +90,12 @@ indices (or other integral values) to our computation type.
 
 A version of \verb|iterate| which passes along an index also
 (very useful for computing terms of a power-series, for example.)
+\begin{titled-frame}{{\color{blue}\tt ixiter i x f}\marginnote{\tt ixiter}}
 \begin{code}
 ixiter :: (Enum ix) => ix -> a -> (ix->a->a) -> [a]
 ixiter i x f = x:(ixiter (succ i) (f i x) f)
 \end{code}
+\end{titled-frame}
 
 Computes the relative error in terms of decimal digits, handy for testing.
 Note that this fails when the exact value is zero.
@@ -118,6 +127,7 @@ The list is assumed to be (eventually) decreasing and the
 summation is terminated as soon as adding a term doesn't change the value.
 (Thus any zeros in the list will immediately terminate the sum.)
 This is typically used for power-series or asymptotic expansions.
+\begin{titled-frame}{{\color{blue}\tt ksum terms}\marginnote{\tt ksum}}
 \begin{code}
 ksum :: (Value v) => [v] -> v
 ksum terms = k 0 0 terms
@@ -131,6 +141,7 @@ ksum terms = k 0 0 terms
          then s
          else k s' e' terms
 \end{code}
+\end{titled-frame}
 
 
 \subsection{Continued fraction evaluation}

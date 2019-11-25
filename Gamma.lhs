@@ -52,16 +52,16 @@ The gamma function
 The gamma function implemented using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
 to increase the real part of the argument to be $>15$ and then
 using an asymptotic expansion for log-gamma, \verb|lngamma_asymp|, to evaluate.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_gamma x} = \Gamma(x)$\marginnote{\tt sf\_gamma}}
 \begin{code}
 sf_gamma :: (Value v) => v -> v
 sf_gamma x =
-  let (x',t) = redup x 1
-      lngx = lngamma_asymp x'
-  in t * (sf_exp lngx)
-  where redup x t
-          | (re x)>15 = (x,t)
-          | otherwise = redup (x+1) (t/x)
+  redup x 1 $ \ x' t -> t * (sf_exp (lngamma_asymp x'))
+  where redup x t k
+          | (re x)>15 = k x t
+          | otherwise = redup (x+1) (t/x) k
 \end{code}
+\end{titled-frame}
 
 \subsubsection{*\tt lngamma\_asymp z}
 The asymptotic expansion for log-gamma

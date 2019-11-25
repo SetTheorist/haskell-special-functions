@@ -6,6 +6,7 @@ and logarithm function, as well as useful variations.
 \subsection{Preamble}
 We begin with a typical preamble.
 
+\begin{titled-frame}{\color{blue}\tt module Exp}
 \begin{code}
 {-# Language BangPatterns #-}
 {-# Language FlexibleInstances #-}
@@ -16,6 +17,7 @@ module Exp (
 import Numbers
 import Util
 \end{code}
+\end{titled-frame}
 
 \subsection{Exponential}
 
@@ -31,15 +33,16 @@ This avoids disastrous cancellation for negative arguments,
 (though note that for complex arguments this is not sufficient.)
 TODO: should do range-reduction first...
 TODO: maybe for complex, use explicit cis?
-%\marginpar{\tt sf\_exp} % ugly placement
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp x} = e^x$\marginnote{\tt sf\_exp}}
 \begin{code}
 sf_exp :: (Value v) => v -> v 
 sf_exp !x
   | is_inf x  = if (re x)<0 then 0 else (1/0)
   | is_nan x  = x
   | (re x)<0  = 1/(sf_exp (-x))
-  | otherwise = ksum $ ixiter 1 1.0 $ \n t -> t*x/((#)n)
+  | otherwise = ksum $ ixiter 1 1.0 $ \n t -> t*x/(#)n
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt sf\_exp\_m1 x}
 For numerical calculations, it is useful to have $\verb|sf_exp_m1 x| = e^x-1$
@@ -48,6 +51,7 @@ We use a series expansion for the calculation.
 Again for negative real part we reflect using $e^{-x}-1 = -e^{-x}(e^x-1)$.
 TODO: should do range-reduction first...
 TODO: maybe for complex, use explicit cis?
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1 x} = e^x-1$\marginnote{\tt sf\_exp\_m1}}
 \begin{code}
 sf_exp_m1 :: (Value v) => v -> v
 sf_exp_m1 !x
@@ -56,6 +60,7 @@ sf_exp_m1 !x
   | (re x)<0  = -sf_exp x * sf_exp_m1 (-x)
   | otherwise = ksum $ ixiter 2 x $ \n t -> t*x/((#)n)
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt sf\_exp\_m1vx x}
 Similarly, it is useful to have the scaled variant $\verb|sf_exp_m1vx x| = \frac{e^x-1}{x}$.
@@ -66,6 +71,7 @@ In this case, we use a continued-fraction expansion
     \frac{x^2/4\cdot7\cdot9}{1+{}}
     \cdots \]
 For complex values, simple calculation is inaccurate (when $\Re z\sim 1$).
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1vx x} = \frac{e^x-1}{x}$\marginnote{\tt sf\_exp\_m1vx}}
 \begin{code}
 sf_exp_m1vx :: (Value v) => v -> v
 sf_exp_m1vx !x
@@ -83,6 +89,7 @@ sf_exp_m1vx !x
           + x2/(4*(2*8-3)*(2*8-1))/(1
           ))))))));
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt sf\_exp\_menx n x}
 Compute the scaled tail of series expansion of the exponential function.
