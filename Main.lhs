@@ -38,6 +38,8 @@
                %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
+\DeclareMathOperator{\Ai}{Ai}
+\DeclareMathOperator{\Bi}{Bi}
 \DeclareMathOperator{\erf}{erf}
 \DeclareMathOperator{\erfc}{erfc}
 \DeclareMathOperator{\Li}{Li}
