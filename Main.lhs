@@ -38,6 +38,7 @@
                %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
+\DeclareMathOperator{\agm}{agm}
 \DeclareMathOperator{\Ai}{Ai}
 \DeclareMathOperator{\Bi}{Bi}
 \DeclareMathOperator{\erf}{erf}
@@ -61,6 +62,9 @@ Special functions.
 %\section{Fibo}
 \input{Fibo.lhs}
 
+%\section{Numbers}
+\input{Numbers.lhs}
+
 %\section{Exponential, logarithm}
 \input{Exp.lhs}
 
@@ -69,6 +73,9 @@ Special functions.
 
 %\section{Erf}
 \input{Erf.lhs}
+
+%\section{AGM}
+\input{AGM.lhs}
 
 %\section{Airy}
 \input{Airy.lhs}

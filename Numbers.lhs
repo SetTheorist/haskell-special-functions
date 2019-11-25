@@ -1,12 +1,18 @@
+\section{Numbers}
+
+\subsection{Preamble}
+\begin{code}
 module Numbers where
-
 import Data.Ratio
-
 import qualified Fibo
+\end{code}
 
+\begin{code}
 fibonacci_number :: Int -> Integer
 fibonacci_number n = Fibo.fibonacci n
+\end{code}
 
+\begin{code}
 lucas_number :: Int -> Integer
 lucas_number = undefined
 
@@ -16,7 +22,9 @@ euler_number = undefined
 catalan_number :: Integer -> Integer
 catalan_number 0 = 1
 catalan_number n = 2*(2*n-1)*(catalan_number (n-1))`div`(n+1)
+\end{code}
 
+\begin{code}
 bernoulli_number :: Int -> Rational
 bernoulli_number = undefined
 
@@ -40,8 +48,10 @@ binomial n k
     | k==n = 1
     | k>n`div`2 = binomial n (n-k)
     | otherwise = (product [n-(k-1)..n]) `div` (product [1..k])
+\end{code}
 
-
+\subsection{Stirling numbers}
+\begin{code}
 -- TODO: this is extremely inefficient approach
 stirling_number_first_kind n k = s n k
   where s n k | k<=0 || n<=0 = 0
@@ -53,4 +63,4 @@ stirling_number_second_kind n k = s n k
   where s n k | k<=0 || n<=0 = 0
         s n 1 = 1
         s n k = k*(s (n-1) k) + (s (n-1) (k-1))
-
+\end{code}
