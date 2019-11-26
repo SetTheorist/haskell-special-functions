@@ -37,7 +37,7 @@ TODO: maybe for complex, use explicit cis?
 \begin{code}
 sf_exp :: (Value v) => v -> v 
 sf_exp !x
-  | is_inf x  = if (re x)<0 then 0 else (1/0)
+  | is_inf x  = if (re x)<0 then 0 else pos_infty
   | is_nan x  = x
   | (re x)<0  = 1/(sf_exp (-x))
   | otherwise = ksum $ ixiter 1 1.0 $ \n t -> t*x/(#)n
@@ -55,7 +55,7 @@ TODO: maybe for complex, use explicit cis?
 \begin{code}
 sf_exp_m1 :: (Value v) => v -> v
 sf_exp_m1 !x
-  | is_inf x  = if (re x)<0 then -1 else (1/0)
+  | is_inf x  = if (re x)<0 then -1 else pos_infty
   | is_nan x  = x
   | (re x)<0  = -sf_exp x * sf_exp_m1 (-x)
   | otherwise = ksum $ ixiter 2 x $ \n t -> t*x/((#)n)
@@ -75,7 +75,7 @@ For complex values, simple calculation is inaccurate (when $\Re z\sim 1$).
 \begin{code}
 sf_exp_m1vx :: (Value v) => v -> v
 sf_exp_m1vx !x
-  | is_inf x = if (re x)<0 then 0 else (1/0)
+  | is_inf x = if (re x)<0 then 0 else pos_infty
   | is_nan x = x
   | rabs(x)>(1/2) = (sf_exp x - 1)/x -- inaccurate for some complex points
   | otherwise =
@@ -105,7 +105,7 @@ sf_exp_menx :: (Value v) => Int -> v -> v
 sf_exp_menx 0 z = sf_exp z
 sf_exp_menx 1 z = sf_exp_m1vx z
 sf_exp_menx n z
-  | is_inf z  = if (re z)>0 then (1/0) else (0) -- TODO: verify
+  | is_inf z  = if (re z)>0 then pos_infty else (0) -- TODO: verify
   | is_nan z  = z
   | otherwise = exp_menx__contfrac n z
   where

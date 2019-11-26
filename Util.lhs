@@ -33,11 +33,15 @@ class (Eq v, Floating v, Fractional v, Num v,
       ) => Value v where
   type RealKind v :: *
   type ComplexKind v :: *
+  pos_infty :: v
+  neg_infty :: v
+  nan :: v
   re :: v -> (RealKind v)
   im :: v -> (RealKind v)
   rabs :: v -> (RealKind v)
   is_inf :: v -> Bool
   is_nan :: v -> Bool
+  is_real :: v -> Bool
   fromDouble :: Double -> v
   fromReal :: (RealKind v) -> v
   toComplex :: v -> (ComplexKind v)
@@ -50,11 +54,15 @@ in the obvious ways.
 instance Value Double where
   type RealKind Double = Double
   type ComplexKind Double = CDouble
+  pos_infty = 1.0/0.0
+  neg_infty = -1.0/0.0
+  nan = 0.0/0.0
   re = id
   im = const 0
   rabs = abs
   is_inf = isInfinite
   is_nan = isNaN
+  is_real _ = True
   fromDouble = id
   fromReal = id
   toComplex x = x :+ 0
@@ -65,11 +73,15 @@ instance Value Double where
 instance Value CDouble where
   type RealKind CDouble = Double
   type ComplexKind CDouble = CDouble
+  pos_infty = (1.0/0.0) :+ 0
+  neg_infty = (-1.0/0.0) :+ 0
+  nan = (0.0/0.0) :+ 0
   re = realPart
   im = imagPart
   rabs = realPart.abs
   is_inf z = (is_inf.re$z) || (is_inf.im$z)
   is_nan z = (is_nan.re$z) || (is_nan.im$z)
+  is_real _ = False
   fromDouble x = x :+ 0
   fromReal x = x :+ 0
   toComplex = id
@@ -130,16 +142,19 @@ This is typically used for power-series or asymptotic expansions.
 \begin{titled-frame}{{\color{blue}\tt ksum terms}\marginnote{\tt ksum}}
 \begin{code}
 ksum :: (Value v) => [v] -> v
-ksum terms = k 0 0 terms
+ksum terms = ksum' terms const
+
+ksum' :: (Value v) => [v] -> (v -> v -> a) -> a
+ksum' terms k = f 0 0 terms
   where
-    k !s !e [] = s
-    k !s !e (t:terms) =
-      let !y = t - e
+    f !s !e [] = k s e
+    f !s !e (t:terms) =
+      let !y  = t - e
           !s' = s + y
           !e' = (s' - s) - y
       in if s' == s
-         then s
-         else k s' e' terms
+         then k s' e'
+         else f s' e' terms
 \end{code}
 \end{titled-frame}
 

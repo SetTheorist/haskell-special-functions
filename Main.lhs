@@ -52,6 +52,7 @@
 \DeclareMathOperator{\Ei}{Ei}
 \DeclareMathOperator{\erf}{erf}
 \DeclareMathOperator{\erfc}{erfc}
+\DeclareMathOperator{\gud}{gud}
 \DeclareMathOperator{\Li}{Li}
 
 \title{Computation of Special Functions\\(Haskell)}
@@ -94,6 +95,9 @@ Special functions.
 
 %\section{Riemann Zeta}
 \input{Zeta.lhs}
+
+%\section{Elliptic}
+\input{Elliptic.lhs}
 
 %\section{Spence}
 \input{Spence.lhs}
