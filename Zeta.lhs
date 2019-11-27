@@ -3,32 +3,32 @@
 \subsection{Preamble}
 \begin{code}
 {-# Language BangPatterns #-}
-module Zeta (
-  sf_zeta,
-  sf_zeta_m1,
-) where
+module Zeta (sf_zeta, sf_zeta_m1) where
 import Gamma
 import Trig
 import Util
 \end{code}
 
 \subsection{Zeta}
+The Riemann zeta function is defined by power series for $\Re z>1$
+\[ \zeta(z) = \sum_{n=1}^\infty n^{-z} \]
+and defined by analytic continuation elsewhere.
 
 \subsubsection{\tt sf\_zeta z}
 Compute the Riemann zeta function $\verb|sf_zeta z| = \zeta(z)$ where
-\[ \zeta(z) = \sum_{n=1}^\infty n^{-z} \]
-(for $\Re z>1$ and defined by analytic continuation elsewhere).
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_zeta z} = \zeta(z)$}
 \begin{code}
 sf_zeta :: (Value v) => v -> v
 sf_zeta z
   | z==1      = (1/0)
   | (re z)<0  = 2 * (2*pi)**(z-1) * (sf_sin$pi*z/2) * (sf_gamma$1-z) * (sf_zeta$1-z)
   | otherwise = zeta_series 1.0 z
-
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt sf\_zeta\_m1 z}
 For numerical purposes, it is useful to have $\verb|sf_zeta_m1 z| = \zeta(z)-1$.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_zeta\_m1 z} = \zeta(z)-1$}
 \begin{code}
 sf_zeta_m1 :: (Value v) => v -> v
 sf_zeta_m1 z
@@ -36,11 +36,13 @@ sf_zeta_m1 z
   | (re z)<0  = 2 * (2*pi)**(z-1) * (sf_sin$pi*z/2) * (sf_gamma$1-z) * (sf_zeta$1-z) - 1  -- TODO:
   | otherwise = zeta_series 0.0 z
 \end{code}
+\end{titled-frame}
 
 \subsubsection*{*\tt zeta\_series i z}
 We use the simple series expansion for $\zeta(z)$ with an
 Euler-Maclaurin correction:
 \[ \zeta(z) = \sum_{n=1}^{N}\frac{1}{n^z} + \sum_{k=1}^{p}\cdots \]
+\begin{titled-frame}{$\text{\color{blue}\tt zeta\_series init z} = {}$}
 \begin{code}
 zeta_series :: (Value v) => v -> v -> v
 zeta_series !init !z = 
@@ -48,7 +50,7 @@ zeta_series !init !z =
       corrs = map correction [2..]
   in summer terms corrs init 0.0 0.0
   where
-    --TODO: make general "corrected" kahan_sum!
+    --TODO: convert to use kahan summer
     summer !(t:ts) !(c:cs) !s !e !r = 
       let !y = t + e
           !s' = s + y
@@ -67,5 +69,6 @@ zeta_series !init !z =
          + n**(-z-1)*zz1 - n**(-z-3)*zz2 + n**(-z-5)*zz3
          - n**(-z-7)*zz4 + n**(-z-9)*zz5
 \end{code}
+\end{titled-frame}
 
 

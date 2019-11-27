@@ -20,12 +20,14 @@ where
 \[ t_0=1 \qquad t_{k}=t_{k-1}\frac{-z^2}{(\mu+2k+1)^2-\nu^2} \]
 
 \subsubsection{\tt sf\_lommel\_s mu nu z}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_lommel\_s mu nu z} = S_{\mu,\nu}(z)$}
 \begin{code}
 sf_lommel_s mu nu z = 
   let terms = ixiter 1 1.0 $ \ k t -> -t*z^2 / ((mu+((#)$2*k+1))^2 - nu^2)
       res = ksum terms
   in res * z**(mu+1) / ((mu+1)^2 - nu^2)
 \end{code}
+\end{titled-frame}
 
 \subsection{Second Lommel function}
 For $\mu\pm\nu \neq \pm1, \pm3, \pm5, \cdots$ 
@@ -35,6 +37,7 @@ is given via an asymptotic expansion:
 where
 \[ u_0=1 \qquad u_{k}=u_{k-1}\frac{-(\mu-2k+1)^2-\nu^2}{z^2} \]
 \subsubsection{\tt sf\_lommel\_s2 mu nu z}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_lommel\_s2 mu nu z} = s_{\mu,\nu}(z)$}
 \begin{code}
 sf_lommel_s2 mu nu z =
   let tterms = ixiter 1 1.0 $ \ k t -> -t*((mu-((#)$2*k+1))^2 - nu^2) / z^2
@@ -43,5 +46,6 @@ sf_lommel_s2 mu nu z =
   in res
   where tk (a:b:cs) = if (rabs a)<(rabs b) then [a] else a:(tk$b:cs)
 \end{code}
+\end{titled-frame}
 
 

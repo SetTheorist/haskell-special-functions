@@ -141,6 +141,23 @@ spouge_approx a z' =
                     * (a-((#)k))**(((#)k)-1/2) * sf_exp(a-((#)k))
 \end{code}
 
+\begin{code}
+spouge :: (Value v) => Int -> v -> v
+spouge a' z' =
+  let z = z' - 1
+      a = fromDouble$(#)a'
+      -- I don't quite understand why I can't do this:
+      --q = fromReal $ (sf_sqrt(2*pi) :: (RealKind v))
+      q = sf_sqrt(2*pi)
+  in (z+a)**(z+1/2)*(sf_exp(-z-a))*(q + ksum (map (\k->(c a k)/(z+(#)k)) [1..(a'-1)]))
+  where
+    c :: (Value v) => v -> Int -> v
+    c a k = let k' = (#)k
+                sgn = if even k then -1 else 1
+            in sgn*(a-k')**(k'-1/2)*(sf_exp(a-k')) / ((#)$factorial(k-1))
+\end{code}  
+    
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Digamma}
 

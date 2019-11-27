@@ -7,9 +7,7 @@ Spence's function $S(z)$ is related to the dilogarithm function via $S(z) = \Li_
 
 \subsection{Preamble}
 \begin{code}
-module Spence (
-    sf_spence,
-) where
+module Spence (sf_spence) where
 import Exp
 import Util
 \end{code}
@@ -29,6 +27,7 @@ We use a variety of transformations to to allow efficient computation with a ser
 \Li_2(z) + \Li_2(1-z) &=& \frac{\pi^2}{6}-\ln(z)\ln(1-z)              \qquad{0<z<1}
 \end{eqnarray*}
 (TODO: this code has not be solidly retested after conversion, especially verify complex.)
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_spence z} = \Li_2(z)$}
 \begin{code}
 sf_spence :: (Value v) => v -> v
 sf_spence z
@@ -40,6 +39,7 @@ sf_spence z
   | (rabs z)<2.5 = (series ((z-1)/z)) - (sf_log z)^2/2
   | otherwise    = (series (1/(1-z))) - pi2_6 - (sf_log (z-1))^2/2
 \end{code}
+\end{titled-frame}
 
 \subsection*{*\tt series z}
 The series expansion used for Spence's integral:

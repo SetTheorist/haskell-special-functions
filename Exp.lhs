@@ -33,7 +33,7 @@ This avoids disastrous cancellation for negative arguments,
 (though note that for complex arguments this is not sufficient.)
 TODO: should do range-reduction first...
 TODO: maybe for complex, use explicit cis?
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp x} = e^x$\marginnote{\tt sf\_exp}}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp x} = e^x$}
 \begin{code}
 sf_exp :: (Value v) => v -> v 
 sf_exp !x
@@ -51,7 +51,7 @@ We use a series expansion for the calculation.
 Again for negative real part we reflect using $e^{-x}-1 = -e^{-x}(e^x-1)$.
 TODO: should do range-reduction first...
 TODO: maybe for complex, use explicit cis?
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1 x} = e^x-1$\marginnote{\tt sf\_exp\_m1}}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1 x} = e^x-1$}
 \begin{code}
 sf_exp_m1 :: (Value v) => v -> v
 sf_exp_m1 !x
@@ -71,7 +71,7 @@ In this case, we use a continued-fraction expansion
     \frac{x^2/4\cdot7\cdot9}{1+{}}
     \cdots \]
 For complex values, simple calculation is inaccurate (when $\Re z\sim 1$).
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1vx x} = \frac{e^x-1}{x}$\marginnote{\tt sf\_exp\_m1vx}}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1vx x} = \frac{e^x-1}{x}$}
 \begin{code}
 sf_exp_m1vx :: (Value v) => v -> v
 sf_exp_m1vx !x
@@ -100,6 +100,7 @@ Compute the scaled tail of series expansion of the exponential function.
     \]
 We use a continued fraction expansion and using the modified Lentz algorithm for evaluation.
 \[  \]
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_menx n z}$}
 \begin{code}
 sf_exp_menx :: (Value v) => Int -> v -> v
 sf_exp_menx 0 z = sf_exp z
@@ -132,6 +133,7 @@ sf_exp_menx n z
          then 1/(1-z/fj')
          else lentz (j+1) dji cj' fj'
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt sf\_exp\_men n x}
 This is the generalization of \verb|sf_exp_m1 x|, giving the tail of the
@@ -176,6 +178,7 @@ The accuracy preserving $\verb|sf_log_p1 x|=\ln 1+x$.
 For values close to zero, we use a power series expansion
 \[ \ln(1+x) = 2\sum_{n=0}^\infty \frac{(\frac{x}{x+2})^{2n+1}}{2n+1} \]
 and otherwise just compute it directly.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_log\_p1 z} = \ln z+1$}
 \begin{code}
 sf_log_p1 :: (Value v) => v -> v
 sf_log_p1 !z
@@ -190,6 +193,7 @@ sf_log_p1 !z
           !terms = zipWith (\n t -> t/((#)$2*n+1)) [1..] tterms
       in 2*(ksum (r:terms))
 \end{code}
+\end{titled-frame}
 
 A simple continued fraction implementation for $\ln 1+z$
 \[\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ \cdots)))))))\]

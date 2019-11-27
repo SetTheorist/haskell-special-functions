@@ -7,6 +7,7 @@ We start with the basic preamble.
 {-# Language FlexibleContexts #-}
 {-# Language FlexibleInstances #-}
 {-# Language TypeFamilies #-}
+-- {-# Language UndecidableSuperClasses #-}
 -- {-# Language UndecidableInstances #-}
 module Util where
 import Data.Complex
@@ -113,8 +114,8 @@ Computes the relative error in terms of decimal digits, handy for testing.
 Note that this fails when the exact value is zero.
 \[ \verb|relerr e a| = \log_{10}\left|\frac{a-e}{e}\right|\]
 \begin{code}
-relerr :: (Value v) => v -> v -> (RealKind v)
-relerr !exact !approx = re $! logBase 10 (abs ((approx-exact)/exact))
+relerr :: (Value v) => v -> v -> v
+relerr !exact !approx = fromReal $ re $! logBase 10 (abs ((approx-exact)/exact))
 \end{code}
 
 \subsection{Kahan summation}
