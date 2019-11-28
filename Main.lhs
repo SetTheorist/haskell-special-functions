@@ -89,6 +89,9 @@ Special functions.
 %\section{Erf}
 \input{Erf.lhs}
 
+%\section{Bessel}
+\input{Bessel.lhs}
+
 %\section{ExpInt}
 \input{ExpInt.lhs}
 

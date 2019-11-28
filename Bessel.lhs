@@ -1,48 +1,68 @@
+\section{Bessel Functions}
+
+Bessel's differential equation is:
+\[ z^2 w'' + z w' + (z^2-\nu^2)w = 0 \]
+
+\subsection{Preamble}
+\begin{code}
 {-# Language BangPatterns #-}
-
 module Bessel where
-
 import Gamma
 import Trig
 import Util
+\end{code}
 
-----------------------------------------
-----------------------------------------
--- Compute Bessel J_nu(z) function
+\subsection{Bessel function $J$ of the first kind}
 
+The Bessel functions $J_\nu(z)$ are defined as
+
+\subsubsection{\tt sf\_bessel\_j nu z}
+Compute Bessel $J\_\nu(z)$ function
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_bessel\_j nu z} = J_\nu(z)$}
+\begin{code}
 sf_bessel_j :: (Value v) => v -> v -> v
-sf_bessel_j nu z = undefined
-  --asy = asympt_z(z, nu);
-  --ser = series(z, nu);
+sf_bessel_j nu z 
+  | (rabs z) < 2 = bessel_j__series nu z
+  | otherwise    = bessel_j__asympt_z nu z
   --sys = besselj(nu,z);
   --rec = recur_back(z, nu);
   --ref = recur_fore(z, nu);
   --re2 = recur_backwards(nu, z, round(abs(max(z, nu)))+21);
   --res = sys;
+\end{code}
+\end{titled-frame}
 
-----------------------------------------
--- straightforward power-series
-bessel_j_series :: (Value v) => v -> v -> v
-bessel_j_series !nu !z = 
+\subsubsection*{*\tt bessel\_j\_\_series nu z}
+The power-series expansion given by
+\[ J_\nu(z) = \left(\frac{z}{2}\right)^\nu \frac{1}{1+\nu} \sum_{k=0}^\infty(-)^k\frac{z^{2k}}{2^{2k}k!\Gamma(\nu+k+1)} \]
+\begin{titled-frame}{$\text{\color{blue}\tt bessel\_j\_\_series nu z}$}
+\begin{code}
+bessel_j__series :: (Value v) => v -> v -> v
+bessel_j__series !nu !z = 
   let !z2 = -(z/2)^2
       !terms = ixiter 1 1 $ \n t -> t*z2/((#)n)/(nu+(#)n)
       !res = ksum terms
-  in res * (z/2)**nu / sf_gamma (1+nu)
+  in res * (z/2)**nu / sf_gamma(1+nu)
+\end{code}
+\end{titled-frame}
 
--- asymptotic expansion
--- for |z|>>nu
--- for |arg(z)|<pi
-bessel_j_asympt_z :: (Value v) => v -> v -> v
-bessel_j_asympt_z !nu !z =
+\subsubsection*{*\tt bessel\_j\_\_asympt nu z}
+Asymptotic expansion for $|z|>>\nu$ with $|arg z|<\pi$. is given by
+\[ J_\nu(z) \sim \left(\frac{2}{\pi z}\right)^{1/2}\
+    \left( \cos\omega \sum_{k=0}^\infty (-)^k \frac{a_{2k}(\nu)}{z^{2k}}
+        -  \sin\omega \sum_{k=0}^\infty (-)^k \frac{a_{2k+1}(\nu)}{z^{2k+1}} \right) \]
+where $\omega = z - \frac{\pi\nu}{2} - \frac{\pi}{4}$ and
+\[ a_k(\nu) = \frac{(4\nu^2-1^2)(4\nu^2-3^2)\cdots(4\nu^2-(2k-1)^2)}{k! 8^k} \]
+TODO: results don't look very good --- maybe just a bug in implementation?
+\begin{code}
+bessel_j__asympt_z :: (Value v) => v -> v -> v
+bessel_j__asympt_z !nu !z =
   let !chi = z - (nu/2 + 1/4)*pi
       !mu = 4*nu^2
   in (sf_sqrt(2/(pi*z))) * (asymp_p nu z)*(sf_cos chi) - (asymp_q nu z)*(sin chi)
   where
 
-    asymp_p !nu !z =
-      let !term = 1.0
-          !res = term
-      in loop 1 term res
+    asymp_p !nu !z = loop 1 1.0 1.0
       where
         !mu = 4*nu^2
         !z8 = -(8*z)^2
@@ -62,7 +82,10 @@ bessel_j_asympt_z !nu !z =
           let !t' = t * (mu-((#)$2*k-1)^2) * (mu-((#)$2*k+1)^2) / (((#)$2*k-2)*((#)$2*k-1)*z8)
               !r' = r + t'
           in if r==r' || (rabs t)>(rabs t') then r else loop (k+1) t' r'
+\end{code}
 
+\begin{code}
+{--
 -- recursion in order (backwards)
 bessel_j_recur_back :: (Value v) => Double -> v -> v
 bessel_j_recur_back !nu !z =
@@ -147,3 +170,5 @@ function res = recur_backwards(n, z, topper)
   res ./= sqrt(scale);
 endfunction
 --}
+--}
+\end{code}

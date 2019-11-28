@@ -9,7 +9,6 @@
 module Erf (
     sf_erf,
     sf_erfc,
-    sf_dawson,
 ) where
 import Exp
 import Util
@@ -127,7 +126,6 @@ sf_dawson :: forall v.(Value v) => v -> v
 sf_dawson z
   -- | (rabs z) < 0.5 = (toComplex$sf_exp(-z^2))*(sf_erf((toComplex z)*(0:+1)))*(sf_sqrt(pi)/2/(0:+1))
   | (im z) /= 0    = dawson__seres z
-  | otherwise      = dawson__asymp z
   | (rabs z) < 5   = dawson__contfrac z
   | otherwise      = dawson__contfrac2 z
 
