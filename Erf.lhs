@@ -4,9 +4,12 @@
 
 \begin{code}
 {-# Language BangPatterns #-}
+-- {-# Language BlockArguments #-}
+{-# Language ScopedTypeVariables #-}
 module Erf (
     sf_erf,
     sf_erfc,
+    sf_dawson,
 ) where
 import Exp
 import Util
@@ -14,19 +17,27 @@ import Util
 
 \subsection{Error function}
 
+The error function is defined via
+\[ \erf(z) = \frac{2}{\sqrt\pi} \int_{0}^{z} e^{-x^2}\,dx \marginnote{$\erf(z)$}\]
+and the complementary error function via 
+\[ \erfc(z) = \frac{2}{\sqrt\pi} \int_{z}^{\infty} e^{-x^2}\,dx \marginnote{$\erfc(z)$}\]
+Thus we have the relation $\erf(z) + \erfc(z) = 1$.
+
 \subsubsection{\tt sf\_erf z}
 The error function $\verb|sf_erf z| = \erf z$ where
-\[ \erf z = \frac{2}{\sqrt\pi} \int_{-\infty}^{z} e^{-x^2}\,dx \]
-For $\Re z<-1$, we transform via $\erf z=-\erf(-z)$ and for $|z|<1$ we use
+\[ \erf(z) = \frac{2}{\sqrt\pi} \int_{-\infty}^{z} e^{-x^2}\,dx \]
+For $\Re z<-1$, we transform via $\erf(z)=-\erf(-z)$ and for $|z|<1$ we use
 the power-series expansion, otherwise we use $\erf z=1-\erfc z$.
 (TODO: this implementation is not perfect, but workable for now.)
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_erf z} = \erf(z)$}
 \begin{code}
 sf_erf :: (Value v) => v -> v
 sf_erf z 
   | (re z)<(-1) = -sf_erf(-z)
-  | (rabs z)<1  = erf_series z
+  | (rabs z)<1  = erf__series z
   | otherwise   = 1 - sf_erfc z
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt sf\_erfc z}
 The complementary error-function $\verb|sf_erfc z| = \erfc z$ where
@@ -36,8 +47,8 @@ use $\erfc z=1-\erf z$.  Finally, if $|z|<10$ we use a continued-fraction expans
 and an asymptotic expansion otherwise.
 (TODO: there are a few issues with this implementation:
 For pure imaginary values and for extremely large values it seems to hang.)
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_erfc z} = \erfc(z)$}
 \begin{code}
--- infinite loop when (re z)==0
 sf_erfc :: (Value v) => v -> v
 sf_erfc z 
   | (re z)<(-1) = 2-(sf_erfc (-z))
@@ -45,6 +56,7 @@ sf_erfc z
   | (rabs z)<10 = erfc_cf_pos1 z
   | otherwise   = erfc_asymp_pos z -- TODO: hangs for very large input
 \end{code}
+\end{titled-frame}
 
 \subsubsection*{\tt erf\_series z}
 The series expansion for $\erf z$:
@@ -53,10 +65,10 @@ There is an alternative expansion
 $\erf z=\frac{2}{\sqrt\pi}e^{-z^2}\sum_{n=0}^\infty\frac{2^nz^{2n+1}}{1\cdot3\cdots(2n+1)}$, but
 we don't use it here. (TODO: why not?)
 \begin{code}
-erf_series z =
+erf__series z =
   let z2 = z^2
       rts = ixiter 1 z $ \n t -> (-t)*z2/(#)n
-      terms = zipWith (\ n t ->t/(#)(2*n+1)) [0..] rts
+      terms = zipWith (\n t -> t/(#)(2*n+1)) [0..] rts
   in (2/sf_sqrt pi)  * ksum terms
 \end{code}
 
@@ -99,4 +111,137 @@ erfc_cf_pos2 z =
       bs = 0:(map (\n->2*z2+(#)4*n+1) [0..])
       cf = steeds as bs
   in sf_exp(-z2) / (sqrt pi) * cf
+\end{code}
+
+\subsection{Dawson's function}
+
+Dawson's function (or Dawson's integral) is given by
+\[ D(z) = e^{-z^2}\int_0^z e^{t^2}\,dt = -\frac{\ii\sqrt\pi}{2} e^{-x^2}\erf(\ii x) \]
+
+\subsubsection{\tt sf\_dawson z}
+Compute Dawson's integral $D(z) = e^(-z^2) \int_0^z e^(t^2) dt$ for real z.
+(Correct only for reals!)
+
+\begin{code}
+sf_dawson :: forall v.(Value v) => v -> v
+sf_dawson z
+  -- | (rabs z) < 0.5 = (toComplex$sf_exp(-z^2))*(sf_erf((toComplex z)*(0:+1)))*(sf_sqrt(pi)/2/(0:+1))
+  | (im z) /= 0    = dawson__seres z
+  | otherwise      = dawson__asymp z
+  | (rabs z) < 5   = dawson__contfrac z
+  | otherwise      = dawson__contfrac2 z
+
+dawson__seres :: (Value v) => v -> v
+dawson__seres z =
+  let tterms = ixiter 1 z $ \n t -> t*z^2/(#)n
+      terms = zipWith (\n t->t/((#)(2*n+1))) [0..] tterms
+      smm = ksum terms
+  in (sf_exp(-z^2)) * smm
+
+faddeeva__asymp :: (Value v) => v -> v
+faddeeva__asymp z =
+  let z' = 1/z
+      terms = ixiter 1 z' $ \n t -> t*z'^2*((#)(2*n+1))/2
+      smm = ksum terms
+  in smm
+{--
+function res = seres(x)
+  res = term = x;
+  n = 1;
+  do
+    term *= x^2 / n;
+    old_res = res;
+    res += term / (2*n+1);
+    ++n; if (n>999) break; endif
+  until (res == old_res)
+  res *= sf_exp(-x^2);
+endfunction
+--}
+
+
+dawson__contfrac :: (Value v) => v -> v
+dawson__contfrac z = undefined
+
+dawson__contfrac2 :: (Value v) => v -> v
+dawson__contfrac2 z = undefined
+
+{--
+function res = contfrac(x)
+  eps = 1e-16;
+  zeta = 1e-100;
+
+  fj = 1;
+  Cj = fj;
+  Dj = 0;
+  j = 1;
+  do
+    aj = (-1)^(rem(j,2)+1)*2*j*x^2;
+    bj = 2*j+1;
+    Dj = bj + aj*Dj; if (Dj==0) Dj=zeta; endif
+    Cj = bj + aj/Cj; if (Cj==0) Cj=zeta; endif
+    Dj = 1/Dj;
+    Deltaj = Cj*Dj;
+    fj *= Deltaj;
+    ++j; if (j>999) break; endif
+  until (abs(Deltaj-1)<eps)
+  res = x/fj;
+endfunction
+
+function res = contfrac2(x)
+  eps = 1e-16;
+  zeta = 1e-100;
+
+  fj = 1+2*x^2;
+  Cj = fj;
+  Dj = 0;
+  j = 1;
+  do
+    aj = -4*j*x^2;
+    bj = (2*j+1) + 2*x^2;
+    Dj = bj + aj*Dj; if (Dj==0) Dj=zeta; endif
+    Cj = bj + aj/Cj; if (Cj==0) Cj=zeta; endif
+    Dj = 1/Dj;
+    Deltaj = Cj*Dj;
+    fj *= Deltaj;
+    ++j; if (j>999) break; endif
+  until (abs(Deltaj-1)<eps)
+  res = x/fj;
+endfunction
+
+# from NR
+# BUGGY
+function res = rybicki(x)
+  h = 2.0;
+  n = 1;
+  res = 0;
+  do
+    old_res = res;
+    res += ( sf_exp(-(x-n*h)^2) - sf_exp(-(x+n*h)^2) )/n;
+    n+=2; if (n>999) break; endif
+  until (res == old_res)
+  res /= sqrt(pi);
+endfunction
+
+function res = besser2(x)
+  res = 0;
+  n = 1;
+  do
+    old_res = res;
+    res += (2*n+1)*sf_bessel_spher_i1(n, x^2) + (2*n+3)*sf_bessel_spher_i1(n+1, x^2);
+    n +=4 ; if (n>999) break; endif
+  until (res == old_res)
+  res *= sf_exp(-x^2) / x;
+endfunction
+
+function res = besser(x)
+  res = 0;
+  n = 0;
+  do
+    old_res = res;
+    res += (-1)^(rem(n,2)) * (sf_bessel_spher_i1(2*n, x^2) + sf_bessel_spher_i1(2*n+1, x^2));
+    ++n; if (n>999) break; endif
+  until (res == old_res)
+  res *= x * sf_exp(-x^2);
+endfunction
+--}
 \end{code}

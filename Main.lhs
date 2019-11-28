@@ -2,6 +2,7 @@
 \usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+%\usepackage{mathbbol}
 
 \usepackage{marginnote}
 
@@ -32,17 +33,18 @@
                {>}{{$>$}}1 {<}{{$<$}}1 {\\}{{$\lambda$}}1
                {\\\\}{{\char`\\\char`\\}}1
                {->}{{$\rightarrow$}}2 {>=}{{$\geq$}}2 {<-}{{$\leftarrow$}}2
-               {<=}{{$\leq$}}2 {=>}{{$\Rightarrow$}}2 
+               {<=}{{$\leq$}}2 {=>}{{$\Rightarrow$}}2
                {\ .}{{$\circ$}}2
                {>>}{{>>}}2 {>>=}{{>>=}}2
                %{\ .\ }{{$\circ$}}2
-               %{|}{{$\mid$}}1               
+               %{|}{{$\mid$}}1
                % my modifications:
                {\ .\ }{{$\circ$}}3
                {\$}{{\scriptsize\$}}1
                {!}{{\scriptsize!}}1
-               {&&}{{$\wedge$}}2               
-               {||}{{$\vee$}}2               
+               {&&}{{$\wedge$}}2
+               {||}{{$\vee$}}2
+               {forall}{{$\forall$}}1%6
                %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
@@ -54,6 +56,9 @@
 \DeclareMathOperator{\erfc}{erfc}
 \DeclareMathOperator{\gud}{gud}
 \DeclareMathOperator{\Li}{Li}
+
+%\def\ii{{\mathbb{i}}}
+\def\ii{{\hat\imath}}
 
 \title{Computation of Special Functions\\(Haskell)}
 \author{Apollo Hogan}

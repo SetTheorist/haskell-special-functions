@@ -6,6 +6,7 @@ We start with the basic preamble.
 {-# Language BangPatterns #-}
 {-# Language FlexibleContexts #-}
 {-# Language FlexibleInstances #-}
+{-# Language ScopedTypeVariables #-}
 {-# Language TypeFamilies #-}
 -- {-# Language UndecidableSuperClasses #-}
 -- {-# Language UndecidableInstances #-}
@@ -97,6 +98,7 @@ TODO: add quad versions also
 A convenient shortcut, as we often find ourselves converting
 indices (or other integral values) to our computation type.
 \begin{code}
+{-# INLINE (#) #-}
 (#) :: (Integral a, Num b) => a -> b
 (#) = fromIntegral
 \end{code}
@@ -105,6 +107,7 @@ A version of \verb|iterate| which passes along an index also
 (very useful for computing terms of a power-series, for example.)
 \begin{titled-frame}{{\color{blue}\tt ixiter i x f}\marginnote{\tt ixiter}}
 \begin{code}
+{-# INLINE ixiter #-}
 ixiter :: (Enum ix) => ix -> a -> (ix->a->a) -> [a]
 ixiter i x f = x:(ixiter (succ i) (f i x) f)
 \end{code}
@@ -114,8 +117,8 @@ Computes the relative error in terms of decimal digits, handy for testing.
 Note that this fails when the exact value is zero.
 \[ \verb|relerr e a| = \log_{10}\left|\frac{a-e}{e}\right|\]
 \begin{code}
-relerr :: (Value v) => v -> v -> v
-relerr !exact !approx = fromReal $ re $! logBase 10 (abs ((approx-exact)/exact))
+relerr :: forall v.(Value v) => v -> v -> (RealKind v)
+relerr !exact !approx = re $! logBase 10 (abs ((approx-exact)/exact))
 \end{code}
 
 \subsection{Kahan summation}
@@ -127,6 +130,8 @@ Here \verb|kadd t s e k| is a single step of addition, adding
 a term to a sum+error and passing the updated sum+error to the continuation.
 \begin{code}
 -- kadd value oldsum olderr ---> newsum newerr
+{-# INLINE kadd #-}
+{-# SPECIALISE kadd :: Double -> Double -> Double -> (Double -> Double -> a) -> a #-}
 kadd :: (Value v) => v -> v -> v -> (v -> v -> a) -> a
 kadd t s e k =
   let y = t - e
@@ -140,8 +145,11 @@ The list is assumed to be (eventually) decreasing and the
 summation is terminated as soon as adding a term doesn't change the value.
 (Thus any zeros in the list will immediately terminate the sum.)
 This is typically used for power-series or asymptotic expansions.
+(TODO: make generic over stopping condition)
 \begin{titled-frame}{{\color{blue}\tt ksum terms}\marginnote{\tt ksum}}
 \begin{code}
+{-# SPECIALISE ksum :: [Double] -> Double #-}
+{-# SPECIALISE ksum' :: [Double] -> (Double -> Double -> a) -> a #-}
 ksum :: (Value v) => [v] -> v
 ksum terms = ksum' terms const
 
