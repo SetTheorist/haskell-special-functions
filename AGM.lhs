@@ -2,13 +2,9 @@
 
 \subsection{Preamble}
 
-\begin{titled-frame}{\tt module AGM}%
+\begin{titled-frame}{\color{blue}\tt module AGM}%
 \begin{code}
-module AGM (
-    sf_agm,
-    sf_agm',
-    )
-where
+module AGM (sf_agm, sf_agm') where
 import Util
 \end{code}
 \end{titled-frame}

@@ -6,11 +6,13 @@ and we extend the function via analytic continuation.
 Spence's function $S(z)$ is related to the dilogarithm function via $S(z) = \Li_2(1-z)$.
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module Spence}
 \begin{code}
 module Spence (sf_spence) where
 import Exp
 import Util
 \end{code}
+\end{titled-frame}
 
 A useful constant $\verb|pi2_6| = \frac{\pi^2}{6}$
 \begin{code}

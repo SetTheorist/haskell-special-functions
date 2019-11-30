@@ -1,16 +1,15 @@
 \section{Exponential Integral}
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module ExpInt}
 \begin{code}
-module ExpInt(
- sf_expint_ei,
- sf_expint_en,
- )
+module ExpInt(sf_expint_ei, sf_expint_en)
 where
 import Exp
 import Gamma
 import Util
 \end{code}
+\end{titled-frame}
 
 \subsection{Exponential integral $\Ei$}
 The exponential integral $\Ei z$ is defined for $x<0$ by

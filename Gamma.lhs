@@ -3,6 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Preamble}
 A basic preamble.
+\begin{titled-frame}{\color{blue}\tt module Gamma}
 \begin{code}
 module Gamma (
     euler_gamma,
@@ -20,6 +21,7 @@ import Numbers(factorial)
 import Trig
 import Util
 \end{code}
+\end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Misc}

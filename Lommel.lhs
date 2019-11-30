@@ -1,13 +1,12 @@
 \section{Lommel functions}
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module Lommel}
 \begin{code}
-module Lommel (
-  sf_lommel_s,
-  sf_lommel_s2,
-) where
+module Lommel (sf_lommel_s, sf_lommel_s2) where
 import Util
 \end{code}
+\end{titled-frame}
 
 --TODO: These are completely untested!
 

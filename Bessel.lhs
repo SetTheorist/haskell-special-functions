@@ -4,6 +4,7 @@ Bessel's differential equation is:
 \[ z^2 w'' + z w' + (z^2-\nu^2)w = 0 \]
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module Bessel}
 \begin{code}
 {-# Language BangPatterns #-}
 {-# Language ScopedTypeVariables #-}
@@ -12,6 +13,7 @@ import Gamma
 import Trig
 import Util
 \end{code}
+\end{titled-frame}
 
 \subsection{Bessel function $J$ of the first kind}
 

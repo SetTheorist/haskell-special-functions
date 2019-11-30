@@ -1,6 +1,7 @@
 \section{Riemann zeta function}
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module Zeta}
 \begin{code}
 {-# Language BangPatterns #-}
 module Zeta (sf_zeta, sf_zeta_m1) where
@@ -8,6 +9,7 @@ import Gamma
 import Trig
 import Util
 \end{code}
+\end{titled-frame}
 
 \subsection{Zeta}
 The Riemann zeta function is defined by power series for $\Re z>1$

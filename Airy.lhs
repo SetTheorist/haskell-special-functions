@@ -5,11 +5,13 @@ standard solutions of the ode $y''-zy=0$.
 
 \subsection{Preamble}
 A basic preamble.
+\begin{titled-frame}{\color{blue}\tt module Airy}
 \begin{code}
 module Airy (sf_airy_ai, sf_airy_bi) where
 import Gamma
 import Util
 \end{code}
+\end{titled-frame}
 
 \subsection{Ai}
 

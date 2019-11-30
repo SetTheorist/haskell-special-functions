@@ -2,6 +2,7 @@
 
 \subsection{Preamble}
 
+\begin{titled-frame}{\color{blue}\tt module Erf}
 \begin{code}
 {-# Language BangPatterns #-}
 -- {-# Language BlockArguments #-}
@@ -13,6 +14,7 @@ module Erf (
 import Exp
 import Util
 \end{code}
+\end{titled-frame}
 
 \subsection{Error function}
 

@@ -1,11 +1,13 @@
 \section{Numbers}
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module Numbers}
 \begin{code}
 module Numbers where
 import Data.Ratio
 import qualified Fibo
 \end{code}
+\end{titled-frame}
 
 \begin{code}
 fibonacci_number :: Int -> Integer

@@ -1,6 +1,7 @@
 \section{Elliptic functions}
 
 \subsection{Preamble}
+\begin{titled-frame}{\color{blue}\tt module Elliptic}
 \begin{code}
 {-# Language BangPatterns #-}
 module Elliptic where
@@ -9,12 +10,14 @@ import Exp
 import Trig
 import Util
 \end{code}
+\end{titled-frame}
 
-$2^{-2/3}$
+\begin{titled-frame}{$\text{\color{blue}\tt two23} = 2^{-2/3}$}
 \begin{code}
 two23 :: Double
 !two23 = 0.62996052494743658238
 \end{code}
+\end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Elliptic integral of the first kind}

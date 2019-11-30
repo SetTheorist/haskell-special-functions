@@ -3,6 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Preamble}
 We start with the basic preamble.
+\begin{titled-frame}{\color{blue}\tt module Util}
 \begin{code}
 {-# Language BangPatterns #-}
 {-# Language FlexibleContexts #-}
@@ -15,6 +16,7 @@ module Util where
 import Data.Complex
 import Data.List(zipWith5)
 \end{code}
+\end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data Types}
