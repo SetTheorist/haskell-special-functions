@@ -95,7 +95,7 @@ erfc_cf_pos1 z =
   let z2 = z^2
       as = z:(map fromDouble [1/2,1..])
       bs = 0:cycle [z2,1]
-      cf = steeds as bs
+      cf = sf_cf_steeds as bs
   in sf_exp(-z2) / (sqrt pi) * cf
 \end{code}
 
@@ -108,7 +108,7 @@ erfc_cf_pos2 z =
   let z2 = z^2
       as = (2*z):(map (\n->(#)$ -(2*n+1)*(2*n+2)) [0..])
       bs = 0:(map (\n->2*z2+(#)4*n+1) [0..])
-      cf = steeds as bs
+      cf = sf_cf_steeds as bs
   in sf_exp(-z2) / (sqrt pi) * cf
 \end{code}
 

@@ -74,9 +74,6 @@ Special functions.
 %\section{Util}
 \input{Util.lhs}
 
-%\section{ODE}
-\input{ODE.lhs}
-
 %\section{Fibo}
 \input{Fibo.lhs}
 

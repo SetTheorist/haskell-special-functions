@@ -63,7 +63,7 @@ sf_atan = atan
 -- $$\tan z = z/(1- z^2/(3- z^2/(5- z^2/(7- ...))))$$
 -- NB terrible convergence
 tan_cf :: (Value v) => v -> v
-tan_cf z = steeds (z:(cycle [-z^2,z^2])) (map (#) (0:[1,3..]))
+tan_cf z = sf_cf_steeds (z:(cycle [-z^2,z^2])) (map (#) (0:[1,3..]))
 
 -- cotangent
 sf_cot :: (Value v) => v -> v

@@ -1,5 +1,6 @@
 \section{Utility}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Preamble}
 We start with the basic preamble.
 \begin{code}
@@ -15,6 +16,7 @@ import Data.Complex
 import Data.List(zipWith5)
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data Types}
 
 We start by defining a convenient type synonym for complex numbers over \verb|Double|.
@@ -95,6 +97,7 @@ instance Value CDouble where
 TODO: add quad versions also
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Helper functions}
 
 A convenient shortcut, as we often find ourselves converting
@@ -123,6 +126,7 @@ relerr :: forall v.(Value v) => v -> v -> (RealKind v)
 relerr !exact !approx = re $! logBase 10 (abs ((approx-exact)/exact))
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Kahan summation}
 
 A useful tool is so-called Kahan summation, based on the observation that
@@ -170,17 +174,50 @@ ksum' terms k = f 0 0 terms
 \end{titled-frame}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Continued fraction evaluation}
+
+Given two sequences $\{a_n\}_{n=1}^\infty$ and $\{b_n\}_{n=0}^\infty$ we have the continued fraction
+\[ b_0 + \frac{a_1}{b_1 + \frac{a_2}{b_2 + \frac{a_3}{b_3 + \frac{a_4}{b_4 + \cdots}}}} \]
+or 
+\[ b_0 + a_1/(b_1 + a_2/(b_2 + a_3/(b_3 + a_4/(b_4 + \cdots)))) \]
+though for typesetting purposes this is often written
+\[ b_0 + \frac{a_1}{b_1 + {}}\ \frac{a_2}{b_2 + {}}\ \frac{a_3}{b_3 + {}}\ \frac{a_4}{b_4 + \cdots} \]
+
+We conventionally notate the $n$'th approximant or convergent as
+\[ C_n = b_0 + \frac{a_1}{b_1 + {}}\ \frac{a_2}{b_2 + {}}\ \frac{a_3}{b_3 + \dots}\ \frac{a_n}{b_n} \]
+
+\subsubsection{Backwards recurrence algorithm}
+
+We can compute the $n$'th convergent $C_n$ for a predetermined $n$ by evaluating
+\[ u_k = b_k + \frac{a_{k+1}}{u_{k+1}} \]
+for $k=n-1, n-2, \dots, 0$, with $u_n = b_n$.  Then $u_0 = C_n$.
+
+\begin{titled-frame}{\color{blue}\tt sf\_cf\_back}
+\begin{code}
+sf_cf_back :: forall v.(Value v) => Int -> [v] -> [v] -> v
+sf_cf_back !n !as !bs =
+  let !an = reverse $ take n as
+      !(un:bn) = reverse $ take (n+1) bs
+  in go un an bn
+  where 
+    go :: v -> [v] -> [v] -> v
+    go !ukp1 ![] ![] = ukp1
+    go !ukp1 !(a:an) !(b:bn) =
+        let uk = b + a/ukp1
+        in go uk an bn
+\end{code}
+\end{titled-frame}
 
 \subsubsection{Steed's algorithm}
 This is Steed's algorithm for evaluation of a continued fraction
-\[ C = b_0 + a_1/(b_1 + a_2/(b_2 + a_3/(b_3 + \cdots))) \]
-where $C_n=A_n/B_n$ is the partial evaluation up to $\dots a_n/b_n$.
-Here \verb|steeds as bs| evaluates until $C_n=C_{n+1}$.
-TODO: describe the algorithm.
+It evaluates the partial convergents $C_n$ in a forward direction.
+This implementation will evaluate until $C_n=C_{n+1}$.
+TODO: describe algorithm.
+\begin{titled-frame}{\color{blue}\tt sf\_cf\_steeds}
 \begin{code}
-steeds :: (Value v) => [v] -> [v] -> v
-steeds (a1:as) (b0:b1:bs) =
+sf_cf_steeds :: (Value v) => [v] -> [v] -> v
+sf_cf_steeds (a1:as) (b0:b1:bs) =
     let !c0 = b0
         !d1 = 1/b1
         !delc1 = a1*d1
@@ -192,8 +229,37 @@ steeds (a1:as) (b0:b1:bs) =
                 !cn = cn_1 + delcn
             in if (cn == cn_1) || is_nan cn then cn else (recur cn delcn dn as bs)
 \end{code}
+\end{titled-frame}
 
+\subsubsection{Modified Lentz algorithm}
+An alternative algorithm for evaluating a continued fraction in a forward directions.
+This algorithm can be less susceptible to contamination from rounding errors.
+TODO: describe algorithm
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_cf\_lentz}$}
+\begin{code}
+sf_cf_lentz :: (Value v) => [v] -> [v] -> v
+sf_cf_lentz as (b0:bs) =
+  let !c0 = nz b0
+      !e0 = c0
+      !d0 = 0
+  in iter c0 d0 e0 as bs
+  where
+    !zeta = 1e-100
+    nz !x = if x==0 then zeta else x
+    iter cn dn en (an:as) (bn:bs) = 
+      let !idn = nz $ bn + an*dn
+          !en' = nz $ bn + an/en
+          !dn' = 1 / idn
+          !hn  = en' * dn'
+          !cn' = cn * hn
+          !delta = rabs(hn - 1)
+      in if cn==cn' || delta<5e-16
+         then cn
+         else iter cn' dn' en' as bs
+\end{code}
+\end{titled-frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Solving ODEs}
 
 \subsubsection{Runge-Kutta IV}
@@ -211,7 +277,7 @@ and then
   t_{i+1} &=& t_i + h \\
   {\bf y}_{i+1} &=& {\bf y}_{i} + \frac16({\bf k}_1 + 2{\bf k}_2 + 2{\bf k}_3 + {\bf k}_4)
 \end{eqnarray*}
-\begin{titled-frame}{\color{blue}\tt sf\_runge\_kutta\_4}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_runge\_kutta\_4}$}
 \begin{code}
 sf_runge_kutta_4 :: forall v.(Value v) =>
     (RealKind v) -> (RealKind v) -> (RealKind v) -> [v] -> ((RealKind v)->[v]->[v]) -> [(RealKind v,[v])]
@@ -234,6 +300,7 @@ sf_runge_kutta_4 !h !t0 !tn !x0 !f = iter t0 x0 [(t0,x0)]
 \end{code}
 \end{titled-frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{TO BE MOVED}
 \begin{code}
 sf_sqrt :: (Value v) => v -> v

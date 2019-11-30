@@ -199,7 +199,7 @@ A simple continued fraction implementation for $\ln 1+z$
 \[\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ \cdots)))))))\]
 Though unused for now, it seems to have decent convergence properties.
 \begin{code}
-ln_1_z_cf z = steeds (z:(ts 1)) [0..]
+ln_1_z_cf z = sf_cf_steeds (z:(ts 1)) [0..]
   where ts n = (n^2*z):(n^2*z):(ts (n+1))
 \end{code}
 
