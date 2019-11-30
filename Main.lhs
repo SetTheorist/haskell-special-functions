@@ -56,6 +56,7 @@
 \DeclareMathOperator{\erfc}{erfc}
 \DeclareMathOperator{\gud}{gud}
 \DeclareMathOperator{\Li}{Li}
+\DeclareMathOperator{\ph}{ph}
 
 %\def\ii{{\mathbb{i}}}
 \def\ii{{\hat\imath}}
@@ -85,6 +86,9 @@ Special functions.
 
 %\section{Gamma}
 \input{Gamma.lhs}
+
+%\section{IncompleteGamma}
+\input{IncompleteGamma.lhs}
 
 %\section{Erf}
 \input{Erf.lhs}

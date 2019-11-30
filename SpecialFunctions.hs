@@ -8,6 +8,7 @@ module SpecialFunctions
     , module Exp
     , module ExpInt
     , module Gamma
+    , module IncompleteGamma
     , module Lommel
     , module Numbers
     , module Probability
@@ -26,6 +27,7 @@ import Erf
 import Exp
 import ExpInt
 import Gamma
+import IncompleteGamma
 import Lommel
 import Numbers
 import Probability

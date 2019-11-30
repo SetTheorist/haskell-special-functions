@@ -48,7 +48,7 @@ sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 \subsection{Gamma}
 
 The gamma function
-\[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dz}{z} \]
+\[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dt}{t} \]
 
 \subsubsection{\tt sf\_gamma z}
 The gamma function implemented using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
