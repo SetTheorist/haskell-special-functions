@@ -12,6 +12,7 @@ We start with the basic preamble.
 -- {-# Language UndecidableInstances #-}
 module Util where
 import Data.Complex
+import Data.List(zipWith5)
 \end{code}
 
 \subsection{Data Types}
@@ -30,6 +31,7 @@ This will also make it convenient for handling \verb|Quad| values (later).
 class (Eq v, Floating v, Fractional v, Num v,
        Enum (RealKind v), Eq (RealKind v), Floating (RealKind v),
          Fractional (RealKind v), Num (RealKind v), Ord (RealKind v),
+         RealFrac (RealKind v),
        Eq (ComplexKind v), Floating (ComplexKind v), Fractional (ComplexKind v),
          Num (ComplexKind v)
       ) => Value v where
@@ -169,6 +171,8 @@ ksum' terms k = f 0 0 terms
 
 
 \subsection{Continued fraction evaluation}
+
+\subsubsection{Steed's algorithm}
 This is Steed's algorithm for evaluation of a continued fraction
 \[ C = b_0 + a_1/(b_1 + a_2/(b_2 + a_3/(b_3 + \cdots))) \]
 where $C_n=A_n/B_n$ is the partial evaluation up to $\dots a_n/b_n$.
@@ -189,9 +193,51 @@ steeds (a1:as) (b0:b1:bs) =
             in if (cn == cn_1) || is_nan cn then cn else (recur cn delcn dn as bs)
 \end{code}
 
+
+\subsection{Solving ODEs}
+
+\subsubsection{Runge-Kutta IV}
+Solve a system of first-order ODEs using the Runge-Kutta IV method.
+To solve ${\bf y}' = {\bf f}(t,{\bf y})$ from $t=t_0$ to $t=t_n$ with initial condition ${\bf y}(t_0)={\bf y}_0$,
+first choose a step-size $h>0$.  Then iteratively proceed by letting
+\begin{eqnarray*}
+  {\bf k}_1 &=& h {\bf f}(t_i, {\bf y}_i) \\
+  {\bf k}_2 &=& h {\bf f}(t_i+\frac{h}{2}, {\bf y}_i+\frac{1}{2}{\bf k}_1) \\
+  {\bf k}_3 &=& h {\bf f}(t_i+\frac{h}{2}, {\bf y}_i+\frac{1}{2}{\bf k}_2) \\
+  {\bf k}_4 &=& h {\bf f}(t_i+h, {\bf y}_i+{\bf k}_3)
+\end{eqnarray*}
+and then
+\begin{eqnarray*}
+  t_{i+1} &=& t_i + h \\
+  {\bf y}_{i+1} &=& {\bf y}_{i} + \frac16({\bf k}_1 + 2{\bf k}_2 + 2{\bf k}_3 + {\bf k}_4)
+\end{eqnarray*}
+\begin{titled-frame}{\color{blue}\tt sf\_runge\_kutta\_4}
+\begin{code}
+sf_runge_kutta_4 :: forall v.(Value v) =>
+    (RealKind v) -> (RealKind v) -> (RealKind v) -> [v] -> ((RealKind v)->[v]->[v]) -> [(RealKind v,[v])]
+sf_runge_kutta_4 !h !t0 !tn !x0 !f = iter t0 x0 [(t0,x0)]
+  where
+    iter :: (RealKind v) -> [v] -> [(RealKind v,[v])] -> [(RealKind v,[v])]
+    iter !ti !xi !path
+      | ti>=tn    = path
+      | otherwise =
+          let !h' = (min h (tn-ti))
+              !h'2 = h'/2
+              !h'' = fromReal h'
+              !k1 = fmap (h''*) (f ti xi)
+              !k2 = fmap (h''*) (f (ti+h'2) (zipWith (\x k->x+k/2) xi k1))
+              !k3 = fmap (h''*) (f (ti+h'2) (zipWith (\x k->x+k/2) xi k2))
+              !k4 = fmap (h''*) (f (ti+h' ) (zipWith (\x k->x+k  ) xi k3))
+              !ti1 = ti + h'
+              !xi1 = zipWith5 (\x k1 k2 k3 k4 -> x + (k1+2*k2+2*k3+k4)/6) xi k1 k2 k3 k4
+          in iter ti1 xi1 ((ti1,xi1):path)
+\end{code}
+\end{titled-frame}
+
 \subsection{TO BE MOVED}
 \begin{code}
 sf_sqrt :: (Value v) => v -> v
 sf_sqrt = sqrt
 \end{code}
+
 

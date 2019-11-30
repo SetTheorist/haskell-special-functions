@@ -6,7 +6,8 @@ import Util
 -- cos(x)
 -- TODO: range reduce
 sf_cos :: (Value v) => v -> v
-sf_cos x = ksum $ ixiter 0 1 $ \n t -> -t*x^2/((#)$2*n+1)/((#)$2*n+2)
+--sf_cos x = ksum $ ixiter 0 1 $ \n t -> -t*x^2/((#)$2*n+1)/((#)$2*n+2)
+sf_cos = cos
 
 sf_acos :: (Value v) => v -> v
 sf_acos = acos
@@ -23,7 +24,8 @@ sf_hvcos x = (sf_cos $ x/2)^2
 -- sin(x)
 -- TODO: range reduce
 sf_sin :: (Value v) => v -> v
-sf_sin x = ksum $ ixiter 1 x $ \n t -> -t*x^2/((#)$2*n)/((#)$2*n+1)
+--sf_sin x = ksum $ ixiter 1 x $ \n t -> -t*x^2/((#)$2*n)/((#)$2*n+1)
+sf_sin = sin
 
 sf_asin :: (Value v) => v -> v
 sf_asin = asin
