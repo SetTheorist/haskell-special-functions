@@ -35,8 +35,8 @@ The incomplete gamma function implemented via
 \begin{code}
 sf_incomplete_gamma :: (Value v) => v -> v -> v
 sf_incomplete_gamma a z 
-  | (rabs z)>(rabs a) && (re z)>5 = incgam__asympt_z a z
-  | (rabs z)>(rabs a)             = incgam__contfrac a z
+  | (rabs z)>(rabs a) && (re z)<5 = incgam__contfrac a z
+  | (rabs z)>(rabs a)             = incgam__asympt_z a z
   | otherwise = (sf_gamma a) - (incgamco__series a z)
 \end{code}
 \end{titled-frame}
@@ -84,10 +84,14 @@ incgam__asympt_z !a !z =
 
 \subsubsection{\tt sf\_incomplete\_gamma\_co a z}
 The complementary incomplete Gamma function implemented via
+TODO: this is just a quick hack implementation!
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_incomplete\_gamma\_co a z} = \gamma(a,z)$}
 \begin{code}
 sf_incomplete_gamma_co :: (Value v) => v -> v -> v
-sf_incomplete_gamma_co a z = undefined
+sf_incomplete_gamma_co a z
+  | (rabs z)>(rabs a) && (re z)<5 = (sf_gamma a) - (incgam__contfrac a z)
+  | (rabs z)>(rabs a)             = (sf_gamma a) - (incgam__asympt_z a z)
+  | otherwise = (incgamco__series a z)
 \end{code}
 \end{titled-frame}
 
