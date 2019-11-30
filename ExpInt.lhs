@@ -3,6 +3,7 @@
 \subsection{Preamble}
 \begin{titled-frame}{\color{blue}\tt module ExpInt}
 \begin{code}
+{-# Language BangPatterns #-}
 module ExpInt(sf_expint_ei, sf_expint_en)
 where
 import Exp
@@ -61,8 +62,8 @@ expint_ei__asymp z =
 \end{titled-frame}
 
 \subsection{Exponential integral $E_n$}
-The exponential integrals $E_n(z)$ are defined as
-\[ E_n(z) = z^{n-1}\int_{z}^\infty \frac{e^{-t}}{t^n}\,dt \]
+The exponential integrals $E_n(z)$ are defined for $n=0,1,\dots$ and $\Re z>0$ via
+\[ E_n(z) = z^{n-1}\int_{z}^\infty \frac{e^{-t}}{t^n}\,dt \marginnote{E_n(z)}\]
 They satisfy the following relations:
 \begin{eqnarray*}
 E_0(z) &=& \frac{e^{-z}}{z} \\
@@ -73,7 +74,10 @@ And they can be expressed in terms of incomplete gamma functions:
 (which also gives a generalization for non-integer $n$).
 
 \subsubsection{\tt sf\_expint\_en n z}
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_expint\_en n z} = E_n(z)$\marginnote{\tt sf\_expint\_en}}
+We evaluate the exponential integrals $E_n(z)$ by handling the special cases
+$n=0,1$ directly, otherwise use a series expansion for $|z|\leq1$
+and a continued fraction expansion otherwise.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_expint\_en n z} = E_n(z)$}
 \begin{code}
 sf_expint_en :: (Value v) => Int -> v -> v
 sf_expint_en n z | (re z)<0 = (0/0) -- (NaN) TODO: confirm this
@@ -81,7 +85,7 @@ sf_expint_en n z | (re z)<0 = (0/0) -- (NaN) TODO: confirm this
 sf_expint_en 0 z = sf_exp(-z) / z
 sf_expint_en 1 z = expint_en__1 z
 sf_expint_en n z | (rabs z) <= 1.0 = expint_en__series n z
-                 | otherwise = expint_en__contfrac n z
+                 | otherwise       = expint_en__contfrac n z
 \end{code}
 \end{titled-frame}
 
@@ -97,6 +101,8 @@ expint_en__1 z =
   in ksum (r0:terms)
 \end{code}
 
+The series expansion for the exponential integral
+\[ E_n(z) = \frac{(-z)^{n-1}}{(n-1)!}(-\ln(z) + \psi(n)) - \sum_{m=0,m\neq n}^\infty \frac{(-x)^m}{(m-(n-1))m!} \]
 \begin{code}
 -- assume n>=2, z<=1
 expint_en__series :: (Value v) => Int -> v -> v
@@ -106,30 +112,16 @@ expint_en__series n z =
       terms' = ixiter 2 (-z) (\m t -> -t*z/(#)m)
       terms = map (\(m,t)->(-t)/(#)(m-(n-1))) $ filter ((/=(n-1)) . fst) $ zip [1..] terms'
   in ksum (res:terms)
+\end{code}
 
--- assume n>=2, z>1
--- modified Lentz algorithm
+The continued fraction expansion for the exponential integral, valid for $z>1$, $n\geq2$.
+(TODO: verify for which complex values is this valid?)
+\[ e^{-x} \left( \frac{1}{x+n-{}}\ \frac{1\cdot n}{x+(n+2)-{}}\ \frac{2\cdot(n+1)}{x+(n+4)- \cdots} \right) \]
+\begin{code}
 expint_en__contfrac :: (Value v) => Int -> v -> v
-expint_en__contfrac n z =
-  let fj = zeta
-      cj = fj
-      dj = 0
-      j = 1
-      n' = (#)n
-  in lentz j cj dj fj
-  where
-    zeta = 1e-100
-    eps = 5e-16
-    nz x = if x==0 then zeta else x
-    lentz j cj dj fj =
-      let aj = (#) $ if j==1 then 1 else -(j-1)*(n+j-2)
-          bj = z + (#)(n + 2*(j-1))
-          dj' = nz $ bj + aj*dj
-          cj' = nz $ bj + aj/cj
-          dji = 1/dj'
-          delta = cj'*dji
-          fj' = fj*delta
-      in if (rabs$delta-1)<eps
-         then fj' * sf_exp(-z)
-         else lentz (j+1) cj' dji fj'
+expint_en__contfrac !n !z =
+  let !n' = (#)n
+      !an = 1:[-(1+k) * (n'+k) | k'<-[0..], let k=(#)k']
+      !bn = 0:[z + n'+2*k | k'<-[0..], let k=(#)k']
+  in (sf_exp(-z))*(sf_cf_lentz an bn)
 \end{code}
