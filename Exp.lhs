@@ -9,7 +9,6 @@ We begin with a typical preamble.
 \begin{titled-frame}{\color{blue}\tt module Exp}
 \begin{code}
 {-# Language BangPatterns #-}
--- {-# Language FlexibleInstances #-}
 {-# Language ScopedTypeVariables #-}
 module Exp (
     sf_exp, sf_expn, sf_exp_m1, sf_exp_m1vx, sf_exp_men, sf_exp_menx,
@@ -67,6 +66,7 @@ TODO: should do range-reduction first...
 TODO: maybe for complex, use explicit cis?
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1 x} = e^x-1$}
 \begin{code}
+{-# SPECIALISE sf_exp_m1 :: Double -> Double #-}
 sf_exp_m1 :: (Value v) => v -> v
 sf_exp_m1 !x
   | is_inf x  = if (re x)<0 then -1 else pos_infty
@@ -87,6 +87,7 @@ In this case, we use a continued-fraction expansion
 For complex values, simple calculation is inaccurate (when $\Re z\sim 1$).
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_m1vx x} = \frac{e^x-1}{x}$}
 \begin{code}
+{-# SPECIALISE sf_exp_m1vx :: Double -> Double #-}
 sf_exp_m1vx :: (Value v) => v -> v
 sf_exp_m1vx !x
   | is_inf x = if (re x)<0 then 0 else pos_infty
@@ -118,6 +119,7 @@ We use a continued fraction expansion
 which is evaluated with the modified Lentz algorithm.
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_exp\_menx n z} = exd_n(x)$}
 \begin{code}
+{-# SPECIALISE sf_exp_menx :: Int -> Double -> Double #-}
 sf_exp_menx :: (Value v) => Int -> v -> v
 sf_exp_menx 0 z = sf_exp z
 sf_exp_menx 1 z = sf_exp_m1vx z
@@ -193,9 +195,9 @@ sf_log_p1 !z
   where
     ser z =
       let !r = z/(z+2)
-          !zr2 = r^2
-          !tterms = iterate (*zr2) (r*zr2)
-          !terms = zipWith (\n t -> t/((#)$2*n+1)) [1..] tterms
+          !r2 = r^2
+          !zterms = iterate (*r2) (r*r2)
+          !terms = zipWith (\n t -> t/((#)$2*n+1)) [1..] zterms
       in 2*(ksum (r:terms))
 \end{code}
 \end{titled-frame}
@@ -203,8 +205,11 @@ sf_log_p1 !z
 A simple continued fraction implementation for $\ln 1+z$
 \[\ln(1+z) = z/(1+ z/(2+ z/(3+ 4z/(4+ 4z/(5+ 9z/(6+ 9z/(7+ \cdots)))))))\]
 Though unused for now, it seems to have decent convergence properties.
+Steeds may give better results that modified Lentz here.
 \begin{code}
-ln_1_z_cf z = sf_cf_steeds (z:(ts 1)) [0..]
+ln_1_z_cf z = sf_cf_steeds (z:(ts 1)) (map (#) [0..])
+  where ts n = (n^2*z):(n^2*z):(ts (n+1))
+ln_1_z_cf' z = sf_cf_lentz (z:(ts 1)) (map (#) [0..])
   where ts n = (n^2*z):(n^2*z):(ts (n+1))
 \end{code}
 

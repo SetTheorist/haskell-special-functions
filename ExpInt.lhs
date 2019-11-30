@@ -1,17 +1,18 @@
 \section{Exponential Integral}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Preamble}
 \begin{titled-frame}{\color{blue}\tt module ExpInt}
 \begin{code}
 {-# Language BangPatterns #-}
-module ExpInt(sf_expint_ei, sf_expint_en)
-where
+module ExpInt(sf_expint_ei, sf_expint_en) where
 import Exp
 import Gamma
 import Util
 \end{code}
 \end{titled-frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Exponential integral $\Ei$}
 The exponential integral $\Ei z$ is defined for $x<0$ by
 \[ \Ei(z) = -\int_{-x}^\infty \frac{e^{-t}}{t}\,dt \]
@@ -24,18 +25,18 @@ We use a series expansion for $|z|<40$ and an asymptotic expansion otherwise.
 \begin{code}
 sf_expint_ei :: (Value v) => v -> v
 sf_expint_ei z
-  | (re z) < 0.0  = (0/0)  -- (NaN)
-  | z == 0.0      = (-1/0) -- (-Inf)
+  | (re z) < 0.0  = nan
+  | z == 0.0      = neg_infty
   | (rabs z) < 40 = expint_ei__series z
   | otherwise     = expint_ei__asymp z
 \end{code}
 \end{titled-frame}
 
 The series expansion is given (for $x>0$)
-\[ \Ei(x) = \gamma + \ln x + \sum_{n=1}^\infty \frac{x^n}{n! n} \]
+\[ \Ei(x) = \gamma + \ln x + \sum_{n=1}^\infty \frac{x^n}{n! n} \marginnote{$\Ei(x)$} \]
 We evaluate the addition of the two terms with the sum slightly differently
 when $\Re z<1/2$ to reduce floating-point cancellation error slightly.
-\begin{titled-frame}{{\color{blue}\tt expint\_ei\_\_series z}\marginnote{\tt expint\_ei\_\_series}}
+\begin{titled-frame}{{\color{blue}\tt expint\_ei\_\_series z}}
 \begin{code}
 expint_ei__series :: (Value v) => v -> v
 expint_ei__series z =
@@ -50,7 +51,7 @@ expint_ei__series z =
 
 The asymptotic expansion as $x\to+\infty$ is
 \[ \Ei(x) \sim \frac{e^x}{x}\sum_{n=0}^\infty \frac{n!}{x^n} \]
-\begin{titled-frame}{{\color{blue}\tt expint\_ei\_\_asymp z}\marginnote{\tt expint\_ei\_\_asymp}}
+\begin{titled-frame}{{\color{blue}\tt expint\_ei\_\_asymp z}}
 \begin{code}
 expint_ei__asymp :: (Value v) => v -> v
 expint_ei__asymp z =
@@ -61,9 +62,10 @@ expint_ei__asymp z =
 \end{code}
 \end{titled-frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Exponential integral $E_n$}
 The exponential integrals $E_n(z)$ are defined for $n=0,1,\dots$ and $\Re z>0$ via
-\[ E_n(z) = z^{n-1}\int_{z}^\infty \frac{e^{-t}}{t^n}\,dt \marginnote{E_n(z)}\]
+\[ E_n(z) = z^{n-1}\int_{z}^\infty \frac{e^{-t}}{t^n}\,dt \marginnote{$E_n(z)$} \]
 They satisfy the following relations:
 \begin{eqnarray*}
 E_0(z) &=& \frac{e^{-z}}{z} \\
@@ -80,7 +82,7 @@ and a continued fraction expansion otherwise.
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_expint\_en n z} = E_n(z)$}
 \begin{code}
 sf_expint_en :: (Value v) => Int -> v -> v
-sf_expint_en n z | (re z)<0 = (0/0) -- (NaN) TODO: confirm this
+sf_expint_en n z | (re z)<0 = nan -- TODO: confirm this
                  | z == 0   = (1/(#)(n-1)) -- TODO: confirm this
 sf_expint_en 0 z = sf_exp(-z) / z
 sf_expint_en 1 z = expint_en__1 z
@@ -91,18 +93,19 @@ sf_expint_en n z | (rabs z) <= 1.0 = expint_en__series n z
 
 We use this series expansion for $E_1(z)$:
 \[ E_1(z) = -\gamma - \ln z + \sum_{k=1}^\infty(-)^k\frac{z^k}{k! k}\]
-(Note that this will not be good for large values of $z$.)
+(Note that this will not be good for large positive values of $z$ due to cancellation.)
 \begin{code}
 expint_en__1 :: (Value v) => v -> v
 expint_en__1 z =
   let r0 = -euler_gamma - (sf_log z)
-      tterms = ixiter 2 (z) $ \k t -> -t*z/(#)k
-      terms = zipWith (\ t k -> t/(#)k) tterms [1..]
+      tterms = ixiter 2 z $ \k t -> -t*z/(#)k
+      terms = zipWith (\t k -> t/(#)k) tterms [1..]
   in ksum (r0:terms)
 \end{code}
 
 The series expansion for the exponential integral
 \[ E_n(z) = \frac{(-z)^{n-1}}{(n-1)!}(-\ln(z) + \psi(n)) - \sum_{m=0,m\neq n}^\infty \frac{(-x)^m}{(m-(n-1))m!} \]
+for $n\geq2$, $z\leq1$
 \begin{code}
 -- assume n>=2, z<=1
 expint_en__series :: (Value v) => Int -> v -> v
@@ -122,6 +125,6 @@ expint_en__contfrac :: (Value v) => Int -> v -> v
 expint_en__contfrac !n !z =
   let !n' = (#)n
       !an = 1:[-(1+k) * (n'+k) | k'<-[0..], let k=(#)k']
-      !bn = 0:[z + n'+2*k | k'<-[0..], let k=(#)k']
+      !bn = 0:[z + n' + 2*k    | k'<-[0..], let k=(#)k']
   in (sf_exp(-z))*(sf_cf_lentz an bn)
 \end{code}

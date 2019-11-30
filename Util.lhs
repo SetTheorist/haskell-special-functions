@@ -225,11 +225,15 @@ sf_cf_steeds (a1:as) (b0:b1:bs) =
         !delc1 = a1*d1
         !c1 = c0 + delc1
     in recur c1 delc1 d1 as bs
-    where recur !cn_1 !delcn_1 !dn_1 !(an:as) !(bn:bs) = 
-            let !dn = 1/(dn_1*an+bn)
-                !delcn = (bn*dn - 1)*delcn_1
-                !cn = cn_1 + delcn
-            in if (cn == cn_1) || is_nan cn then cn else (recur cn delcn dn as bs)
+    where
+      !eps = 5e-16
+      recur !cn' !delcn' !dn' !(an:as) !(bn:bs) = 
+        let !dn = 1/(dn'*an+bn)
+            !delcn = (bn*dn - 1)*delcn'
+            !cn = cn' + delcn
+        in if cn == cn' || (rabs delcn)<eps || is_nan cn
+           then cn
+           else (recur cn delcn dn as bs)
 \end{code}
 \end{titled-frame}
 
@@ -246,6 +250,7 @@ sf_cf_lentz as (b0:bs) =
       !d0 = 0
   in iter c0 d0 e0 as bs
   where
+    !eps = 5e-16
     !zeta = 1e-100
     nz !x = if x==0 then zeta else x
     iter cn dn en (an:as) (bn:bs) = 
@@ -255,7 +260,7 @@ sf_cf_lentz as (b0:bs) =
           !hn  = en' * dn'
           !cn' = cn * hn
           !delta = rabs(hn - 1)
-      in if cn==cn' || delta<5e-16
+      in if cn==cn' || delta<eps || is_nan cn'
          then cn
          else iter cn' dn' en' as bs
 \end{code}
@@ -282,20 +287,21 @@ and then
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_runge\_kutta\_4}$}
 \begin{code}
 sf_runge_kutta_4 :: forall v.(Value v) =>
-    (RealKind v) -> (RealKind v) -> (RealKind v) -> [v] -> ((RealKind v)->[v]->[v]) -> [(RealKind v,[v])]
+    (RealKind v) -> (RealKind v) -> (RealKind v) -> [v] -> ((RealKind v)->[v]->[v])
+      -> [(RealKind v,[v])]
 sf_runge_kutta_4 !h !t0 !tn !x0 !f = iter t0 x0 [(t0,x0)]
   where
     iter :: (RealKind v) -> [v] -> [(RealKind v,[v])] -> [(RealKind v,[v])]
     iter !ti !xi !path
       | ti>=tn    = path
       | otherwise =
-          let !h' = (min h (tn-ti))
+          let !h'  = (min h (tn-ti))
               !h'2 = h'/2
               !h'' = fromReal h'
-              !k1 = fmap (h''*) (f ti xi)
-              !k2 = fmap (h''*) (f (ti+h'2) (zipWith (\x k->x+k/2) xi k1))
-              !k3 = fmap (h''*) (f (ti+h'2) (zipWith (\x k->x+k/2) xi k2))
-              !k4 = fmap (h''*) (f (ti+h' ) (zipWith (\x k->x+k  ) xi k3))
+              !k1  = fmap (h''*) (f ti xi)
+              !k2  = fmap (h''*) (f (ti+h'2) (zipWith (\x k->x+k/2) xi k1))
+              !k3  = fmap (h''*) (f (ti+h'2) (zipWith (\x k->x+k/2) xi k2))
+              !k4  = fmap (h''*) (f (ti+h' ) (zipWith (\x k->x+k  ) xi k3))
               !ti1 = ti + h'
               !xi1 = zipWith5 (\x k1 k2 k3 k4 -> x + (k1+2*k2+2*k3+k4)/6) xi k1 k2 k3 k4
           in iter ti1 xi1 ((ti1,xi1):path)

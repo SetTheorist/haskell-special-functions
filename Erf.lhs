@@ -70,7 +70,7 @@ erf__series z =
   let z2 = z^2
       rts = ixiter 1 z $ \n t -> (-t)*z2/(#)n
       terms = zipWith (\n t -> t/(#)(2*n+1)) [0..] rts
-  in (2/sf_sqrt pi)  * ksum terms
+  in (2/sf_sqrt pi) * (ksum terms)
 \end{code}
 
 \subsubsection*{*\tt sf\_erf z}
@@ -144,20 +144,6 @@ faddeeva__asymp z =
       terms = ixiter 1 z' $ \n t -> t*z'^2*((#)(2*n+1))/2
       smm = ksum terms
   in smm
-{--
-function res = seres(x)
-  res = term = x;
-  n = 1;
-  do
-    term *= x^2 / n;
-    old_res = res;
-    res += term / (2*n+1);
-    ++n; if (n>999) break; endif
-  until (res == old_res)
-  res *= sf_exp(-x^2);
-endfunction
---}
-
 
 dawson__contfrac :: (Value v) => v -> v
 dawson__contfrac z = undefined
@@ -165,83 +151,4 @@ dawson__contfrac z = undefined
 dawson__contfrac2 :: (Value v) => v -> v
 dawson__contfrac2 z = undefined
 
-{--
-function res = contfrac(x)
-  eps = 1e-16;
-  zeta = 1e-100;
-
-  fj = 1;
-  Cj = fj;
-  Dj = 0;
-  j = 1;
-  do
-    aj = (-1)^(rem(j,2)+1)*2*j*x^2;
-    bj = 2*j+1;
-    Dj = bj + aj*Dj; if (Dj==0) Dj=zeta; endif
-    Cj = bj + aj/Cj; if (Cj==0) Cj=zeta; endif
-    Dj = 1/Dj;
-    Deltaj = Cj*Dj;
-    fj *= Deltaj;
-    ++j; if (j>999) break; endif
-  until (abs(Deltaj-1)<eps)
-  res = x/fj;
-endfunction
-
-function res = contfrac2(x)
-  eps = 1e-16;
-  zeta = 1e-100;
-
-  fj = 1+2*x^2;
-  Cj = fj;
-  Dj = 0;
-  j = 1;
-  do
-    aj = -4*j*x^2;
-    bj = (2*j+1) + 2*x^2;
-    Dj = bj + aj*Dj; if (Dj==0) Dj=zeta; endif
-    Cj = bj + aj/Cj; if (Cj==0) Cj=zeta; endif
-    Dj = 1/Dj;
-    Deltaj = Cj*Dj;
-    fj *= Deltaj;
-    ++j; if (j>999) break; endif
-  until (abs(Deltaj-1)<eps)
-  res = x/fj;
-endfunction
-
-# from NR
-# BUGGY
-function res = rybicki(x)
-  h = 2.0;
-  n = 1;
-  res = 0;
-  do
-    old_res = res;
-    res += ( sf_exp(-(x-n*h)^2) - sf_exp(-(x+n*h)^2) )/n;
-    n+=2; if (n>999) break; endif
-  until (res == old_res)
-  res /= sqrt(pi);
-endfunction
-
-function res = besser2(x)
-  res = 0;
-  n = 1;
-  do
-    old_res = res;
-    res += (2*n+1)*sf_bessel_spher_i1(n, x^2) + (2*n+3)*sf_bessel_spher_i1(n+1, x^2);
-    n +=4 ; if (n>999) break; endif
-  until (res == old_res)
-  res *= sf_exp(-x^2) / x;
-endfunction
-
-function res = besser(x)
-  res = 0;
-  n = 0;
-  do
-    old_res = res;
-    res += (-1)^(rem(n,2)) * (sf_bessel_spher_i1(2*n, x^2) + sf_bessel_spher_i1(2*n+1, x^2));
-    ++n; if (n>999) break; endif
-  until (res == old_res)
-  res *= x * sf_exp(-x^2);
-endfunction
---}
 \end{code}
