@@ -7,8 +7,9 @@ A basic preamble.
 \begin{code}
 {-# Language BangPatterns #-}
 module IncompleteGamma (
-    )
-where
+  sf_incomplete_gamma,
+  sf_incomplete_gamma_co
+) where
 import Exp
 import Gamma
 import Numbers(factorial)
@@ -30,7 +31,9 @@ via
 where we clearly have $\Gamma(a,z) + \gamma(a,z) = \Gamma(a)$.
 
 \subsubsection{\tt sf\_incomplete\_gamma a z}
-The incomplete gamma function implemented via
+The incomplete gamma function implemented via ...
+Seems to work okay for $z>0$, not great for complex values.
+Untested for $z<0$.
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_incomplete\_gamma a z} = \Gamma(a,z)$}
 \begin{code}
 sf_incomplete_gamma :: (Value v) => v -> v -> v
@@ -97,7 +100,7 @@ sf_incomplete_gamma_co a z
 
 A series expansion for the complementary incomplete Gamma function
 where $a\neq0,-1,-2,\dots$
-\[ \gamma(a,z) = e^{-x}\sum_{k=0}^\infty \frac{x^{a+k}}{(a)_{k+1}) \]
+\[ \gamma(a,z) = e^{-x}\sum_{k=0}^\infty \frac{x^{a+k}}{(a)_{k+1}} \]
 This should converge well for $a\geq z$.
 \begin{code}
 incgamco__series a z =
