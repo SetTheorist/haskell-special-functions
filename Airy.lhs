@@ -29,7 +29,7 @@ or
 For now, we use an asymptotic expansion for large values and a series for smaller values.
 This gives reasonable results for small-enough or large-enough values, but it has
 low accuracy for intermediate values, ({\it e.g.\@} $z=5$).
-(Seems quite bad for complex values)
+(TODO: Seems quite bad for complex values)
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_airy\_ai z} = \Ai(z)$}
 \begin{code}
 sf_airy_ai :: (Value v) => v -> v
@@ -109,11 +109,17 @@ airy_ai__asympt_neg z' =
 \subsection{Bi}
 
 \subsubsection{\tt sf\_airy\_bi z}
-For now, just use a simple series expansion.
+For now, we use an asymptotic expansion for large values and a series for smaller values.
+This gives reasonable results for small-enough or large-enough values, but it has
+low accuracy for intermediate values, ({\it e.g.\@} $z=5$).
+(TODO: Seems quite bad for complex values)
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_airy\_bi z} = \Bi(z)$}
 \begin{code}
 sf_airy_bi :: (Value v) => v -> v
-sf_airy_bi !z = airy_bi__series z
+sf_airy_bi !z
+  | (rabs z)>=9 && (re z)>=0 = airy_bi__asympt_pos z
+  | (rabs z)>=9 && (re z)< 0 = airy_bi__asympt_neg z
+  | otherwise                = airy_bi__series z
 \end{code}
 \end{titled-frame}
 
@@ -125,7 +131,6 @@ Initial conditions
 \begin{code}
 bi0 :: (Value v) => v
 bi0 = 3**(-1/6)/sf_gamma(2/3)
-
 bi'0 :: (Value v) => v
 bi'0 = 3**(1/6)/sf_gamma(1/3)
 \end{code}
@@ -139,6 +144,43 @@ airy_bi__series z =
         !biterms  = ixiter 0 1 $ \n t -> t*z3*((#)$3*n+1)/((#)$(3*n+1)*(3*n+2)*(3*n+3))
         !bi'terms = ixiter 0 z $ \n t -> t*z3*((#)$3*n+2)/((#)$(3*n+2)*(3*n+3)*(3*n+4))
     in bi0 * (ksum biterms) + bi'0 * (ksum bi'terms)
+\end{code}
+
+The asymptotic expansion for $\Bi(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
+\[ \Bi(z) \sim \frac{e^{\zeta}}{\sqrt{\pi} z^{1/4}}\sum_{k=0}^\infty \frac{u_k}{\zeta^k} \]
+where $\zeta=(2/3)z^{3/2}$ and where (with $u_0=1$)
+\[ u_{k} = \frac{(2k+1)(2k+3)\cdots(6k-1)}{216^k k!} = \frac{(6k-5)(6k-3)(6k-1)}{(2k-1)216 k} u_{k-1} \]
+\begin{code}
+airy_bi__asympt_pos :: (Value v) => v -> v
+airy_bi__asympt_pos z =
+  let !zeta = z**(3/2)*2/3
+      !uk = ixiter 1 1 $ \ k u -> let k'=(#)k in u*(6*k'-5)*(6*k'-3)*(6*k'-1)/(2*k'-1)/216/k'
+      !zn = iterate (/zeta) 1
+      !tterms = zipWith (*) uk zn
+      !terms = tk tterms
+  in (sf_exp(zeta))/((sf_sqrt pi)*(z**(1/4))) * (ksum terms)
+  where tk !(a:b:c:ts) = if (rabs b)<(rabs c) then [a] else a:(tk$b:c:ts)
+\end{code}
+
+We also have the asymptotic expansion
+\[ \Bi(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
+    \cos(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k}}{\zeta^{2k}}
+   + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k=1}}{\zeta^{2k+1}}
+  \right) \]
+\begin{code}
+airy_bi__asympt_neg :: (Value v) => v -> v
+airy_bi__asympt_neg z' =
+  let !z = -z'
+      !zeta = z**(3/2)*2/3
+      !zp4 = zeta - pi/4
+      !uk = ixiter 1 1 $ \ k u -> let k'=(#)k in u*(6*k'-5)*(6*k'-3)*(6*k'-1)/(2*k'-1)/216/k'
+      !uke = evel uk
+      !uko = evel (tail uk)
+      !eterms = tk $ zipWith (*) uke (iterate (/(-zeta^2)) 1)
+      !oterms = tk $ zipWith (*) uko (iterate (/(-zeta^2)) (1/zeta))
+  in (-(sf_sin zp4)*(ksum eterms) + (sf_cos zp4)*(ksum oterms))/((sf_sqrt pi)*z**(1/4))
+  where tk (a:b:c:ts) = if (rabs b)<(rabs c) then [a] else a:(tk$b:c:ts)
+        evel (a:b:cs) = a:(evel cs)
 \end{code}
 
 
