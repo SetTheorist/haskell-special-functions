@@ -1,6 +1,6 @@
-\section{Riemann zeta function}
+\chapter{Riemann zeta function}
 
-\subsection{Preamble}
+\section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Zeta}
 \begin{code}
 {-# Language BangPatterns #-}
@@ -11,12 +11,12 @@ import Util
 \end{code}
 \end{titled-frame}
 
-\subsection{Zeta}
+\section{Zeta}
 The Riemann zeta function is defined by power series for $\Re z>1$
 \[ \zeta(z) = \sum_{n=1}^\infty n^{-z} \]
 and defined by analytic continuation elsewhere.
 
-\subsubsection{\tt sf\_zeta z}
+\subsection{\tt sf\_zeta z}
 Compute the Riemann zeta function $\verb|sf_zeta z| = \zeta(z)$ where
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_zeta z} = \zeta(z)$}
 \begin{code}
@@ -28,7 +28,7 @@ sf_zeta z
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_zeta\_m1 z}
+\subsection{\tt sf\_zeta\_m1 z}
 For numerical purposes, it is useful to have $\verb|sf_zeta_m1 z| = \zeta(z)-1$.
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_zeta\_m1 z} = \zeta(z)-1$}
 \begin{code}
@@ -40,7 +40,7 @@ sf_zeta_m1 z
 \end{code}
 \end{titled-frame}
 
-\subsubsection*{*\tt zeta\_series i z}
+\subsubsection{\tt zeta\_series i z}
 We use the simple series expansion for $\zeta(z)$ with an
 Euler-Maclaurin correction:
 \[ \zeta(z) = \sum_{n=1}^{N}\frac{1}{n^z} + \sum_{k=1}^{p}\cdots \]

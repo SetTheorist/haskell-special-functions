@@ -1,7 +1,7 @@
-\section{Utility}
+\chapter{Utility}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Preamble}
+\section{Preamble}
 We start with the basic preamble.
 \begin{titled-frame}{\color{blue}\tt module Util}
 \begin{code}
@@ -19,7 +19,7 @@ import Data.List(zipWith5)
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Data Types}
+\section{Data Types}
 
 We start by defining a convenient type synonym for complex numbers over \verb|Double|.
 \begin{code}
@@ -100,7 +100,7 @@ TODO: add quad versions also
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Helper functions}
+\section{Helper functions}
 
 A convenient shortcut, as we often find ourselves converting
 indices (or other integral values) to our computation type.
@@ -129,7 +129,7 @@ relerr !exact !approx = re $! logBase 10 (abs ((approx-exact)/exact))
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Kahan summation}
+\section{Kahan summation}
 
 A useful tool is so-called Kahan summation, based on the observation that
 in floating-point arithmetic, one can \dots
@@ -177,7 +177,7 @@ ksum' terms k = f 0 0 terms
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Continued fraction evaluation}
+\section{Continued fraction evaluation}
 
 Given two sequences $\{a_n\}_{n=1}^\infty$ and $\{b_n\}_{n=0}^\infty$ we have the continued fraction
 \[ b_0 + \frac{a_1}{b_1 + \frac{a_2}{b_2 + \frac{a_3}{b_3 + \frac{a_4}{b_4 + \cdots}}}} \]
@@ -189,7 +189,7 @@ though for typesetting purposes this is often written
 We conventionally notate the $n$'th approximant or convergent as
 \[ C_n = b_0 + \frac{a_1}{b_1 + {}}\ \frac{a_2}{b_2 + {}}\ \frac{a_3}{b_3 + \dots}\ \frac{a_n}{b_n} \]
 
-\subsubsection{Backwards recurrence algorithm}
+\subsection{Backwards recurrence algorithm}
 
 We can compute the $n$'th convergent $C_n$ for a predetermined $n$ by evaluating
 \[ u_k = b_k + \frac{a_{k+1}}{u_{k+1}} \]
@@ -211,7 +211,7 @@ sf_cf_back !n !as !bs =
 \end{code}
 \end{titled-frame}
 
-\subsubsection{Steed's algorithm}
+\subsection{Steed's algorithm}
 This is Steed's algorithm for evaluation of a continued fraction
 It evaluates the partial convergents $C_n$ in a forward direction.
 This implementation will evaluate until $C_n=C_{n+1}$.
@@ -237,7 +237,7 @@ sf_cf_steeds (a1:as) (b0:b1:bs) =
 \end{code}
 \end{titled-frame}
 
-\subsubsection{Modified Lentz algorithm}
+\subsection{Modified Lentz algorithm}
 An alternative algorithm for evaluating a continued fraction in a forward directions.
 This algorithm can be less susceptible to contamination from rounding errors.
 TODO: describe algorithm
@@ -267,9 +267,9 @@ sf_cf_lentz as (b0:bs) =
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Solving ODEs}
+\section{Solving ODEs}
 
-\subsubsection{Runge-Kutta IV}
+\subsection{Runge-Kutta IV}
 Solve a system of first-order ODEs using the Runge-Kutta IV method.
 To solve ${\bf y}' = {\bf f}(t,{\bf y})$ from $t=t_0$ to $t=t_n$ with initial condition ${\bf y}(t_0)={\bf y}_0$,
 first choose a step-size $h>0$.  Then iteratively proceed by letting
@@ -309,7 +309,7 @@ sf_runge_kutta_4 !h !t0 !tn !x0 !f = iter t0 x0 [(t0,x0)]
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{TO BE MOVED}
+\section{TO BE MOVED}
 \begin{code}
 sf_sqrt :: (Value v) => v -> v
 sf_sqrt = sqrt

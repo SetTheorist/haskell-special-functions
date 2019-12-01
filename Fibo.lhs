@@ -1,4 +1,4 @@
-\section{Fibonacci Numbers}
+\chapter{Fibonacci Numbers}
 
 A silly approach to efficient computation of Fibonacci numbers
 \[ f_n = f_{n-1} + f_{n-2} \qquad f_0=0 \qquad f_1=1 \]

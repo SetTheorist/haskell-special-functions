@@ -1,7 +1,7 @@
-\section{Gamma}
+\chapter{Gamma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Preamble}
+\section{Preamble}
 A basic preamble.
 \begin{titled-frame}{\color{blue}\tt module Gamma}
 \begin{code}
@@ -24,9 +24,9 @@ import Util
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Misc}
+\section{Misc}
 
-\subsubsection{\tt euler\_gamma}
+\subsection{\tt euler\_gamma}
 A constant for Euler's gamma:
 \[ \gamma = \lim_{n\to\infty}\left(\sum_{k=1}^n\frac1n - \ln n\right) \]
 \begin{code}
@@ -34,7 +34,7 @@ euler_gamma :: (Floating a) => a
 euler_gamma = 0.577215664901532860606512090082402431042159335939923598805767234884867726777664670936947063291746749
 \end{code}
 
-\subsubsection{\tt sf\_beta a b}
+\subsection{\tt sf\_beta a b}
 The Beta integral
 \[ B(a,b) = \int_0^1 t^{a-1}(1-t)^{b-1}\,dt = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)} \]
 implemented in terms of log-gamma
@@ -45,62 +45,68 @@ sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Gamma}
+\section{Gamma}
 
 The gamma function
 \[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dt}{t} \]
 
-\subsubsection{\tt sf\_gamma z}
+\subsection{\tt sf\_gamma z}
 The gamma function implemented using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
 to increase the real part of the argument to be $>15$ and then
-using an asymptotic expansion for log-gamma, \verb|lngamma_asymp|, to evaluate.
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_gamma x} = \Gamma(x)$\marginnote{\tt sf\_gamma}}
+using an asymptotic expansion for log-gamma, \verb|lngamma__asymp|, to evaluate.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_gamma x} = \Gamma(x)$}
 \begin{code}
 sf_gamma :: (Value v) => v -> v
 sf_gamma x =
-  redup x 1 $ \ x' t -> t * (sf_exp (lngamma_asymp x'))
+  redup x 1 $ \ x' t -> t * (sf_exp (lngamma__asymp x'))
   where redup x t k
           | (re x)>15 = k x t
           | otherwise = redup (x+1) (t/x) k
 \end{code}
 \end{titled-frame}
 
-\subsubsection{*\tt lngamma\_asymp z}
+\subsubsection{\tt lngamma\_\_asymp z}
 The asymptotic expansion for log-gamma
 \[ \ln\Gamma(z) \sim (z-\frac12)\ln z - z + \frac12\ln(2\pi) + \sum_{k=1}^{\infty}\frac{B_{2k}}{2k(2k-1)z^{2k-1}} \]
 where $B_n$ is the $n$'th Bernoulli number.
+\begin{titled-frame}{\tt lngamma\_\_asymp z}
 \begin{code}
-lngamma_asymp :: (Value v) => v -> v
-lngamma_asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
+lngamma__asymp :: (Value v) => v -> v
+lngamma__asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
   where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
 \end{code}
+\end{titled-frame}
 
-\subsubsection{\tt sf\_invgamma z}
+\subsection{\tt sf\_invgamma z}
 The inverse gamma function, $\verb|sf_invgamma z|=\frac{1}{\Gamma(z)}$.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_invgamma x} = 1/\Gamma(x)$}
 \begin{code}
 sf_invgamma :: (Value v) => v -> v
 sf_invgamma x =
   let (x',t) = redup x 1
-      lngx = lngamma_asymp x'
+      lngx = lngamma__asymp x'
   in t * (sf_exp$ -lngx)
   where redup x t
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t*x)
 \end{code}
+\end{titled-frame}
 
-\subsubsection{\tt sf\_lngamma z}
+\subsection{\tt sf\_lngamma z}
 The log-gamma function, $\verb|sf_lngamma z|=\ln\Gamma(z)$.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_lngamma x} = \ln\Gamma(x)$}
 \begin{code}
 sf_lngamma :: (Value v) => v -> v
 sf_lngamma x =
   let (x',t) = redup x 0
-      lngx = lngamma_asymp x'
+      lngx = lngamma__asymp x'
   in t + lngx
   where redup x t
           | (re x)>15 = (x,t)
           | otherwise = redup (x+1) (t-sf_log x)
 
 \end{code}
+\end{titled-frame}
 
 \subsubsection{\tt bernoulli\_b n}
 The Bernoulli numbers,~$B_n$.
@@ -125,7 +131,7 @@ bernoulli_b 20 = -174611/330
 bernoulli_b _ = undefined
 \end{code}
 
-\subsubsection*{Spouge's approximation to the gamma function}
+\subsubsection{Spouge's approximation to the gamma function}
 In tests, this gave disappointing results.
 \begin{code}
 -- Spouge's approximation (a=17?)
@@ -161,25 +167,29 @@ spouge a' z' =
     
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Digamma}
+\section{Digamma}
 
 The digamma function
 \[ \psi(z) = \frac{d}{dz} \ln\Gamma(z) = \frac{\Gamma'(z)}{\Gamma(z)} \]
 
-\subsubsection{\tt sf\_digamma z}
+\subsection{\tt sf\_digamma z}
 We implement with a series expansion for $|z|<=10$ and otherwise with an asymptotic expansion.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_digamma z} = \psi(z)$}
 \begin{code}
 sf_digamma :: (Value v) => v -> v
 --sf_digamma n | is_nonposint n = Inf
 sf_digamma z | (rabs z)>10 = digamma__asympt z
              | otherwise   = digamma__series z
 \end{code}
+\end{titled-frame}
 
+\subsubsection{\tt digamma\_\_series z}
 The series expansion is the following
 \[ \psi(z) = -\gamma-\frac1z + \sum_{k=1}^\infty \frac{z}{k(k+z)} \]
 but with Euler-Maclaurin correction terms:
 \[ \psi(z) = -\gamma-\frac1z + \sum_{k=1}^n\frac{z}{k(k+z)}
     + (\ln\frac{k+z}{k} - \frac{z}{2k(k=z)} + \sum_{j=1}^{p}B_{2j}(k^{-2j}-(k+z)^{-2j}) \]
+\begin{titled-frame}{\color{blue}\tt digamma\_\_series z}
 \begin{code}
 digamma__series :: (Value v) => v -> v
 digamma__series z =
@@ -205,12 +215,15 @@ digamma__series z =
         + bn3*(k^^(-6) - (k+z)^^(-6))
         + bn4*(k^^(-8) - (k+z)^^(-8))
 \end{code}
+\end{titled-frame}
 
+\subsubsection{\tt digamma\_\_asympt z}
 The asymptotic expansion (valid for $|arg z|<\pi$) is the following
 \[ \psi(z) \sim \ln z - \frac{1}{2z} + \sum_{k=1}^\infty\frac{B_{2k}}{2kz^{2k}} \]
 Note that our implementation will fail if the \verb|bernoulli_b| table is exceeded.
 If $\Re z<\frac12$ then we use the reflection identity to ensure $\Re z\geq\frac12$:
 \[ \psi(z) - \psi(1-z) = \frac{-\pi}{\tan(\pi z)} \]
+\begin{titled-frame}{\color{blue}\tt digamma\_\_asympt z}
 \begin{code}
 digamma__asympt :: (Value v) => v -> v
 digamma__asympt z
@@ -228,4 +241,5 @@ digamma__asympt z
            then res
            else sumit res' t terms
 \end{code}
+\end{titled-frame}
 

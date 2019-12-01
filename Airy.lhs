@@ -1,9 +1,9 @@
-\section{Airy}
+\chapter{Airy}
 
 The Airy functions $\Ai$ and $\Bi$,
 are standard solutions of the ode $y''-zy=0$.
 
-\subsection{Preamble}
+\section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Airy}
 \begin{code}
 {-# Language BangPatterns #-}
@@ -15,7 +15,7 @@ import Util
 \end{code}
 \end{titled-frame}
 
-\subsection{Ai}
+\section{Ai}
 
 The solution $\Ai(z)$ of the Airy ODE is given by
 \[ \Ai(z) = \frac1\pi \int_0^\infty \cos(\frac{t^3}{3} + xt)\,dt \]
@@ -25,7 +25,7 @@ it can be given in terms of Bessel functions, where $\zeta=(2/3)z^{3/2}$
 or
 \[ \Ai(-z) = \frac{\sqrt{z}}{3} \left( J_{1/3}(\zeta) - J_{-1/3}(\zeta) \right) \]
 
-\subsubsection{\tt sf\_airy\_ai z}
+\subsection{\tt sf\_airy\_ai z}
 For now, we use an asymptotic expansion for large values and a series for smaller values.
 This gives reasonable results for small-enough or large-enough values, but it has
 low accuracy for intermediate values, ({\it e.g.\@} $z=5$).
@@ -40,6 +40,7 @@ sf_airy_ai !z
 \end{code}
 \end{titled-frame}
 
+\subsubsection{Initial conditions}
 Initial conditions
 \begin{eqnarray*}
 \Ai(0)  &=& \frac{1}{3^{2/3} \Gamma(2/3)} \\
@@ -52,6 +53,7 @@ ai'0 :: (Value v) => v
 ai'0 = (-3**(-1/3)) * (sf_invgamma(1/3))
 \end{code}
 
+\subsubsection{Series expansion}
 The series expansion for $\Ai(z)$ is given by 
 \begin{eqnarray*}
 \Ai(z) &=& \Ai(0)f(z) + \Ai'(0)g(z) \\
@@ -69,6 +71,7 @@ airy_ai__series !z =
     in ai0 * (ksum aiterms) + ai'0 * (ksum ai'terms)
 \end{code}
 
+\subsubsection{Asymptotic expansion (positive)}
 The asymptotic expansion for $\Ai(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
 \[ \Ai(z) \sim \frac{e^{-\zeta}}{2\sqrt{\pi}z^{1/4}}\sum_{k=0}^\infty (-)^k \frac{u_k}{\zeta^k} \]
 where $\zeta=(2/3)z^{3/2}$ and where (with $u_0=1$)
@@ -85,10 +88,11 @@ airy_ai__asympt_pos z =
   where tk (a:b:c:ts) = if (rabs b)<(rabs c) then [a] else a:(tk$b:c:ts)
 \end{code}
 
+\subsubsection{Asymptotic expansion (negative)}
 We also have the asymptotic expansion
 \[ \Ai(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
     \cos(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k}}{\zeta^{2k}}
-   + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k=1}}{\zeta^{2k+1}}
+   + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k+1}}{\zeta^{2k+1}}
   \right) \]
 \begin{code}
 airy_ai__asympt_neg :: (Value v) => v -> v
@@ -106,9 +110,9 @@ airy_ai__asympt_neg z' =
         evel (a:b:cs) = a:(evel cs)
 \end{code}
 
-\subsection{Bi}
+\section{Bi}
 
-\subsubsection{\tt sf\_airy\_bi z}
+\subsection{\tt sf\_airy\_bi z}
 For now, we use an asymptotic expansion for large values and a series for smaller values.
 This gives reasonable results for small-enough or large-enough values, but it has
 low accuracy for intermediate values, ({\it e.g.\@} $z=5$).
@@ -135,6 +139,7 @@ bi'0 :: (Value v) => v
 bi'0 = 3**(1/6)/sf_gamma(1/3)
 \end{code}
 
+\subsubsection{Series expansion}
 Series expansion, where $n!!!=\max(n,1)$ for $n\leq2$ and otherwise $n!!!=n\cdot(n-3)!!!$:
 \[ \Bi(z) = \Bi(0)\left(\sum_{n=0}^\infty\frac{(3n-2)!!!}{(3n)!}z^{3n}\right)
     + \Bi'(0)\left(\frac{(3n-1)!!!}{(3n+1)!}z^{3n+1}\right) \]
@@ -146,6 +151,7 @@ airy_bi__series z =
     in bi0 * (ksum biterms) + bi'0 * (ksum bi'terms)
 \end{code}
 
+\subsubsection{Asymptotic expansion (positive)}
 The asymptotic expansion for $\Bi(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
 \[ \Bi(z) \sim \frac{e^{\zeta}}{\sqrt{\pi} z^{1/4}}\sum_{k=0}^\infty \frac{u_k}{\zeta^k} \]
 where $\zeta=(2/3)z^{3/2}$ and where (with $u_0=1$)
@@ -162,10 +168,11 @@ airy_bi__asympt_pos z =
   where tk !(a:b:c:ts) = if (rabs b)<(rabs c) then [a] else a:(tk$b:c:ts)
 \end{code}
 
+\subsubsection{Asymptotic expansion (negative)}
 We also have the asymptotic expansion
 \[ \Bi(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
     \cos(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k}}{\zeta^{2k}}
-   + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k=1}}{\zeta^{2k+1}}
+   + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k+1}}{\zeta^{2k+1}}
   \right) \]
 \begin{code}
 airy_bi__asympt_neg :: (Value v) => v -> v

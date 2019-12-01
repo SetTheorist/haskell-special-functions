@@ -1,6 +1,6 @@
-\section{Elliptic functions}
+\chapter{Elliptic functions}
 
-\subsection{Preamble}
+\section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Elliptic}
 \begin{code}
 {-# Language BangPatterns #-}
@@ -20,7 +20,7 @@ two23 :: Double
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Elliptic integral of the first kind}
+\section{Elliptic integral of the first kind}
 
 Assume that $1-\sin^2\phi, 1-k^2\sin^2\phi\in \mathbb{C}\setminus(-\infty,0]$
 except that one of them may be 0.
@@ -32,7 +32,7 @@ The elliptic integral of the first kind is defined by
 The complete integral is given by $\phi=\pi/2$:
 \[ K(k) = F(\pi/2, k) = \]
 
-\subsubsection{\tt sf\_elliptic\_k k}
+\subsection{\tt sf\_elliptic\_k k}
 Compute the complete elliptic integral of the first kind $K(k)$
 To evaluate this, we use the AGM relation
 \[ K(k) = \frac{\pi}{2 \agm(1,k')} \qquad \text{where $k'=\sqrt{1-k^2}$} \marginnote{$K(k)$}\]
@@ -46,7 +46,7 @@ sf_elliptic_k k =
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_f phi k}
+\subsection{\tt sf\_elliptic\_f phi k}
 Compute the (incomplete) elliptic integral of the first kind $F(\phi,k)$.
 To evaluate, we use an ascending Landen transformation:
 \[ F(\phi,k) = \frac{2}{1+k} F(\phi_2, k_2)
@@ -82,7 +82,7 @@ sf_elliptic_f phi k
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Elliptic integral of the second kind}
+\section{Elliptic integral of the second kind}
 
 Assume that $1-\sin^2\phi, 1-k^2\sin^2\phi\in \mathbb{C}\setminus(-\infty,0]$
 except that one of them may be 0.
@@ -94,7 +94,7 @@ Legendre's (incomplete) elliptic integral of the second kind is defined via
 The complete integral is
 \[ E(k) = E(\pi/2, k) = \]
 
-\subsubsection{\tt sf\_elliptic\_e k}
+\subsection{\tt sf\_elliptic\_e k}
 Compute the complete elliptic integral of the second kind $E(k)$.
 We evaluate this with an agm-based approach:
 \[ ... \]
@@ -111,7 +111,7 @@ sf_elliptic_e k =
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_e\_ic phi k}
+\subsection{\tt sf\_elliptic\_e\_ic phi k}
 Compute the incomplete elliptic integral of the second kind $E(\phi, k)$
 We evaluate this with an ascending Landen transformation:
 \[ ... \]
@@ -134,7 +134,7 @@ sf_elliptic_e_ic phi k
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Elliptic integral of the third kind}
+\section{Elliptic integral of the third kind}
 
 We define Legendre's (incomplete) elliptic integral of the third kind via
 \[ \Pi(\phi,\alpha^2,k) = \int_0^\phi\frac{d\theta}{\sqrt{1-k^2\sin^2\theta}(1-\alpha^2\sin^2\theta)}
@@ -143,7 +143,7 @@ We define Legendre's (incomplete) elliptic integral of the third kind via
 The complete integral of the third kind is given by 
 \[ \Pi(\alpha^2,k) = \Pi(\pi/2,\alpha^2,k) = \]
 
-\subsubsection{\tt sf\_elliptic\_pi c k}
+\subsection{\tt sf\_elliptic\_pi c k}
 Compute the complete elliptic integral of the third kind
 ($c=\alpha^2$ in DLMF notation)
 for real values only $0<k<1$, $0<c<1$.
@@ -175,7 +175,7 @@ sf_elliptic_pi c k = complete_agm k c
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_pi\_ic phi c k}
+\subsection{\tt sf\_elliptic\_pi\_ic phi c k}
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_elliptic\_pi\_ic phi c k} = \Pi(\phi,c,k)$}
 \begin{code}
 sf_elliptic_pi_ic :: Double -> Double -> Double -> Double
@@ -203,7 +203,7 @@ sf_elliptic_pi_ic phi c k = gauss_transform k c phi
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Elliptic integral of Legendre's type}
+\section{Elliptic integral of Legendre's type}
 
 The (incomplete) elliptic integral of Legendre's type is defined by
 \[ D(\phi,k) = \int_0^\phi \frac{\sin^2\theta}{\sqrt{1-k^2\sin^2\theta}}\,d\theta
@@ -213,7 +213,7 @@ This can be expressed as $D(\phi,k) = (F(\phi,k)-E(\phi,k))/k^2$.
 The complete elliptic integral of Legendre's type is
 \[ D(k) = D(\pi/2,k) = (K(k)-E(k))/k^2 \]
 
-\subsubsection{\tt sf\_elliptic\_d\_ic phi k}
+\subsection{\tt sf\_elliptic\_d\_ic phi k}
 We simply reduce to $F(\phi,k)$ and $E(\phi,k)$.
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_elliptic\_d\_ic phi k} = D(\phi,k)$}
 \begin{code}
@@ -222,7 +222,7 @@ sf_elliptic_d_ic phi k = ((sf_elliptic_f phi k) - (sf_elliptic_e_ic phi k)) / (k
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_d\_ic phi k}
+\subsection{\tt sf\_elliptic\_d\_ic phi k}
 We simply reduce to $K(k)$ and $E(k)$.
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_elliptic\_d k} = D(k)$}
 \begin{code}
@@ -232,11 +232,11 @@ sf_elliptic_d k = ((sf_elliptic_k k) - (sf_elliptic_e k)) / (k^2)
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Burlisch's elliptic integrals}
+\section{Burlisch's elliptic integrals}
 
 DLMF: ``Bulirsch’s integrals are linear combinations of Legendre’s integrals that are chosen to facilitate computational application of Bartky’s transformation''
 
-\subsubsection{\tt sf\_elliptic\_cel kc p a b}
+\subsection{\tt sf\_elliptic\_cel kc p a b}
 Compute Burlisch's elliptic integral where $p\neq0$, $k_c\neq0$.
 \[ cel(k_c,p,a,b) = \int_0^{\pi/2} \frac{a\cos^2\theta + b\sin^2\theta}{\cos^2\theta+p\sin^2\theta}
         \frac{1}{\sqrt{\cos^2\theta + k_c^2\sin^2\theta}} \,d\theta \marginnote{$cel(k_c,p,a,b)$}\]
@@ -248,7 +248,7 @@ sf_elliptic_cel kc p a b = a * (sf_elliptic_rf 0 (kc^2) 1) + (b-p*a)/3 * (sf_ell
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_el1 x kc}
+\subsection{\tt sf\_elliptic\_el1 x kc}
 Compute Burlisch's elliptic integral
 \[ el_1(x,k_c) =\]
 TODO: UNTESTED!
@@ -262,7 +262,7 @@ sf_elliptic_el1 x kc =
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_el2 x kc a b}
+\subsection{\tt sf\_elliptic\_el2 x kc a b}
 Compute Burlisch's elliptic integral
 \[ el_2(x,k_c,a,b) = \int_0^{\arctan x}\frac{a + b\tan^2\theta}{\sqrt{(1+\tan^2\theta)(1+k_c^2\tan^2\theta)}} \,d\theta \]
 TODO: UNTESTED!
@@ -275,7 +275,7 @@ sf_elliptic_el2 x kc a b =
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_el3 x kc p}
+\subsection{\tt sf\_elliptic\_el3 x kc p}
 Compute the Burlisch's elliptic integral
 \[ el_3(x,k_c,p) = \int_0^{\arctan x} \frac{d\theta}{(\cos^2\theta + p\sin^2\theta)\sqrt{\cos^2\theta + k_c^2\sin^2\theta}} \]
 TODO: UNTESTED!
@@ -290,9 +290,9 @@ sf_elliptic_el3 x kc p =
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Symmetric elliptic integrals}
+\section{Symmetric elliptic integrals}
 
-\subsubsection{\tt sf\_elliptic\_rc x y}
+\subsection{\tt sf\_elliptic\_rc x y}
 Compute the symmetric elliptic integral $R_C(x,y)$ for real parameters.
 Let $x\in\mathbb{C}\setminus(-\infty,0)$, $y\in\mathbb{C}\setminus\{0\}$, then we define
 \[ R_C(x,y) = \frac12 \int_0^\infty \frac{dt}{\sqrt{t+x}(t+y)} \]
@@ -315,7 +315,7 @@ sf_elliptic_rc x y
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_rd x y z}
+\subsection{\tt sf\_elliptic\_rd x y z}
 Compute the symmetric elliptic integral $R_D(x,y,z)$
 TODO: UNTESTED!
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_elliptic\_rc x y z} = R_D(x,y,z)$}
@@ -337,7 +337,7 @@ sf_elliptic_rd x y z = let (x',s) = (iter x y z 0.0) in (x'**(-3/2) + s)
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_rf x y z}
+\subsection{\tt sf\_elliptic\_rf x y z}
 Compute the symmetric elliptic integral of the first kind
 \[ R_F(x,y,z) = \frac12 \int_0^\infty \frac{dt}{\sqrt{t+x}\sqrt{t+y}\sqrt{t+z}} \]
 TODO: UNTESTED!
@@ -360,7 +360,7 @@ sf_elliptic_rf x y z = 1/(sf_sqrt $ iter x y z)
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_rg x y z}
+\subsection{\tt sf\_elliptic\_rg x y z}
 Compute the symmetric elliptic integral
 \[ R_G(x,y,z) = \frac{1}{4\pi} \int_0^{2\pi}\int_0^\pi
     \sqrt{x \sin^2\theta \cos^2\phi + y\sin^2\theta \sin^2\phi + z\cos^2\theta}\sin\theta \,d\theta\, d\phi \]
@@ -395,7 +395,7 @@ sf_elliptic_rg x y z
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_elliptic\_rj x y z p}
+\subsection{\tt sf\_elliptic\_rj x y z p}
 Compute the symmetric elliptic integral
 \[ R_J(x,y,z,p) = \frac32 \int_0^\infty \frac{dt}{\sqrt{t+x}\sqrt{t+y}\sqrt{t+z}(t+p)} \]
 TODO: UNTESTED!

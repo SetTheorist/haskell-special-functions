@@ -1,22 +1,19 @@
-\section{Error function}
+\chapter{Error function}
 
-\subsection{Preamble}
+\section{Preamble}
 
 \begin{titled-frame}{\color{blue}\tt module Erf}
 \begin{code}
 {-# Language BangPatterns #-}
 -- {-# Language BlockArguments #-}
 {-# Language ScopedTypeVariables #-}
-module Erf (
-    sf_erf,
-    sf_erfc,
-) where
+module Erf (sf_erf, sf_erfc) where
 import Exp
 import Util
 \end{code}
 \end{titled-frame}
 
-\subsection{Error function}
+\section{Error function}
 
 The error function is defined via
 \[ \erf(z) = \frac{2}{\sqrt\pi} \int_{0}^{z} e^{-x^2}\,dx \marginnote{$\erf(z)$}\]
@@ -24,7 +21,7 @@ and the complementary error function via
 \[ \erfc(z) = \frac{2}{\sqrt\pi} \int_{z}^{\infty} e^{-x^2}\,dx \marginnote{$\erfc(z)$}\]
 Thus we have the relation $\erf(z) + \erfc(z) = 1$.
 
-\subsubsection{\tt sf\_erf z}
+\subsection{\tt sf\_erf z}
 The error function $\verb|sf_erf z| = \erf z$ where
 \[ \erf(z) = \frac{2}{\sqrt\pi} \int_{-\infty}^{z} e^{-x^2}\,dx \]
 For $\Re z<-1$, we transform via $\erf(z)=-\erf(-z)$ and for $|z|<1$ we use
@@ -40,7 +37,7 @@ sf_erf z
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_erfc z}
+\subsection{\tt sf\_erfc z}
 The complementary error-function $\verb|sf_erfc z| = \erfc z$ where
 \[ \erfc z = 1-\erf z = \frac{2}{\sqrt\pi} \int_{z}^{\infty} e^{-x^2}\,dx \]
 For $\Re z<-1$ we transform via $\erfc z=2-\erf(-z)$ and if $|z|<1$ then we
@@ -59,7 +56,7 @@ sf_erfc z
 \end{code}
 \end{titled-frame}
 
-\subsubsection*{\tt erf\_series z}
+\subsubsection{\tt erf\_series z}
 The series expansion for $\erf z$:
 \[ \erf z = \frac{2}{\sqrt\pi}\sum_{n=0}^\infty\frac{(-)^nz^{2n+1}}{n!(2n+1)} \]
 There is an alternative expansion
@@ -73,7 +70,7 @@ erf__series z =
   in (2/sf_sqrt pi) * (ksum terms)
 \end{code}
 
-\subsubsection*{*\tt sf\_erf z}
+\subsubsection{\tt sf\_erf z}
 This asymptotic expansion for $\erfc z$ is valid as $z\to+\infty$:
 \[ \erfc z \sim \frac{e^{-z^2}}{\sqrt\pi}\sum_{n=0}^\infty(-)^n\frac{(1/2)_m}{z^{2m+1}} \]
 where the Pochhammer symbol $(1/2)_m$ is given by:
@@ -89,7 +86,7 @@ erfc_asymp_pos z =
   where tk (a:b:cs) = if (rabs a)<(rabs b) then [a] else a:(tk$b:cs)
 \end{code}
 
-\subsubsection*{*\tt erfc\_cf\_pos1 z}
+\subsubsection{\tt erfc\_cf\_pos1 z}
 A continued-fraction expansion for $\erfc z$:
 \[ \sqrt\pi e^{z^2} \erfc z = \frac{z}{z^2+{}} \frac{1/2}{1+{}} \frac{1}{z^2+{}} \frac{3/2}{1+{}} \cdots\]
 \begin{code}
@@ -101,7 +98,7 @@ erfc_cf_pos1 z =
   in sf_exp(-z2) / (sqrt pi) * cf
 \end{code}
 
-\subsubsection*{*\tt erfc\_cf\_pos1 z}
+\subsubsection{\tt erfc\_cf\_pos1 z}
 This is an alternative continued-fraction expansion.
 \[ \sqrt\pi e^{z^2} \erfc z = \frac{2z}{2z^2+1-{}} \frac{1\cdot2}{2z^2+5-{}} \frac{3\cdot4}{2z^2+9-{}} \cdots \]
 Unused for now.

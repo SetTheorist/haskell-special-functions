@@ -1,6 +1,6 @@
-\section{Numbers}
+\chapter{Numbers}
 
-\subsection{Preamble}
+\section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Numbers}
 \begin{code}
 module Numbers where
@@ -52,7 +52,7 @@ binomial n k
     | otherwise = (product [n-(k-1)..n]) `div` (product [1..k])
 \end{code}
 
-\subsection{Stirling numbers}
+\section{Stirling numbers}
 \begin{code}
 -- TODO: this is extremely inefficient approach
 stirling_number_first_kind n k = s n k

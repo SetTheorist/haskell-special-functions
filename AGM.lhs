@@ -1,7 +1,6 @@
-\section{AGM}
+\chapter{AGM}
 
-\subsection{Preamble}
-
+\section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module AGM}%
 \begin{code}
 module AGM (sf_agm, sf_agm') where
@@ -9,7 +8,7 @@ import Util
 \end{code}
 \end{titled-frame}
 
-\subsection{AGM}
+\section{AGM}
 Gauss' arithmetic-geometric mean or AGM of two numbers is defined as
 the limit $\agm(\alpha,\beta)=\lim_n\alpha_n=\lim_n \beta_n$ where
 we define
@@ -19,7 +18,7 @@ we define
 \end{eqnarray*}
 (Note that we need real values to be positive for this to make sense.)
 
-\subsubsection{\tt sf\_agm alpha beta}
+\subsection{\tt sf\_agm alpha beta}
 Here we compute the AGM via the definition and return the full
 arrays of intermediate values $([\alpha_n],[\beta_n],[\gamma_n])$,
 where $\gamma_n=\frac{\alpha_n-\beta_n}{2}$.
@@ -38,7 +37,7 @@ sf_agm alpha beta = agm [alpha] [beta] [alpha-beta]
 \end{code}%
 \end{titled-frame}
   
-\subsubsection{\tt sf\_agm' alpha beta}
+\subsection{\tt sf\_agm' alpha beta}
 Here we return simply the value $\verb|sf_agm' a b|=\agm(a,b)$.
 \begin{titled-frame}{$\text{\tt sf\_agm' z}=\agm z$}%
 \begin{code}
@@ -54,6 +53,7 @@ sf_agm' alpha beta = agm alpha beta ((alpha-beta)/2)
 \end{code}
 \end{titled-frame}
 
+TODO:
 \begin{code}
 sf_agm_c0 :: (Value v) => v -> v -> v -> ([v],[v],[v])
 sf_agm_c0 alpha beta c0 = undefined

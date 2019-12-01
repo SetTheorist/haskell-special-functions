@@ -1,15 +1,12 @@
-\section{Incomplete Gamma}
+\chapter{Incomplete Gamma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Preamble}
+\section{Preamble}
 A basic preamble.
 \begin{titled-frame}{\color{blue}\tt module IncompleteGamma}
 \begin{code}
 {-# Language BangPatterns #-}
-module IncompleteGamma (
-  sf_incomplete_gamma,
-  sf_incomplete_gamma_co
-) where
+module IncompleteGamma (sf_incomplete_gamma, sf_incomplete_gamma_co) where
 import Exp
 import Gamma
 import Numbers(factorial)
@@ -19,7 +16,7 @@ import Util
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Incomplete Gamma functions}
+\section{Incomplete Gamma functions}
 
 We define the two basic incomplete Gamma functions
 (the incomplete Gamma function and the complementary incomplete Gamma function, resp.\@)
@@ -30,7 +27,7 @@ via
 \end{eqnarray*}
 where we clearly have $\Gamma(a,z) + \gamma(a,z) = \Gamma(a)$.
 
-\subsubsection{\tt sf\_incomplete\_gamma a z}
+\subsection{\tt sf\_incomplete\_gamma a z}
 The incomplete gamma function implemented via ...
 Seems to work okay for $z>0$, not great for complex values.
 Untested for $z<0$.
@@ -44,6 +41,7 @@ sf_incomplete_gamma a z
 \end{code}
 \end{titled-frame}
 
+\subsubsection{\tt incgam\_\_contfrac}
 This continued fraction expansion converges for $\Re z>0$ where $v=1/z$:
 (Perhaps even for $|\ph z|<\pi$.)
 \[ e^{z} z^{1-a} \Gamma(a,z) = \frac{1}{1+{}}%
@@ -73,6 +71,7 @@ incgam__contfrac' !a !z =
   where merge (a:as) bs = a:(merge bs as)
 \end{code}
 
+\subsubsection{\tt incgam\_\_asympt\_z}
 We have the asymptotic expansion as $z\to\infty$
 \[ \Gamma(a,z) \sim z^{a-1}e^{-z} \sum_{n=0}^\infty \frac{\Gamma(a)}{\Gamma(a-n)}z^{-n} \]
 This seems to give good results for $z>a$.
@@ -85,7 +84,7 @@ incgam__asympt_z !a !z =
     tk (a:b:c:ts) = if (rabs b)<(rabs c) then [a] else a:(tk$b:c:ts)
 \end{code}
 
-\subsubsection{\tt sf\_incomplete\_gamma\_co a z}
+\subsection{\tt sf\_incomplete\_gamma\_co a z}
 The complementary incomplete Gamma function implemented via
 TODO: this is just a quick hack implementation!
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_incomplete\_gamma\_co a z} = \gamma(a,z)$}
@@ -98,6 +97,7 @@ sf_incomplete_gamma_co a z
 \end{code}
 \end{titled-frame}
 
+\subsubsection{\tt incgamco\_\_series}
 A series expansion for the complementary incomplete Gamma function
 where $a\neq0,-1,-2,\dots$
 \[ \gamma(a,z) = e^{-x}\sum_{k=0}^\infty \frac{x^{a+k}}{(a)_{k+1}} \]

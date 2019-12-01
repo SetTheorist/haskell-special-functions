@@ -1,4 +1,5 @@
-\documentclass{article}
+%\documentclass{article}
+\documentclass{report}
 \usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -68,53 +69,53 @@
 \maketitle
 \tableofcontents
 
-\section{Introduction}
+\chapter{Introduction}
 
 Special functions.
 
-%\section{Util}
+%\chapter{Util}
 \input{Util.lhs}
 
-%\section{Fibo}
+%\chapter{Fibo}
 \input{Fibo.lhs}
 
-%\section{Numbers}
+%\chapter{Numbers}
 \input{Numbers.lhs}
 
-%\section{Exponential, logarithm}
+%\chapter{Exponential, logarithm}
 \input{Exp.lhs}
 
-%\section{Gamma}
+%\chapter{Gamma}
 \input{Gamma.lhs}
 
-%\section{IncompleteGamma}
+%\chapter{IncompleteGamma}
 \input{IncompleteGamma.lhs}
 
-%\section{Erf}
+%\chapter{Erf}
 \input{Erf.lhs}
 
-%\section{Bessel}
+%\chapter{Bessel}
 \input{Bessel.lhs}
 
-%\section{ExpInt}
+%\chapter{ExpInt}
 \input{ExpInt.lhs}
 
-%\section{AGM}
+%\chapter{AGM}
 \input{AGM.lhs}
 
-%\section{Airy}
+%\chapter{Airy}
 \input{Airy.lhs}
 
-%\section{Riemann Zeta}
+%\chapter{Riemann Zeta}
 \input{Zeta.lhs}
 
-%\section{Elliptic}
+%\chapter{Elliptic}
 \input{Elliptic.lhs}
 
-%\section{Spence}
+%\chapter{Spence}
 \input{Spence.lhs}
 
-%\section{Lommel}
+%\chapter{Lommel}
 \input{Lommel.lhs}
 
 \end{document}

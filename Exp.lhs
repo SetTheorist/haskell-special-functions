@@ -1,9 +1,9 @@
-\section{Exponential \& Logarithm}
+\chapter{Exponential \& Logarithm}
 
 In this section, we implement the exponential function
 and logarithm function, as well as useful variations.
 
-\subsection{Preamble}
+\section{Preamble}
 We begin with a typical preamble.
 
 \begin{titled-frame}{\color{blue}\tt module Exp}
@@ -20,12 +20,12 @@ import System.IO.Unsafe
 \end{code}
 \end{titled-frame}
 
-\subsection{Exponential}
+\section{Exponential}
 
 We start with implementation of the most basic special function, $exp(x)$ or $e^x$
 and variations thereof.
 
-\subsubsection{\tt sf\_exp x}
+\subsection{\tt sf\_exp x}
 For the exponential $\verb|sf_exp x|=\exp(x)$ we use a simple series expansions
 \[ e^x = \sum_{n=0}^\infty\frac{x^n}{n!} \]
 after first using the identity $e^{-x}=1/e^x$ to ensure
@@ -57,7 +57,7 @@ sf_exp !x
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_exp\_m1 x}
+\subsection{\tt sf\_exp\_m1 x}
 For numerical calculations, it is useful to have $\verb|sf_exp_m1 x| = e^x-1$
 as explicitly calculating this expression will give poor results for $x$ near~1.
 We use a series expansion for the calculation.
@@ -76,7 +76,7 @@ sf_exp_m1 !x
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_exp\_m1vx x}
+\subsection{\tt sf\_exp\_m1vx x}
 Similarly, it is useful to have the scaled variant $\verb|sf_exp_m1vx x| = \frac{e^x-1}{x}$.
 In this case, we use a continued-fraction expansion
 \[ \frac{e^x-1}{x} = \frac{2}{2-x+{}} \frac{x^2/6}{1+{}}
@@ -103,7 +103,7 @@ sf_exp_m1vx !x
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_exp\_menx n x}
+\subsection{\tt sf\_exp\_menx n x}
 Compute the scaled tail of series expansion of the exponential function, $exd_n(x)$:
 \begin{eqnarray*}
 \verb|sf_exp_menx n x|
@@ -136,7 +136,7 @@ sf_exp_menx n z
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_exp\_men n x}
+\subsection{\tt sf\_exp\_men n x}
 This is the generalization of \verb|sf_exp_m1 x|, giving the tail of the
 series expansion of the exponential function, for $n=0, 1, \dots$.
 \[ \verb|sf_exp_men n z| = e^z - \sum_{k=0}^{n-1}\frac{z^k}{k!} = \sum_{k=n}^\infty\frac{z^k}{k!} \]
@@ -154,7 +154,7 @@ sf_exp_men !n !x = (sf_exp_menx n x) * x^n / ((#)$factorial n)
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_expn n x}
+\subsection{\tt sf\_expn n x}
 We compute the initial part of the series for the exponential function
 \[ e_n(z) = \sum_{k=0}^n \frac{z^k}{k!} \]
 This implementation simply computes the series directly.
@@ -171,16 +171,16 @@ sf_expn n z
 \end{titled-frame}
 
 
-\subsection{Logarithm}
+\section{Logarithm}
 
-\subsubsection{\tt sf\_log x}
+\subsection{\tt sf\_log x}
 We simply use the built-in implementation (from the \verb|Floating| typeclass).
 \begin{code}
 sf_log :: (Value v) => v -> v
 sf_log = log
 \end{code}
 
-\subsubsection{\tt sf\_log\_p1 x}
+\subsection{\tt sf\_log\_p1 x}
 The accuracy preserving $\verb|sf_log_p1 x|=\ln 1+x$.
 For values close to zero, we use a power series expansion
 \[ \ln(1+x) = 2\sum_{n=0}^\infty \frac{(\frac{x}{x+2})^{2n+1}}{2n+1} \]

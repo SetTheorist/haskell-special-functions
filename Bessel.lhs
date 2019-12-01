@@ -1,4 +1,4 @@
-\section{Bessel Functions}
+\chapter{Bessel Functions}
 
 Bessel's differential equation is:
 \begin{equation} z^2 w'' + z w' + (z^2-\nu^2)w = 0 \label{bessel:ode}\end{equation}
@@ -9,7 +9,7 @@ If $\nu=n$ is an integer, then $J_n(z)$ is still a solution,
 but $J_{-n}(z)=(-)^nJ_n(z)$ so it is not a second linearly
 independent solution of Eqn.~\ref{bessel:ode}.
 
-\subsection{Preamble}
+\section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Bessel}
 \begin{code}
 {-# Language BangPatterns #-}
@@ -21,11 +21,11 @@ import Util
 \end{code}
 \end{titled-frame}
 
-\subsection{Bessel function $J$ of the first kind}
+\section{Bessel function of the first kind $J_\nu(z)$}
 
 The Bessel functions $J_\nu(z)$ are defined as 
 
-\subsubsection{\tt sf\_bessel\_j nu z}
+\subsection{\tt sf\_bessel\_j nu z}
 Compute Bessel $J\_\nu(z)$ function
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_bessel\_j nu z} = J_\nu(z)$}
 \begin{code}
@@ -39,7 +39,7 @@ sf_bessel_j nu z
 \end{code}
 \end{titled-frame}
 
-\subsubsection*{*\tt bessel\_j\_\_series nu z}
+\subsubsection{\tt bessel\_j\_\_series nu z}
 The power-series expansion given by
 \[ J_\nu(z) = \left(\frac{z}{2}\right)^\nu \frac{1}{1+\nu} \sum_{k=0}^\infty(-)^k\frac{z^{2k}}{2^{2k}k!\Gamma(\nu+k+1)} \]
 \begin{titled-frame}{$\text{\color{blue}\tt bessel\_j\_\_series nu z}$}
@@ -53,7 +53,7 @@ bessel_j__series !nu !z =
 \end{code}
 \end{titled-frame}
 
-\subsubsection*{*\tt bessel\_j\_\_asympt nu z}
+\subsubsection{\tt bessel\_j\_\_asympt nu z}
 Asymptotic expansion for $|z|>>\nu$ with $|arg z|<\pi$. is given by
 \[ J_\nu(z) \sim \left(\frac{2}{\pi z}\right)^{1/2}\
     \left( \cos\omega \sum_{k=0}^\infty (-)^k \frac{a_{2k}(\nu)}{z^{2k}}
@@ -76,6 +76,7 @@ bessel_j__asympt_z !nu !z =
     evel (a:b:cs) = a:(evel cs)
 \end{code}
 
+\subsubsection{\tt bessel\_j\_\_recur\_back nu z}
 This approach uses the recursion in order (for large order) in a backward direction
 \[ J_{\nu-1}(z) = \frac{2\nu}{z} J_{\nu}(z) - J_{\nu+1}(z) \]
 (largest to smallest).
@@ -83,9 +84,9 @@ We start by iterating downward from 20 terms above the largest order we'd like w
 initial values~0 and~1.  We then compute the initial (smallest order) term and
 scale the whole series with the iterated value and the computed value.
 \begin{code}
---bessel_j_recur_back :: (Value v) => Double -> v -> v
-bessel_j_recur_back :: forall v.(Value v) => (RealKind v) -> v -> [v]
-bessel_j_recur_back !nu !z =
+--bessel_j__recur_back :: (Value v) => Double -> v -> v
+bessel_j__recur_back :: forall v.(Value v) => (RealKind v) -> v -> [v]
+bessel_j__recur_back !nu !z =
   let !jjs = runback (nnx-2) [1.0,0.0]
       !scale = if (rabs z)<10 then (bessel_j__series nuf z) else (bessel_j__asympt_z nuf z)
       --scale2 = ((head jjs)^2) + 2*(ksum (map (^2) $ tail jjs)) -- only integral nu
