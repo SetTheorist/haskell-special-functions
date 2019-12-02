@@ -11,6 +11,7 @@ import Util
 \end{code}
 \end{titled-frame}
 
+
 \section{misc}
 \begin{code}
 fibonacci_number :: Int -> Integer
@@ -21,9 +22,6 @@ fibonacci_number n = Fibo.fibonacci n
 lucas_number :: Int -> Integer
 lucas_number = undefined
 
-euler_number :: Int -> Integer
-euler_number = undefined
-
 catalan_number :: Integer -> Integer
 catalan_number 0 = 1
 catalan_number n = 2*(2*n-1)*(catalan_number (n-1))`div`(n+1)
@@ -31,10 +29,10 @@ catalan_number n = 2*(2*n-1)*(catalan_number (n-1))`div`(n+1)
 
 \section{Bernoulli numbers}
 
-The Bernoulli numbers are defined via their exponential generating function
+The Bernoulli numbers, $B_n$, are defined via their exponential generating function
 \[ \frac{t}{e^t-1} = \sum_{n=1}^\infty B_n \frac{t^n}{n!} \]
 
-\subsubsection{\tt sf\_bernoulli\_b}
+\subsection{\tt sf\_bernoulli\_b}
 To compute the Bernoulli numbers $B_n$, we use the relation
 \[ \sum_{k=0}^{n}\binom{n+1}{k}B_k = 0 \]
 we compute with rational numbers, so the result will be exact.
@@ -50,19 +48,57 @@ _bernoulli_number_computation n
   | n == 1    = -1%2
   | (odd n)   = 0
   | otherwise =
-      let !terms = map (\k -> let k'=(#)k in ((#)$binomial (n+1) k)*(sf_bernoulli_b!!k)) [0..(n-1)]
+      let !terms = map (\k -> ((#)$binomial (n+1) k)*(sf_bernoulli_b!!k)) [k|k<-(0:1:[2..(n-1)]),k<=n-1]
       in -(sum terms)/((#)n+1)
 \end{code}
 \end{titled-frame}
 
-\subsubsection{\tt sf\_bernoulli\_b\_scaled}
+\subsection{\tt sf\_bernoulli\_b\_scaled}
 To compute the scaled Bernoulli numbers $\widetilde{B}_n = \frac{B_n}{n!}$, we simply divide
 the (unscaled) Bernoulli number by~$n!$.
 Again, this is not the most efficient approach, but it suffices for now.
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_bernoulli\_b\_scaled !! n} = B_n/n!$}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_bernoulli\_b\_scaled !! n} = \widetilde{B}_n = B_n/n!$}
 \begin{code}
 sf_bernoulli_b_scaled :: [Rational]
 sf_bernoulli_b_scaled = zipWith (/) sf_bernoulli_b (map (fromIntegral.factorial) [0..])
+\end{code}
+\end{titled-frame}
+
+\section{Euler numbers}
+
+The Euler numbers, $E_n$, are defined via their exponential generating function
+\[ \frac{2t}{e^{2t}-1} = \sum_{n=1}^\infty E_n \frac{t^n}{n!} \]
+
+\subsection{\tt sf\_euler\_e}
+To compute the Euler numbers $E_n$, we use the relation
+\[ \sum_{k=0}^{n}\binom{2n}{2k}E_{2k} = 0 \]
+as Euler numbers are all integers, we compute with \verb|Integer| type
+to get exact results.
+(Note that this is not the most efficient approach to computing
+the Euler numbers, but it suffices for now.)
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_euler\_e !! n} = E_n$}
+\begin{code}
+sf_euler_e :: [Integer]
+sf_euler_e = map _euler_number_computation [0..]
+_euler_number_computation :: Int -> Integer
+_euler_number_computation n
+  | n == 0    = 1
+  | (odd n)   = 0
+  | otherwise =
+      let !n' = n`div`2
+          !terms = map (\k -> ((#)$binomial (2*n') (2*k))*(sf_euler_e!!(2*k))) [0..(n'-1)]
+      in -(sum terms)
+\end{code}
+\end{titled-frame}
+
+\subsection{\tt sf\_euler\_e\_scaled}
+To compute the scaled Euler numbers $\widetilde{E}_n = \frac{E_n}{n!}$, we simply divide
+the (unscaled) Euler number by~$n!$.
+Again, this is not the most efficient approach, but it suffices for now.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_euler\_e\_scaled !! n} = \widetilde{E}_n = E_n/n!$}
+\begin{code}
+sf_euler_e_scaled :: [Rational]
+sf_euler_e_scaled = zipWith (\a b->(#)a/(#)b) sf_euler_e (map factorial [0..])
 \end{code}
 \end{titled-frame}
 
