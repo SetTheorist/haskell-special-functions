@@ -52,6 +52,7 @@
 \DeclareMathOperator{\agm}{agm}
 \DeclareMathOperator{\Ai}{Ai}
 \DeclareMathOperator{\Bi}{Bi}
+\DeclareMathOperator{\Daw}{Daw}
 \DeclareMathOperator{\Ei}{Ei}
 \DeclareMathOperator{\erf}{erf}
 \DeclareMathOperator{\erfc}{erfc}

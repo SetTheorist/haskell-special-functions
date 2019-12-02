@@ -22,8 +22,8 @@ We define the two basic incomplete Gamma functions
 (the incomplete Gamma function and the complementary incomplete Gamma function, resp.\@)
 via
 \begin{eqnarray*}
-\Gamma(a,z) &=& \int_z^\infty e^{-t}t^{a} \,\frac{dt}{t} \marginnote{$\Gamma(a,z)$}\\
-\gamma(a,z) &=& \int_0^z e^{-t}t^{a} \,\frac{dt}{t}      \marginnote{$\gamma(a,z)$}
+\Gamma(a,z) &=& \int_z^\infty e^{-t}t^{a} \,\frac{dt}{t} \marginnote{$\Gamma(a,z)$} \marginnote{$\Gamma(a,z)$}\\
+\gamma(a,z) &=& \int_0^z e^{-t}t^{a} \,\frac{dt}{t}      \marginnote{$\gamma(a,z)$} \marginnote{$\gamma(a,z)$}
 \end{eqnarray*}
 where we clearly have $\Gamma(a,z) + \gamma(a,z) = \Gamma(a)$.
 

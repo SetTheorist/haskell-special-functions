@@ -13,11 +13,10 @@ module Gamma (
     sf_invgamma,
     sf_lngamma,
     sf_digamma,
-    bernoulli_b,
     )
 where
 import Exp
-import Numbers(factorial)
+import Numbers(factorial,sf_bernoulli_b)
 import Trig
 import Util
 \end{code}
@@ -28,7 +27,7 @@ import Util
 
 \subsection{\tt euler\_gamma}
 A constant for Euler's gamma:
-\[ \gamma = \lim_{n\to\infty}\left(\sum_{k=1}^n\frac1n - \ln n\right) \]
+\[ \gamma = \lim_{n\to\infty}\left(\sum_{k=1}^n\frac1n - \ln n\right) \marginnote{$\gamma$}\]
 \begin{code}
 euler_gamma :: (Floating a) => a
 euler_gamma = 0.577215664901532860606512090082402431042159335939923598805767234884867726777664670936947063291746749
@@ -36,7 +35,7 @@ euler_gamma = 0.5772156649015328606065120900824024310421593359399235988057672348
 
 \subsection{\tt sf\_beta a b}
 The Beta integral
-\[ B(a,b) = \int_0^1 t^{a-1}(1-t)^{b-1}\,dt = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)} \]
+\[ B(a,b) = \int_0^1 t^{a-1}(1-t)^{b-1}\,dt = \frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)} \marginnote{$B(a,b)$}\]
 implemented in terms of log-gamma
 \[ \verb|sf_beta a b| = e^{\ln\Gamma(a) + \ln\Gamma(b) - \ln\Gamma(a+b)} \]
 \begin{code}
@@ -48,7 +47,7 @@ sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 \section{Gamma}
 
 The gamma function
-\[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dt}{t} \]
+\[ \Gamma(z) = \int_0^\infty e^{-t}t^{z} \,\frac{dt}{t} \marginnote{$\Gamma(z)$}\]
 
 \subsection{\tt sf\_gamma z}
 The gamma function implemented using the identity $\Gamma(z) = \frac{1}{z}\Gamma(z+1)$
@@ -73,7 +72,7 @@ where $B_n$ is the $n$'th Bernoulli number.
 \begin{code}
 lngamma__asymp :: (Value v) => v -> v
 lngamma__asymp z = (z - 1/2)*(sf_log z) - z + (1/2)*sf_log(2*pi) + (ksum terms)
-  where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=bernoulli_b$2*k']
+  where terms = [b2k/(2*k*(2*k-1)*z^(2*k'-1)) | k'<-[1..10], let k=(#)k', let b2k=fromRational$sf_bernoulli_b!!(2*k')]
 \end{code}
 \end{titled-frame}
 
@@ -107,29 +106,6 @@ sf_lngamma x =
 
 \end{code}
 \end{titled-frame}
-
-\subsubsection{\tt bernoulli\_b n}
-The Bernoulli numbers,~$B_n$.
-A simple hard-coded table, for now.
-(Should be moved to Numbers module and general, cached,
-implementation done.)
-\begin{code}
-bernoulli_b :: (Value v) => Int -> v
-bernoulli_b 1 = -1/2
-bernoulli_b k | k`mod`2==1 = 0
-bernoulli_b 0 = 1
-bernoulli_b 2 = 1/6
-bernoulli_b 4 = -1/30
-bernoulli_b 6 = 1/42
-bernoulli_b 8 = -1/30
-bernoulli_b 10 = 5/66
-bernoulli_b 12 = -691/2730
-bernoulli_b 14 = 7/6
-bernoulli_b 16 = -3617/510
-bernoulli_b 18 = 43867/798
-bernoulli_b 20 = -174611/330
-bernoulli_b _ = undefined
-\end{code}
 
 \subsubsection{Spouge's approximation to the gamma function}
 In tests, this gave disappointing results.
@@ -170,7 +146,7 @@ spouge a' z' =
 \section{Digamma}
 
 The digamma function
-\[ \psi(z) = \frac{d}{dz} \ln\Gamma(z) = \frac{\Gamma'(z)}{\Gamma(z)} \]
+\[ \psi(z) = \frac{d}{dz} \ln\Gamma(z) = \frac{\Gamma'(z)}{\Gamma(z)} \marginnote{$\psi(z)$}\]
 
 \subsection{\tt sf\_digamma z}
 We implement with a series expansion for $|z|<=10$ and otherwise with an asymptotic expansion.
@@ -204,10 +180,10 @@ digamma__series z =
           res' = sum' + c
       in if res==res' then res
          else summer res' sum' terms corrs
-    bn1 = bernoulli_b 2
-    bn2 = bernoulli_b 4
-    bn3 = bernoulli_b 6
-    bn4 = bernoulli_b 8
+    bn1 = fromRational$sf_bernoulli_b!!2
+    bn2 = fromRational$sf_bernoulli_b!!4
+    bn3 = fromRational$sf_bernoulli_b!!6
+    bn4 = fromRational$sf_bernoulli_b!!8
     correction k =
       (sf_log$(k+z)/k) - z/2/(k*(k+z))
         + bn1*(k^^(-2) - (k+z)^^(-2))
@@ -220,7 +196,6 @@ digamma__series z =
 \subsubsection{\tt digamma\_\_asympt z}
 The asymptotic expansion (valid for $|arg z|<\pi$) is the following
 \[ \psi(z) \sim \ln z - \frac{1}{2z} + \sum_{k=1}^\infty\frac{B_{2k}}{2kz^{2k}} \]
-Note that our implementation will fail if the \verb|bernoulli_b| table is exceeded.
 If $\Re z<\frac12$ then we use the reflection identity to ensure $\Re z\geq\frac12$:
 \[ \psi(z) - \psi(1-z) = \frac{-\pi}{\tan(\pi z)} \]
 \begin{titled-frame}{\color{blue}\tt digamma\_\_asympt z}
@@ -233,7 +208,7 @@ digamma__asympt z
       compute z res =
         let z_2 = z^^(-2)
             zs = iterate (*z_2) z_2
-            terms = zipWith (\n z2n -> z2n*(bernoulli_b(2*n+2))/(#)(2*n+2)) [0..] zs
+            terms = zipWith (\n z2n -> z2n*(fromRational$sf_bernoulli_b!!(2*n+2))/(#)(2*n+2)) [0..] zs
         in sumit res res terms
       sumit res ot (t:terms) =
         let res' = res - t

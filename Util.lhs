@@ -15,6 +15,7 @@ We start with the basic preamble.
 module Util where
 import Data.Complex
 import Data.List(zipWith5)
+import System.IO.Unsafe
 \end{code}
 \end{titled-frame}
 
@@ -309,10 +310,28 @@ sf_runge_kutta_4 !h !t0 !tn !x0 !f = iter t0 x0 [(t0,x0)]
 \end{titled-frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Series}
+
+\subsection{Clenshaw summation for Chebyshev expansions}
+For $x\in[0,1]$ and a sequence of coefficients $\{c_n\}_{n=0}^\infty$
+then the Clenshaw iteration will 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Memoization}
+
+There are many values that are used in various algorithms but can be expensive to compute,
+(such as Bernoulli numbers, $B_n$).  Thus it is useful to have a way to memoize their calculation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{TO BE MOVED}
 \begin{code}
 sf_sqrt :: (Value v) => v -> v
 sf_sqrt = sqrt
 \end{code}
 
+%\begin{code}
+%{-# SPECIALISE xxx :: Double #-}
+%xxx :: (Value v) => v
+%xxx = let !_ = unsafePerformIO.putStrLn$"!" in 3
+%\end{code}
 

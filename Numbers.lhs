@@ -3,9 +3,11 @@
 \section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Numbers}
 \begin{code}
+{-# Language BangPatterns #-}
 module Numbers where
 import Data.Ratio
 import qualified Fibo
+import Util
 \end{code}
 \end{titled-frame}
 
@@ -26,9 +28,26 @@ catalan_number 0 = 1
 catalan_number n = 2*(2*n-1)*(catalan_number (n-1))`div`(n+1)
 \end{code}
 
+To compute the Bernoulli numbers $B_n$, we use the relation
+\[ \sum_{k=0}^{n}\binom{n+1}{k}B_k = 0 \]
+we compute with rational numbers, so the result will be exact.
+(Note that this is not the most efficient approach to computing
+the Bernoulli numbers, but it suffices for now.)
 \begin{code}
-bernoulli_number :: Int -> Rational
-bernoulli_number = undefined
+sf_bernoulli_b :: [Rational]
+sf_bernoulli_b = map _bernoulli_number_computation [0..]
+_bernoulli_number_computation :: Int -> Rational
+_bernoulli_number_computation n
+  | n == 0    = 1
+  | n == 1    = -1%2
+  | (odd n)   = 0
+  | otherwise =
+      let !n' = (#)n
+          !terms = map (\k -> let k'=(#)k in ((#)$binomial (n+1) k)*(sf_bernoulli_b!!k)) [0..(n-1)]
+      in -(sum terms)/(n'+1)
+\end{code}
+
+\begin{code}
 
 tangent_number :: Int -> Integer
 tangent_number = undefined

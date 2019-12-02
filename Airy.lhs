@@ -18,7 +18,7 @@ import Util
 \section{Ai}
 
 The solution $\Ai(z)$ of the Airy ODE is given by
-\[ \Ai(z) = \frac1\pi \int_0^\infty \cos(\frac{t^3}{3} + xt)\,dt \]
+\[ \Ai(z) = \frac1\pi \int_0^\infty \cos(\frac{t^3}{3} + xt)\,dt \marginnote{$\Ai(z)$}\]
 it can be given in terms of Bessel functions, where $\zeta=(2/3)z^{3/2}$
 \[ \Ai(z) = \frac{\sqrt{z/3}}{\pi} K_{\pm1/3}(\zeta)
     = \frac{\sqrt{z}}{3} \left( I_{-1/3}(\zeta) - I_{1/3}(\zeta) \right) \]
