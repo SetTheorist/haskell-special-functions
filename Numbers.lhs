@@ -11,6 +11,7 @@ import Util
 \end{code}
 \end{titled-frame}
 
+\section{misc}
 \begin{code}
 fibonacci_number :: Int -> Integer
 fibonacci_number n = Fibo.fibonacci n
@@ -28,11 +29,18 @@ catalan_number 0 = 1
 catalan_number n = 2*(2*n-1)*(catalan_number (n-1))`div`(n+1)
 \end{code}
 
+\section{Bernoulli numbers}
+
+The Bernoulli numbers are defined via their exponential generating function
+\[ \frac{t}{e^t-1} = \sum_{n=1}^\infty B_n \frac{t^n}{n!} \]
+
+\subsubsection{\tt sf\_bernoulli\_b}
 To compute the Bernoulli numbers $B_n$, we use the relation
 \[ \sum_{k=0}^{n}\binom{n+1}{k}B_k = 0 \]
 we compute with rational numbers, so the result will be exact.
 (Note that this is not the most efficient approach to computing
 the Bernoulli numbers, but it suffices for now.)
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_bernoulli\_b !! n} = B_n$}
 \begin{code}
 sf_bernoulli_b :: [Rational]
 sf_bernoulli_b = map _bernoulli_number_computation [0..]
@@ -42,13 +50,25 @@ _bernoulli_number_computation n
   | n == 1    = -1%2
   | (odd n)   = 0
   | otherwise =
-      let !n' = (#)n
-          !terms = map (\k -> let k'=(#)k in ((#)$binomial (n+1) k)*(sf_bernoulli_b!!k)) [0..(n-1)]
-      in -(sum terms)/(n'+1)
+      let !terms = map (\k -> let k'=(#)k in ((#)$binomial (n+1) k)*(sf_bernoulli_b!!k)) [0..(n-1)]
+      in -(sum terms)/((#)n+1)
 \end{code}
+\end{titled-frame}
+
+\subsubsection{\tt sf\_bernoulli\_b\_scaled}
+To compute the scaled Bernoulli numbers $\widetilde{B}_n = \frac{B_n}{n!}$, we simply divide
+the (unscaled) Bernoulli number by~$n!$.
+Again, this is not the most efficient approach, but it suffices for now.
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_bernoulli\_b\_scaled !! n} = B_n/n!$}
+\begin{code}
+sf_bernoulli_b_scaled :: [Rational]
+sf_bernoulli_b_scaled = zipWith (/) sf_bernoulli_b (map (fromIntegral.factorial) [0..])
+\end{code}
+\end{titled-frame}
+
+\section{misc}
 
 \begin{code}
-
 tangent_number :: Int -> Integer
 tangent_number = undefined
 
