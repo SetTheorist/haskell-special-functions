@@ -113,6 +113,9 @@ Special functions.
 %\chapter{Elliptic}
 \input{Elliptic.lhs}
 
+%\chapter{Debye}
+\input{Debye.lhs}
+
 %\chapter{Spence}
 \input{Spence.lhs}
 
