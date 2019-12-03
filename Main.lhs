@@ -120,6 +120,9 @@ Special functions.
 %\chapter{Riemann Zeta}
 \input{Zeta.lhs}
 
+%\chapter{Theta}
+\input{Theta.lhs}
+
 %\chapter{Elliptic}
 \input{Elliptic.lhs}
 

@@ -15,6 +15,7 @@ module SpecialFunctions
     , module Probability
     , module Quad
     , module Spence
+    , module Theta
     , module Trig
     , module Util
     , module Zeta
@@ -35,6 +36,7 @@ import Numbers
 import Probability
 import Quad
 import Spence
+import Theta
 import Trig
 import Util
 import Zeta
