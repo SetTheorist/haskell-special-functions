@@ -1,9 +1,9 @@
 \chapter{Spence}
 
 Spence's integral for $z\geq0$ is
-\[ S(z) = -\int_1^z \frac{\ln t}{t-1}\,dt = -\int_0^{z-1}\frac{ln(1+u)}{z}\,dz \]
+\[ \O{S}(z) = -\int_1^z \frac{\ln t}{t-1}\,dt = -\int_0^{z-1}\frac{ln(1+u)}{z}\,dz \]
 and we extend the function via analytic continuation.
-Spence's function $S(z)$ is related to the dilogarithm function via $S(z) = \Li_2(1-z)$.
+Spence's function $\O{S}(z)$ is related to the dilogarithm function via $S(z) = \O{Li}_2(1-z)$.
 
 \section{Preamble}
 \begin{titled-frame}{\color{blue}\tt module Spence}
@@ -21,15 +21,15 @@ pi2_6 = pi^2/6
 \end{code}
 
 \section{\tt sf\_spence z}
-Compute Spence's integral $\verb|sf_spence z| = S(z)$.
+Compute Spence's integral $\verb|sf_spence z| = \O{S}(z)$.
 We use a variety of transformations to to allow efficient computation with a series.
 \begin{eqnarray*}
-\Li_2(z) + \Li_2(\frac{z}{z-1}) &=& -\frac12(\ln(1-z))^2              \qquad{z\in\mathbb{C}\setminus[1,\infty)} \\
-\Li_2(z) + \Li_2(\frac{1}{z}) &=& -\frac{\pi^2}{6}-\frac12(\ln(-z))^2 \qquad{z\in\mathbb{C}\setminus[0,\infty)} \\
-\Li_2(z) + \Li_2(1-z) &=& \frac{\pi^2}{6}-\ln(z)\ln(1-z)              \qquad{0<z<1}
+\O{Li}_2(z) + \O{Li}_2(\frac{z}{z-1}) &=& -\frac12(\ln(1-z))^2              \qquad{z\in\CC\setminus[1,\infty)} \\
+\O{Li}_2(z) + \O{Li}_2(\frac{1}{z}) &=& -\frac{\pi^2}{6}-\frac12(\ln(-z))^2 \qquad{z\in\CC\setminus[0,\infty)} \\
+\O{Li}_2(z) + \O{Li}_2(1-z) &=& \frac{\pi^2}{6}-\ln(z)\ln(1-z)              \qquad{0<z<1}
 \end{eqnarray*}
 (TODO: this code has not be solidly retested after conversion, especially verify complex.)
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_spence z} = \Li_2(z)$}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_spence z} = \O{Li}_2(z)$}
 \begin{code}
 sf_spence :: (Value v) => v -> v
 sf_spence z

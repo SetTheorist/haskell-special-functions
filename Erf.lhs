@@ -114,10 +114,10 @@ erfc_cf_pos2 z =
 \subsection{Dawson's function}
 
 Dawson's function (or Dawson's integral) is given by
-\[ \Daw(z) = e^{-z^2}\int_0^z e^{t^2}\,dt = -\frac{\ii\sqrt\pi}{2} e^{-x^2}\erf(\ii x) \]
+\[ \O{Daw}(z) = e^{-z^2}\int_0^z e^{t^2}\,dt = -\frac{\ii\sqrt\pi}{2} e^{-x^2}\erf(\ii x) \]
 
 \subsubsection{\tt sf\_dawson z}
-Compute Dawson's integral $\Daw(z) = e^{-z^2} \int_0^z e^{t^2} dt$ for real z.
+Compute Dawson's integral $\O{Daw}(z) = e^{-z^2} \int_0^z e^{t^2} dt$ for real z.
 (Correct only for reals!)
 
 \begin{code}

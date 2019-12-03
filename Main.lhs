@@ -13,9 +13,9 @@
 \definecolor{TFFrameColor}{rgb}{0.9,0.9,0.9}
 \definecolor{TFTitleColor}{rgb}{0.0,0.0,0.0}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\usepackage{verbatim}
 %\newenvironment{code}{\footnotesize\verbatim}{\endverbatim\normalsize}
-
 %\usepackage{listings}
 %\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small}}{}
 %basicstyle=\small\ttfamily,
@@ -49,20 +49,30 @@
                %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
-\DeclareMathOperator{\agm}{agm}
-\DeclareMathOperator{\Ai}{Ai}
-\DeclareMathOperator{\Bi}{Bi}
-\DeclareMathOperator{\Daw}{Daw}
-\DeclareMathOperator{\Ei}{Ei}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\F}[1]{{\mathtt{#1}}}
 \DeclareMathOperator{\erf}{erf}
 \DeclareMathOperator{\erfc}{erfc}
-\DeclareMathOperator{\gud}{gud}
-\DeclareMathOperator{\Li}{Li}
+\DeclareMathOperator{\acos}{acos}
+\DeclareMathOperator{\asin}{asin}
+\DeclareMathOperator{\atan}{atan}
+\DeclareMathOperator{\acosh}{acosh}
+\DeclareMathOperator{\asinh}{asinh}
+\DeclareMathOperator{\atanh}{atanh}
 \DeclareMathOperator{\ph}{ph}
+\let\O=\operatorname
+\newcommand{\Ob}[1]{\operatorname{\mathbf{#1}}}
+\newcommand{\RR}{{\mathbb{R}}}
+\newcommand{\CC}{{\mathbb{C}}}
+\newcommand{\ZZ}{{\mathbb{Z}}}
+\newcommand{\QQ}{{\mathbb{Q}}}
+\newcommand{\NN}{{\mathbb{N}}}
+\newcommand{\NNo}{{\mathbb{N}_0}}
+\newcommand{\ii}{{\hat{\imath}}}
+\newcommand{\Hyper}[5]{{\mathop{{}_{#1}\!\O{F\!}_{#2}\left({\genfrac{}{}{0pt}{}{#3}{#4}}\middle|{#5}\right)}}}
 
-%\def\ii{{\mathbb{i}}}
-\def\ii{{\hat\imath}}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{Computation of Special Functions\\(Haskell)}
 \author{Apollo Hogan}
 \begin{document}

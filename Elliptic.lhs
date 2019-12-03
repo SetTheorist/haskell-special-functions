@@ -22,7 +22,7 @@ two23 :: Double
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Elliptic integral of the first kind}
 
-Assume that $1-\sin^2\phi, 1-k^2\sin^2\phi\in \mathbb{C}\setminus(-\infty,0]$
+Assume that $1-\sin^2\phi, 1-k^2\sin^2\phi\in \CC\setminus(-\infty,0]$
 except that one of them may be 0.
 
 The elliptic integral of the first kind is defined by
@@ -35,7 +35,7 @@ The complete integral is given by $\phi=\pi/2$:
 \subsection{\tt sf\_elliptic\_k k}
 Compute the complete elliptic integral of the first kind $K(k)$
 To evaluate this, we use the AGM relation
-\[ K(k) = \frac{\pi}{2 \agm(1,k')} \qquad \text{where $k'=\sqrt{1-k^2}$} \marginnote{$K(k)$}\]
+\[ K(k) = \frac{\pi}{2 \O{agm}(1,k')} \qquad \text{where $k'=\sqrt{1-k^2}$} \marginnote{$K(k)$}\]
 TODO: UNTESTED!
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_elliptic\_k k} = K(k)$}
 \begin{code}
@@ -53,8 +53,8 @@ To evaluate, we use an ascending Landen transformation:
     \qquad \text{where $k_2=\frac{2\sqrt{k}}{1+k}$ and $2\phi_2=\phi+\arcsin(k \sin\phi)$} \marginnote{$F(\phi,k)$}\]
 Note that $0<k<1$ and $0<\phi\leq\pi/2$ imply $k<k_2<1$ and $\phi_2<\phi$.
 We iterate this transformation until we reach $k=1$ and use the special case
-\[ F(\phi,1) = \gud^{-1}(\phi) \]
-(Where $\gud^{-1}(\phi)$ is the inverse Gudermannian function (TODO)).
+\[ F(\phi,1) = \O{gud}^{-1}(\phi) \]
+(Where $\O{gud}^{-1}(\phi)$ is the inverse Gudermannian function (TODO)).
 TODO: UNTESTED!
 \begin{titled-frame}{$\text{\color{blue}\tt sf\_elliptic\_f phi k} = F(\phi,k)$}
 \begin{code}
@@ -84,7 +84,7 @@ sf_elliptic_f phi k
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Elliptic integral of the second kind}
 
-Assume that $1-\sin^2\phi, 1-k^2\sin^2\phi\in \mathbb{C}\setminus(-\infty,0]$
+Assume that $1-\sin^2\phi, 1-k^2\sin^2\phi\in \CC\setminus(-\infty,0]$
 except that one of them may be 0.
 
 Legendre's (incomplete) elliptic integral of the second kind is defined via
@@ -294,7 +294,7 @@ sf_elliptic_el3 x kc p =
 
 \subsection{\tt sf\_elliptic\_rc x y}
 Compute the symmetric elliptic integral $R_C(x,y)$ for real parameters.
-Let $x\in\mathbb{C}\setminus(-\infty,0)$, $y\in\mathbb{C}\setminus\{0\}$, then we define
+Let $x\in\CC\setminus(-\infty,0)$, $y\in\CC\setminus\{0\}$, then we define
 \[ R_C(x,y) = \frac12 \int_0^\infty \frac{dt}{\sqrt{t+x}(t+y)} \]
 (where the Cauchy principal value is taken if $y<0$.)
 TODO: UNTESTED!
@@ -430,5 +430,4 @@ sf_elliptic_rj x y z p =
          else iter x' y' z' p' smm' scale'
 \end{code}
 \end{titled-frame}
-
 

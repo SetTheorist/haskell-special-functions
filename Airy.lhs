@@ -1,6 +1,6 @@
 \chapter{Airy}
 
-The Airy functions $\Ai$ and $\Bi$,
+The Airy functions $\O{Ai}$ and $\O{Bi}$,
 are standard solutions of the ode $y''-zy=0$.
 
 \section{Preamble}
@@ -17,20 +17,20 @@ import Util
 
 \section{Ai}
 
-The solution $\Ai(z)$ of the Airy ODE is given by
-\[ \Ai(z) = \frac1\pi \int_0^\infty \cos(\frac{t^3}{3} + xt)\,dt \marginnote{$\Ai(z)$}\]
+The solution $\O{Ai}(z)$ of the Airy ODE is given by
+\[ \O{Ai}(z) = \frac1\pi \int_0^\infty \cos(\frac{t^3}{3} + xt)\,dt \marginnote{$\O{Ai}(z)$}\]
 it can be given in terms of Bessel functions, where $\zeta=(2/3)z^{3/2}$
-\[ \Ai(z) = \frac{\sqrt{z/3}}{\pi} K_{\pm1/3}(\zeta)
-    = \frac{\sqrt{z}}{3} \left( I_{-1/3}(\zeta) - I_{1/3}(\zeta) \right) \]
+\[ \O{Ai}(z) = \frac{\sqrt{z/3}}{\pi} \O{K}_{\pm1/3}(\zeta)
+    = \frac{\sqrt{z}}{3} \left( \O{I}_{-1/3}(\zeta) - \O{I}_{1/3}(\zeta) \right) \]
 or
-\[ \Ai(-z) = \frac{\sqrt{z}}{3} \left( J_{1/3}(\zeta) - J_{-1/3}(\zeta) \right) \]
+\[ \O{Ai}(-z) = \frac{\sqrt{z}}{3} \left( \O{J}_{1/3}(\zeta) - \O{J}_{-1/3}(\zeta) \right) \]
 
 \subsection{\tt sf\_airy\_ai z}
 For now, we use an asymptotic expansion for large values and a series for smaller values.
 This gives reasonable results for small-enough or large-enough values, but it has
 low accuracy for intermediate values, ({\it e.g.\@} $z=5$).
 (TODO: Seems quite bad for complex values)
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_airy\_ai z} = \Ai(z)$}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_airy\_ai z} = \O{Ai}(z)$}
 \begin{code}
 sf_airy_ai :: (Value v) => v -> v
 sf_airy_ai !z
@@ -43,8 +43,8 @@ sf_airy_ai !z
 \subsubsection{Initial conditions}
 Initial conditions
 \begin{eqnarray*}
-\Ai(0)  &=& \frac{1}{3^{2/3} \Gamma(2/3)} \\
-\Ai'(0) &=& \frac{-1}{3^{1/3} \Gamma(1/3)}
+\O{Ai}(0)  &=& \frac{1}{3^{2/3} \Gamma(2/3)} \\
+\O{Ai}'(0) &=& \frac{-1}{3^{1/3} \Gamma(1/3)}
 \end{eqnarray*}
 \begin{code}
 ai0 :: (Value v) => v
@@ -54,9 +54,9 @@ ai'0 = (-3**(-1/3)) * (sf_invgamma(1/3))
 \end{code}
 
 \subsubsection{Series expansion}
-The series expansion for $\Ai(z)$ is given by 
+The series expansion for $\O{Ai}(z)$ is given by 
 \begin{eqnarray*}
-\Ai(z) &=& \Ai(0)f(z) + \Ai'(0)g(z) \\
+\O{Ai}(z) &=& \O{Ai}(0)f(z) + \O{Ai}'(0)g(z) \\
 f(z) &=& \sum_{n=0}^\infty\frac{(3n-2)!!!}{(3n)!}z^{3n}
   = 1 + \frac{1}{3!}z^3 + \frac{1\cdot4}{6!}z^6 + \frac{1\cdot4\cdot7}{9!}z^9 + \cdots \\
 g(z) &=& \sum_{n=0}^\infty\frac{(3n-1)!!!}{(3n+1)!}z^{3n+1}
@@ -72,8 +72,8 @@ airy_ai__series !z =
 \end{code}
 
 \subsubsection{Asymptotic expansion (positive)}
-The asymptotic expansion for $\Ai(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
-\[ \Ai(z) \sim \frac{e^{-\zeta}}{2\sqrt{\pi}z^{1/4}}\sum_{k=0}^\infty (-)^k \frac{u_k}{\zeta^k} \]
+The asymptotic expansion for $\O{Ai}(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
+\[ \O{Ai}(z) \sim \frac{e^{-\zeta}}{2\sqrt{\pi}z^{1/4}}\sum_{k=0}^\infty (-)^k \frac{u_k}{\zeta^k} \]
 where $\zeta=(2/3)z^{3/2}$ and where (with $u_0=1$)
 \[ u_{k} = \frac{(2k+1)(2k+3)\cdots(6k-1)}{216^k k!} = \frac{(6k-5)(6k-3)(6k-1)}{(2k-1)216 k} u_{k-1} \]
 \begin{code}
@@ -90,7 +90,7 @@ airy_ai__asympt_pos z =
 
 \subsubsection{Asymptotic expansion (negative)}
 We also have the asymptotic expansion
-\[ \Ai(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
+\[ \O{Ai}(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
     \cos(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k}}{\zeta^{2k}}
    + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k+1}}{\zeta^{2k+1}}
   \right) \]
@@ -117,7 +117,7 @@ For now, we use an asymptotic expansion for large values and a series for smalle
 This gives reasonable results for small-enough or large-enough values, but it has
 low accuracy for intermediate values, ({\it e.g.\@} $z=5$).
 (TODO: Seems quite bad for complex values)
-\begin{titled-frame}{$\text{\color{blue}\tt sf\_airy\_bi z} = \Bi(z)$}
+\begin{titled-frame}{$\text{\color{blue}\tt sf\_airy\_bi z} = \O{Bi}(z)$}
 \begin{code}
 sf_airy_bi :: (Value v) => v -> v
 sf_airy_bi !z
@@ -129,8 +129,8 @@ sf_airy_bi !z
 
 Initial conditions
 \begin{eqnarray*}
-\Bi(0)  &=& \frac{1}{3^{1/6} \Gamma(2/3)} \\
-\Bi'(0) &=& \frac{3^{1/6}}{\Gamma(1/3)}
+\O{Bi}(0)  &=& \frac{1}{3^{1/6} \Gamma(2/3)} \\
+\O{Bi}'(0) &=& \frac{3^{1/6}}{\Gamma(1/3)}
 \end{eqnarray*}
 \begin{code}
 bi0 :: (Value v) => v
@@ -141,8 +141,8 @@ bi'0 = 3**(1/6)/sf_gamma(1/3)
 
 \subsubsection{Series expansion}
 Series expansion, where $n!!!=\max(n,1)$ for $n\leq2$ and otherwise $n!!!=n\cdot(n-3)!!!$:
-\[ \Bi(z) = \Bi(0)\left(\sum_{n=0}^\infty\frac{(3n-2)!!!}{(3n)!}z^{3n}\right)
-    + \Bi'(0)\left(\frac{(3n-1)!!!}{(3n+1)!}z^{3n+1}\right) \]
+\[ \O{Bi}(z) = \O{Bi}(0)\left(\sum_{n=0}^\infty\frac{(3n-2)!!!}{(3n)!}z^{3n}\right)
+    + \O{Bi}'(0)\left(\frac{(3n-1)!!!}{(3n+1)!}z^{3n+1}\right) \]
 \begin{code}
 airy_bi__series z =
     let !z3 = z^3
@@ -152,8 +152,8 @@ airy_bi__series z =
 \end{code}
 
 \subsubsection{Asymptotic expansion (positive)}
-The asymptotic expansion for $\Bi(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
-\[ \Bi(z) \sim \frac{e^{\zeta}}{\sqrt{\pi} z^{1/4}}\sum_{k=0}^\infty \frac{u_k}{\zeta^k} \]
+The asymptotic expansion for $\O{Bi}(z)$ when $z\to\infty$ with $|\ph z|\leq\pi-\delta$ is given by
+\[ \O{Bi}(z) \sim \frac{e^{\zeta}}{\sqrt{\pi} z^{1/4}}\sum_{k=0}^\infty \frac{u_k}{\zeta^k} \]
 where $\zeta=(2/3)z^{3/2}$ and where (with $u_0=1$)
 \[ u_{k} = \frac{(2k+1)(2k+3)\cdots(6k-1)}{216^k k!} = \frac{(6k-5)(6k-3)(6k-1)}{(2k-1)216 k} u_{k-1} \]
 \begin{code}
@@ -170,7 +170,7 @@ airy_bi__asympt_pos z =
 
 \subsubsection{Asymptotic expansion (negative)}
 We also have the asymptotic expansion
-\[ \Bi(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
+\[ \O{Bi}(-z) \sim \frac{1}{\sqrt\pi z^{1/4}} \left(
     \cos(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k}}{\zeta^{2k}}
    + \sin(\zeta-\frac\pi4) \sum_{k=0}^\infty (-)^k\frac{u_{2k+1}}{\zeta^{2k+1}}
   \right) \]

@@ -10,7 +10,7 @@ import Util
 
 \section{AGM}
 Gauss' arithmetic-geometric mean or AGM of two numbers is defined as
-the limit $\agm(\alpha,\beta)=\lim_n\alpha_n=\lim_n \beta_n$ where
+the limit $\O{agm}(\alpha,\beta)=\lim_n\alpha_n=\lim_n \beta_n$ where
 we define
 \begin{eqnarray*}
   \alpha_{n+1} &=& \frac{\alpha_n+\beta_n}{2} \\
@@ -23,7 +23,7 @@ Here we compute the AGM via the definition and return the full
 arrays of intermediate values $([\alpha_n],[\beta_n],[\gamma_n])$,
 where $\gamma_n=\frac{\alpha_n-\beta_n}{2}$.
 (The iteration converges quadratically so this is an efficient approach.)
-\begin{titled-frame}{$\text{\tt sf\_agm alpha beta}=\agm(\alpha,\beta)$\marginnote{\tt sf\_agm}}%
+\begin{titled-frame}{$\text{\tt sf\_agm alpha beta}=\O{agm}(\alpha,\beta)$\marginnote{\tt sf\_agm}}%
 \begin{code}
 sf_agm :: (Value v) => v -> v -> ([v],[v],[v])
 sf_agm alpha beta = agm [alpha] [beta] [alpha-beta]
@@ -38,8 +38,8 @@ sf_agm alpha beta = agm [alpha] [beta] [alpha-beta]
 \end{titled-frame}
   
 \subsection{\tt sf\_agm' alpha beta}
-Here we return simply the value $\verb|sf_agm' a b|=\agm(a,b)$.
-\begin{titled-frame}{$\text{\tt sf\_agm' z}=\agm z$}%
+Here we return simply the value $\verb|sf_agm' a b|=\O{agm}(a,b)$.
+\begin{titled-frame}{$\text{\tt sf\_agm' a b}=\O{agm}(a,b)$}%
 \begin{code}
 sf_agm' :: (Value v) => v -> v -> v
 sf_agm' alpha beta = agm alpha beta ((alpha-beta)/2)

@@ -5,14 +5,14 @@ A silly approach to efficient computation of Fibonacci numbers
 
 The idea is to use the closed-form solution:
 \[ f_n = \frac{1}{\sqrt5}\left(\frac{1+\sqrt5}{2}\right)^n + \frac{-1}{\sqrt5}\left(\frac{1-\sqrt5}{2}\right)^n \]
-and note that we can work in $\mathbb{Q}[\sqrt5]$ with terms of the form $a+b\sqrt5$ with $a,b\in\mathbb{Q}$
+and note that we can work in $\QQ[\sqrt5]$ with terms of the form $a+b\sqrt5$ with $a,b\in\QQ$
 (notice that $\frac{1}{\sqrt5}=\frac{\sqrt5}{5}$.)
 \begin{eqnarray*}\
 (a+b\sqrt5) + (c+d\sqrt5) &=& (a+c)+(b+d)\sqrt5 \\
 (a+b\sqrt5) * (c+d\sqrt5) &=& (ac+5bd)+(ad+bc)\sqrt5
 \end{eqnarray*}
 
-We use the \verb|Rational| type to represent elements of $\mathbb{Q}$, which is a bit more than we actually need,
+We use the \verb|Rational| type to represent elements of $\QQ$, which is a bit more than we actually need,
 as in the computations above the denominator of $\left(\frac{1\pm\sqrt5}{2}\right)^n$ is always, in fact,~1~or~2.
 \begin{code}
 module Fibo (fibonacci) where
