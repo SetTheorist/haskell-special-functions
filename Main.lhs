@@ -46,6 +46,7 @@
                {&&}{{$\wedge$}}2
                {||}{{$\vee$}}2
                {forall}{{$\forall$}}1%6
+               {eps}{{$\epsilon$}}1
                %{'}{{${}^\prime$}}1 %% TODO: this is ugly, find better
     }
 
