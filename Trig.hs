@@ -9,6 +9,11 @@ sf_cos :: (Value v) => v -> v
 --sf_cos x = ksum $ ixiter 0 1 $ \n t -> -t*x^2/((#)$2*n+1)/((#)$2*n+2)
 sf_cos = cos
 
+-- cos(pi*x)
+-- TODO: efficient version
+sf_cos_pi :: (Value v) => v -> v
+sf_cos_pi x = sf_cos (pi*x)
+
 sf_acos :: (Value v) => v -> v
 sf_acos = acos
 
@@ -26,6 +31,11 @@ sf_hvcos x = (sf_cos $ x/2)^2
 sf_sin :: (Value v) => v -> v
 --sf_sin x = ksum $ ixiter 1 x $ \n t -> -t*x^2/((#)$2*n)/((#)$2*n+1)
 sf_sin = sin
+
+-- sin(pi*x)
+-- TODO: efficient version
+sf_sin_pi :: (Value v) => v -> v
+sf_sin_pi x = sf_sin (pi*x)
 
 sf_asin :: (Value v) => v -> v
 sf_asin = asin
