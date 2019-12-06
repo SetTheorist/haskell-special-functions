@@ -4,7 +4,8 @@
 \begin{titled-frame}{\color{blue}\tt module Zeta}
 \begin{code}
 {-# Language BangPatterns #-}
-module Zeta (sf_zeta, sf_zeta_m1) where
+module Zeta (sf_zeta, sf_zeta_m1, sf_gamma_p1m1) where
+import Exp
 import Gamma
 import Trig
 import Util
@@ -73,4 +74,18 @@ zeta_series !init !z =
 \end{code}
 \end{titled-frame}
 
+
+\section{\tt sf\_gamma\_p1m1 z}
+Compute $\Gamma(1+z)-1$ (without losing precision for small z).
+(Note that this is not generalized for other precisions...)
+\begin{code}
+sf_gamma_p1m1 :: (Value v) => v -> v
+sf_gamma_p1m1 z
+  | (rabs z) >= 1/2 = (sf_gamma $ 1+z)-1
+  | otherwise =
+      let !tterms = map (\k -> (-1)^k * (sf_zeta_m1$(#)k) * z^k / (#)k) [2..]
+          !terms = (-sf_log_p1 z):(z*0.4227843350984671393934879099):tterms
+          !res = ksum terms
+      in sf_exp_m1 res
+\end{code}
 

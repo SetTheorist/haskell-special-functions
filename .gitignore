@@ -24,3 +24,4 @@ cabal.project.local~
 *.aux
 *.swp
 *.toc
+plot*.dat
