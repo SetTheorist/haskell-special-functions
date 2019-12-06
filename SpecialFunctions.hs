@@ -4,6 +4,7 @@ module SpecialFunctions
     , module Airy
     , module Bessel
     , module Debye
+    , module EasyPlot
     , module Elliptic
     , module Erf
     , module Exp
@@ -26,6 +27,7 @@ import Airy
 import AGM
 import Bessel
 import Debye
+import EasyPlot
 import Elliptic
 import Erf
 import Exp
