@@ -14,6 +14,7 @@ module SpecialFunctions
     , module Numbers
     , module Probability
     , module Quad
+    , module Solve
     , module Spence
     , module Theta
     , module Trig
@@ -35,6 +36,7 @@ import Lommel
 import Numbers
 import Probability
 import Quad
+import Solve
 import Spence
 import Theta
 import Trig

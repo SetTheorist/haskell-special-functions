@@ -3,7 +3,7 @@
 \section{Preamble}
 \begin{code}
 {-# Language BangPatterns #-}
-module Solving where
+module Solve where
 import Trig
 import Util
 import System.IO.Unsafe
@@ -116,9 +116,8 @@ sf_solve_quartic !a !b !c !d !e
 Compute the root(s) of the polynomial $a_1 + a_2*x + ... + a_n*x^{n-1}$.
 returns up to nr roots.
 \begin{code}
-sf_solve_poly :: (Value v) -> Int -> [v] -> [v]
-sf_solve_poly nr as =
-  let !m = (length as) - 1
+sf_solve_poly :: (Value v) => Int -> [v] -> [v]
+sf_solve_poly nr as = undefined
 {--
 ## @deftypefn {Function File} {@var{res} =} sf_solve_poly (@var{a}, [@var{nr}])
 ## Compute the root(s) of the polynomial $a_1 + a_2*x + ... + a_n*x^(n-1)$.

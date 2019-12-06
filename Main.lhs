@@ -88,6 +88,9 @@ Special functions.
 %\chapter{Util}
 \input{Util.lhs}
 
+%\chapter{Solve}
+\input{Solve.lhs}
+
 %\chapter{Fibo}
 \input{Fibo.lhs}
 
