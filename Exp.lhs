@@ -48,7 +48,7 @@ sf_exp !x
   | is_nan x  = x
   | (re x)<0  = 1/(sf_exp (-x))
   -- | otherwise = ksum $ ixiter 1 1.0 $ \n t -> t*x/(#)n
-  | otherwise =
+  | otherwise = -- TODO: split real/imaginary!!!
       let !ln2 = 0.69314718055994530941723212145817656807
           !n   = floor $ (rabs x)/ln2
           !r   = x - (fromReal$ln2*((#)n))

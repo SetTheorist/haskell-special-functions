@@ -97,6 +97,9 @@ Special functions.
 %\chapter{Numbers}
 \input{Numbers.lhs}
 
+%\chapter{Orthogonal polynomials}
+\input{OrthoPoly.lhs}
+
 %\chapter{Exponential, logarithm}
 \input{Exp.lhs}
 

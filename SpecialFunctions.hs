@@ -13,6 +13,7 @@ module SpecialFunctions
     , module IncompleteGamma
     , module Lommel
     , module Numbers
+    , module OrthoPoly
     , module Probability
     , module Quad
     , module Solve
@@ -36,6 +37,7 @@ import Gamma
 import IncompleteGamma
 import Lommel
 import Numbers
+import OrthoPoly
 import Probability
 import Quad
 import Solve
