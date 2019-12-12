@@ -3,6 +3,7 @@ module SpecialFunctions
     , module AGM
     , module Airy
     , module Bessel
+    , module Bloat
     , module Debye
     , module EasyPlot
     , module Elliptic
@@ -27,6 +28,7 @@ module SpecialFunctions
 import Airy
 import AGM
 import Bessel
+import Bloat
 import Debye
 import EasyPlot
 import Elliptic

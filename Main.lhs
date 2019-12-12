@@ -88,6 +88,9 @@ Special functions.
 %\chapter{Util}
 \input{Util.lhs}
 
+%\chapter{Bloat}
+\input{Bloat.lhs}
+
 %\chapter{Solve}
 \input{Solve.lhs}
 
