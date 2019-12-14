@@ -114,6 +114,11 @@ indices (or other integral values) to our computation type.
 b +# a = b + (#)a
 (#+) :: (Integral a, Num b) => a -> b -> b
 a #+ b = (#)a + b
+
+(*#) :: (Integral a, Num b) => b -> a -> b
+b *# a = b * (#)a
+(#*) :: (Integral a, Num b) => a -> b -> b
+a #* b = (#)a * b
 \end{code}
 
 A version of \verb|iterate| which passes along an index also

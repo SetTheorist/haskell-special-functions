@@ -214,19 +214,30 @@ sf_orthopoly_chebyshev_u_zeros !n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Jacobi Polynomials}
 
-\begin{code}
-{--
-## -*- texinfo -*-
-## @deftypefn {Function File} {@var{res} =} sf_orthopoly_jacobi_coeffs (@var{n}, @var{a}, @var{b})
-## Compute the coefficients of the $n$'th Jacobi polynomial:
-## $J^(a,b)_n(z) = a_1 + a_2*x + ... + a_(n+1)*x^n$,
-## $a>-1$, $b>-1$, $n=0, 1, 2, ...$
-## @end deftypefn
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Coefficients}
 
-function res = sf_orthopoly_jacobi_coeffs(n, a, b)
-  if (nargin < 3) print_usage; endif
-  if (!sf_is_nonnegint(n) || a<-1 || b<-1) print_usage; endif
-  switch (n)
+Compute the coefficients of the $n$'th Jacobi polynomial:
+$J^{(\alpha,\beta)}_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
+$a>-1$, $b>-1$, $n=0, 1, 2, \dots$
+\begin{code}
+sf_orthopoly_jacobi_coeffs :: Double -> Double -> Int -> [Double]
+sf_orthopoly_jacobi_coeffs a b n
+--  if (!sf_is_nonnegint(n) || a<-1 || b<-1) print_usage; endif
+  | n==0 = P.coeffs $ p0
+  | n==1 = P.coeffs $ p1
+  | otherwise = P.coeffs $ go 2 p0 p1
+  where
+    p0 = 1
+    p1 = P.Poly [(a-b)/2, (2+a+b)/2]
+    go !k !rm2 !rm1 = 
+      let !ax = (2*#k+a+b-1)*(a^2-b^2)
+          !bx = (2*#k+a+b-2)*(2*k#+a+b-1)*(2*k#+a+b)
+          !cx = 2*(k#+a-1)*(k#+b-1)*(2*k#+a+b)
+          !dx = 2*k#*(k#+a+b)*(2*k#+a+b-2)
+          !rm0 = (ax P.<* rm1 + (bx P.<*P.px)*rm1 - cx P.<* rm2) P./> dx
+      in if k==n then rm0 else go (k+1) rm1 rm0
+{--
   case 0
     res = [1];
   case 1
