@@ -43,6 +43,20 @@ sf_beta :: (Value v) => v -> v -> v
 sf_beta a b = sf_exp $ (sf_lngamma a) + (sf_lngamma b) - (sf_lngamma$a+b)
 \end{code}
 
+
+
+Compute the Pochhammer symbol $(z)_\alpha$
+\begin{code}
+{--
+sf_pochhammer z al
+  | (sf_is_nonnegint al) && al<100 = product $ map (z+) (0:(floor$al-1))
+  | otherwise = sf_exp $ (sf_lngamma $ z + al) - (sf_lngamma z)
+  --  kludge cleanup
+  -- f (sf_is_int(z) && sf_is_int(al)) res = round(res); endif
+  -- f (imag(z)==0 && imag(al)==0) res = real(res); endif
+--}
+\end{code}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Gamma}
 

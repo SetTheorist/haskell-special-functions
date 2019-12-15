@@ -32,6 +32,30 @@ class OrthogonalPolynomial a where
   value_arr :: a -> Int -> Double -> [Double]
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Utility}
+
+Compute the polynomial $p_n(x)$ satisfying the second-order recurrence
+\[ p_{n+1}(x) = (A_n x + B_n)p_n(x) - C_n p_{n-1}(x) \]
+with $p_0(x)$ and $p_1(x)$ given.
+\begin{code}
+{-# INLINABLE recur_coeffs #-}
+recur_coeffs :: P.Poly Double -> P.Poly Double -> (Int->Double) -> (Int->Double) -> (Int->Double) -> Int -> P.Poly Double
+recur_coeffs p0 p1 an bn cn n
+  | n == 0    = p0
+  | n == 1    = p1
+  | otherwise = iter 2 p0 p1
+  where
+    iter :: Int -> P.Poly Double -> P.Poly Double -> P.Poly Double
+    iter !k !rm2 !rm1 =
+      let !ak = an (k-1)
+          !bk = bn (k-1)
+          !ck = cn (k-1)
+          !rm0 = (P.Poly [bk,ak])*rm1 - (ck P.<* rm2)
+      in if k==n then rm0
+         else iter (k+1) rm1 rm0
+\end{code}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Chebyshev Polynomials of the First Kind}
 
@@ -55,15 +79,8 @@ instance OrthogonalPolynomial ChebyshevTPolynomial where
 Compute the coefficients of the $n$'th Chebyshev polynomial of the first kind: $T_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
 $n=0, 1, 2, \dots$
 \begin{code}
-sf_orthopoly_chebyshev_t_coeffs !n
-  | n==0 = [1]
-  | n==1 = [0,1]
-  | otherwise = P.coeffs $ iter 2 1 P.px
-  where
-    iter !k !rm2 !rm1 =
-      let !rm0 = 2 P.<* (P.px*rm1) - rm2
-      in if k==n then rm0
-         else iter (k+1) rm1 rm0
+sf_orthopoly_chebyshev_t_coeffs :: Int -> [Double]
+sf_orthopoly_chebyshev_t_coeffs !n = P.coeffs $ recur_coeffs (P.Poly[1]) (P.Poly[0,1]) (const 2) (const 0) (const 1) n
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,6 +88,7 @@ sf_orthopoly_chebyshev_t_coeffs !n
 Compute the scale-factor to normalize the $n$'th Chebyshev polynomial of the first kind, $T_n(z)$
 $n=0, 1, 2, \dots$
 \begin{code}
+sf_orthopoly_chebyshev_t_scale :: Int -> Double
 sf_orthopoly_chebyshev_t_scale !n
   | n==0      = sf_sqrt (1/pi)
   | otherwise = sf_sqrt (2/pi)
@@ -94,7 +112,9 @@ sf_orthopoly_chebyshev_t_value_accum !k1 !k0 !n !z
 
 Returns values in reverse order: $[T_n(z),T_{n-1}(z),\dots,T_0(z)]$
 \begin{code}
+sf_orthopoly_chebyshev_t_value  :: Int -> Double -> Double
 sf_orthopoly_chebyshev_t_value  = sf_orthopoly_chebyshev_t_value_accum const 0
+sf_orthopoly_chebyshev_t_values :: Int -> Double -> [Double]
 sf_orthopoly_chebyshev_t_values = sf_orthopoly_chebyshev_t_value_accum (:)   []
 \end{code}
 
@@ -104,6 +124,7 @@ sf_orthopoly_chebyshev_t_values = sf_orthopoly_chebyshev_t_value_accum (:)   []
 Compute the Gauss quadrature weights for the $n$'th Chebyshev polynomial of the first kind: $T_n(z)$
 $n=0, 1, 2, \dots$
 \begin{code}
+sf_orthopoly_chebyshev_t_weights :: Int -> [Double]
 sf_orthopoly_chebyshev_t_weights !n
   | n==0      = []
   | otherwise = replicate n (pi/(#)n)
@@ -146,15 +167,8 @@ Compute the coefficients of the $n$'th Chebyshev polynomial of the second kind:
 $U_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
 $n=0, 1, 2, \dots$
 \begin{code}
-sf_orthopoly_chebyshev_u_coeffs !n
-  | n==0 = [1]
-  | n==1 = [0,2]
-  | otherwise = P.coeffs $ iter 2 1 (2 P.<* P.px)
-  where
-    iter !k !rm2 !rm1 =
-      let !rm0 = 2 P.<* (P.px*rm1) - rm2
-      in if k==n then rm0
-         else iter (k+1) rm1 rm0
+sf_orthopoly_chebyshev_u_coeffs :: Int -> [Double]
+sf_orthopoly_chebyshev_u_coeffs !n = P.coeffs $ recur_coeffs (P.Poly[1]) (P.Poly[0,2]) (const 2) (const 0) (const 1) n
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,6 +176,7 @@ sf_orthopoly_chebyshev_u_coeffs !n
 Compute the scale-factor to normalize the $n$'th Chebyshev polynomial of the second kind, $U_n(z)$
 $n=0, 1, 2, \dots$
 \begin{code}
+sf_orthopoly_chebyshev_u_scale :: Int -> Double
 sf_orthopoly_chebyshev_u_scale _ = sf_sqrt $ 2/pi
 \end{code}
 
@@ -183,7 +198,9 @@ sf_orthopoly_chebyshev_u_value_accum !k1 !k0 !n !z
 
 Returns values in reverse order: $[U_n(z),U_{n-1}(z),\dots,U_0(z)]$
 \begin{code}
+sf_orthopoly_chebyshev_u_value  :: Int -> Double -> Double
 sf_orthopoly_chebyshev_u_value  = sf_orthopoly_chebyshev_u_value_accum const 0
+sf_orthopoly_chebyshev_u_values :: Int -> Double -> [Double]
 sf_orthopoly_chebyshev_u_values = sf_orthopoly_chebyshev_u_value_accum (:)   []
 \end{code}
 
@@ -192,6 +209,7 @@ sf_orthopoly_chebyshev_u_values = sf_orthopoly_chebyshev_u_value_accum (:)   []
 Compute the Gauss quadrature weights for the $n$'th Chebyshev polynomial of the second kind: $U_n(z)$
 $n=0, 1, 2, \dots$
 \begin{code}
+sf_orthopoly_chebyshev_u_weights :: Int -> [Double]
 sf_orthopoly_chebyshev_u_weights !n
   | n==0 = []
   | otherwise = map (\j -> (pi/(#)(n+1)) * (sf_sin $ (pi*(#)j/(#)(n+1)))^2) [1..n]
@@ -201,8 +219,9 @@ sf_orthopoly_chebyshev_u_weights !n
 \subsection{Zeros}
 
 Compute the zeros of the $n$'th Chebyshev polynomial of the second kind: $U_n(z)$
-$n=0, 1, 2, ...$
+$n=0, 1, 2, \dots$
 \begin{code}
+sf_orthopoly_chebyshev_u_zeros :: Int -> [Double]
 sf_orthopoly_chebyshev_u_zeros !n
   | n==0      = []
   | otherwise =
@@ -214,12 +233,27 @@ sf_orthopoly_chebyshev_u_zeros !n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Jacobi Polynomials}
 
+\begin{code}
+data JacobiPolynomial = JacobiPolynomial Double Double
+
+instance OrthogonalPolynomial JacobiPolynomial where
+  support _ = (-1,1)
+  weight    (JacobiPolynomial a b) x = (1-x)**a * (1+x)**b
+  coeffs    (JacobiPolynomial a b) = sf_orthopoly_jacobi_coeffs a b
+  scale     (JacobiPolynomial a b) = sf_orthopoly_jacobi_scale a b
+  value     (JacobiPolynomial a b) = sf_orthopoly_jacobi_value a b
+  value_arr (JacobiPolynomial a b) = sf_orthopoly_jacobi_values a b
+  weights   (JacobiPolynomial a b) = sf_orthopoly_jacobi_weights a b
+  zeros     (JacobiPolynomial a b) = sf_orthopoly_jacobi_zeros a b
+\end{code}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Coefficients}
 
 Compute the coefficients of the $n$'th Jacobi polynomial:
 $J^{(\alpha,\beta)}_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
-$a>-1$, $b>-1$, $n=0, 1, 2, \dots$
+$\alpha>-1$, $\beta>-1$, $n=0, 1, 2, \dots$
 \begin{code}
 sf_orthopoly_jacobi_coeffs :: Double -> Double -> Int -> [Double]
 sf_orthopoly_jacobi_coeffs a b n
@@ -237,37 +271,13 @@ sf_orthopoly_jacobi_coeffs a b n
           !dx = 2*k#*(k#+a+b)*(2*k#+a+b-2)
           !rm0 = (ax P.<* rm1 + (bx P.<*P.px)*rm1 - cx P.<* rm2) P./> dx
       in if k==n then rm0 else go (k+1) rm1 rm0
-{--
-  case 0
-    res = [1];
-  case 1
-    res = [(a-b)/2,(2+a+b)/2];
-  otherwise
-    persistent cache = {};
-    if (n<=length(cache) && !isempty(cache{n}))
-      res = cache{n};
-    endif
-    rm1 = zeros(1,n+1); rm1(1) = 1;
-    rm0 = zeros(1,n+1); rm0(1) = (a-b)/2; rm0(2) = (2+a+b)/2;
-    for k=2:n
-      rm2 = rm1;
-      rm1 = rm0;
-      ax = (2*k+a+b-1)*(a^2-b^2);
-      bx = (2*k+a+b-2)*(2*k+a+b-1)*(2*k+a+b);
-      cx = 2*(k+a-1)*(k+b-1)*(2*k+a+b);
-      dx = 2*k*(k+a+b)*(2*k+a+b-2);
-      rm0 = (ax*rm1 + bx*shift(rm1,1) - cx*rm2) / dx;
-    endfor
-    res = rm0;
-    if (n<1000) cache{n} = res; endif
-  endswitch
-endfunction
---}
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Scale-factor}
 Compute the scale-factor to normalize the $n$'th Jacobi polynomial:
 $J^{(\alpha,\beta)}_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
-$a>-1$, $b>-1$, $n=0, 1, 2, \dots$
+$\alpha>-1$, $\beta>-1$, $n=0, 1, 2, \dots$
 \begin{code}
 -- if (any(!sf_is_nonnegint(n)) || a<-1 || b<-1) print_usage; endif
 sf_orthopoly_jacobi_scale a b n = sf_sqrt $
@@ -276,8 +286,10 @@ sf_orthopoly_jacobi_scale a b n = sf_sqrt $
     * (sf_gamma$n#+a+b+1)/(sf_gamma$n#+b+1)
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Value}
 Compute the value of the $n$'th Jacobi polynomial: $J^{(\alpha,\beta)}_n(z)$,
-$a>-1$, $b>-1$, $n=0, 1, 2, \dots$, typically $z\in(-1,1)$
+$\alpha>-1$, $\beta>-1$, $n=0, 1, 2, \dots$, typically $z\in(-1,1)$
 \begin{code}
 -- if (!sf_is_nonnegint(n) || a<=-1 || b<=-1) print_usage; endif
 sf_orthopoly_jacobi_value_accum !k1 !k0 !a !b !n !z
@@ -300,41 +312,38 @@ sf_orthopoly_jacobi_value = sf_orthopoly_jacobi_value_accum  const 0
 sf_orthopoly_jacobi_values = sf_orthopoly_jacobi_value_accum (:)   []
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Weights}
+Compute the Gaussian quadrature weights of the $n$'th Jacobi polynomial: $P^{(\alpha,\beta)}_n(z)$
+$n=0, 1, 2, \dots$, $\alpha>-1$, $\beta>-1$
 \begin{code}
-{--
-## -*- texinfo -*-
-## @deftypefn {Function File} {@var{res} =} sf_orthopoly_jacobi_weights (@var{n}, @var{a}, @var{b})
-## Compute the Gaussian quadrature weights of the $n$'th Jacobi polynomial: $P^(a,b)_n(z)$
-## $n=0, 1, 2, ...$, $a>-1$, $b>-1$
-## @end deftypefn
-
-function res = sf_orthopoly_jacobi_weights(n, a, b)
-  if (nargin < 3) print_usage; endif
-  if (!sf_is_nonnegint(n) || a<=-1 || b<=-1) print_usage; endif
-  if (n==0)
-    res = [];
-  elseif (n==1)
-    res = [1];
-  else
-    zs = sf_orthopoly_jacobi_zeros(n, a, b);
-    # need ortho_normal_ polynomials here
-    nrm = sf_orthopoly_jacobi_scale(0:(n-1), a, b);
-    res = zeros(n, 1);
-    for jj = 0:(n-1)
-      res += (sf_orthopoly_jacobi_value(jj, a, b, zs)*nrm(jj+1)).^2;
-    endfor
-    res = 1./res;
-  endif
-endfunction
---}
+sf_orthopoly_jacobi_weights :: Double -> Double -> Int -> [Double]
+sf_orthopoly_jacobi_weights a b n
+  -- if (!sf_is_nonnegint(n) || a<=-1 || b<=-1) print_usage; endif
+  | n==0 = []
+  | n==1 = [1]
+  | otherwise =
+    let !zs = sf_orthopoly_jacobi_zeros a b n
+        -- need ortho_normal_ polynomials here
+        jth j =
+          let !jvs = map (sf_orthopoly_jacobi_value a b j) zs
+              !nj = sf_orthopoly_jacobi_scale a b j
+          in map (\x->(x*nj)^2) jvs
+        !ires = foldl (P..+.) (replicate n 0) (map jth [0..(n-1)])
+        !res = map (1/) ires
+    in res
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Zeros}
+Compute the zeros of the $n$'th Jacobi polynomial: $P^{(\alpha,\beta)}_n(z)$
+$n=0, 1, 2, \dots$, $\alpha>-1$, $\beta>-1$
 \begin{code}
+sf_orthopoly_jacobi_zeros :: Double -> Double -> Int -> [Double]
+sf_orthopoly_jacobi_zeros a b n = undefined
 {--
 ## -*- texinfo -*-
 ## @deftypefn {Function File} {@var{res} =} sf_orthopoly_jacobi_zeros (@var{n}, @var{a}, @var{b})
-## Compute the zeros of the $n$'th Jacobi polynomial: $P^(a,b)_n(z)$
-## $n=0, 1, 2, ...$, $a>-1$, $b>-1$
 ## @end deftypefn
 
 function res = sf_orthopoly_jacobi_zeros(n, a, b)
@@ -381,7 +390,7 @@ instance OrthogonalPolynomial LaguerrePolynomial where
   value     (LaguerrePolynomial a) = sf_orthopoly_laguerre_value a
   value_arr (LaguerrePolynomial a) = sf_orthopoly_laguerre_values a
   weights   (LaguerrePolynomial a) = sf_orthopoly_laguerre_weights a
-  zeros     (LaguerrePolynomial a) = undefined
+  zeros     (LaguerrePolynomial a) = sf_orthopoly_laguerre_zeros a
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -397,15 +406,12 @@ sf_orthopoly_laguerre_coeffs_dx !a !n !k
   | otherwise = ((-1)^(k`mod`2)) P.*. (sf_orthopoly_laguerre_coeffs (a+#k) (n-k))
   
 sf_orthopoly_laguerre_coeffs :: Double -> Int -> [Double]
-sf_orthopoly_laguerre_coeffs !a !n
-  | n==0 = [1]
-  | n==1 = [1+a, -1]
-  | otherwise = P.coeffs $ iter 2 (1) (P.Poly [(1+a),-1])
-  where
-    iter !k !rm2 !rm1 =
-      let !rm0 = (((2*k#+a-1)P.<*rm1) - P.px -((k#+a-1)P.<*rm2)) P./> (#)k
-      in if k==n then rm0
-         else iter (k+1) rm1 rm0
+sf_orthopoly_laguerre_coeffs !a !n = P.coeffs $ 
+  recur_coeffs (P.Poly[1]) (P.Poly[1+a,-1])
+    (\j -> -1        /#(j+1))
+    (\j -> (2*j#+a+1)/#(j+1))
+    (\j -> (j#+a)    /#(j+1))
+    n
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -490,11 +496,11 @@ Compute the zeros of the $n$'th (generalized) Laguerre polynomial: $L^\alpha_n(z
 $n=0, 1, 2, \dots$
 not good for large
 \begin{code}
-sf_orthopoly_laguerre_zeros_dx a n k 
+sf_orthopoly_laguerre_zeros_dx !a !n !k 
   | k>n       = []  -- degenerate case... technically every point is a zero...
   | otherwise = sf_orthopoly_laguerre_zeros (a+#k) (n-k)
 
-sf_orthopoly_laguerre_zeros a n
+sf_orthopoly_laguerre_zeros !a !n
   | n==0 = []
   | n==1 = [1+a]
   | otherwise = undefined
@@ -545,8 +551,8 @@ instance OrthogonalPolynomial LegendrePolynomial where
   scale _     = sf_orthopoly_legendre_scale
   value _     = sf_orthopoly_legendre_value
   value_arr _ = sf_orthopoly_legendre_values
-  weights     = undefined
-  zeros       = undefined
+  weights _   = sf_orthopoly_legendre_weights
+  zeros _     = sf_orthopoly_legendre_zeros
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -557,17 +563,13 @@ $P_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
 $n=0, 1, 2, \dots$
 (TODO: cache?)
 \begin{code}
-sf_orthopoly_legendre_coeffs :: forall v.(Eq v,Num v,Fractional v) => Int -> [v]
-sf_orthopoly_legendre_coeffs !n
-  | n == 0    = [1]
-  | n == 1    = [0,1]
-  | otherwise = P.coeffs $ iter 2 1 P.px
-  where
-    iter :: Int -> P.Poly v -> P.Poly v -> P.Poly v
-    iter !k !rm2 !rm1 =
-      let rm0 = ((((#)$2*k-1)P.<*(P.px*rm1)) - (((#)$k-1)P.<*rm2)) P./> (#)k
-      in if k==n then rm0
-         else iter (k+1) rm1 rm0
+sf_orthopoly_legendre_coeffs :: Int -> [Double]
+sf_orthopoly_legendre_coeffs !n = P.coeffs $
+  recur_coeffs (P.Poly[1]) (P.Poly[0,1])
+    (\k -> ((#)$2*k+1)/((#)$k+1))
+    (const 0)
+    (\k -> (#)k       /((#)$k+1))
+    n
 \end{code}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -614,6 +616,7 @@ $n=0, 1, 2, \dots$
 \begin{code}
 -- cache?
 --if (!sf_is_nonnegint(n)) print_usage; endif
+sf_orthopoly_legendre_weights :: Int -> [Double]
 sf_orthopoly_legendre_weights !n
   | n==0 = []
   | n==1 = [1]
@@ -663,3 +666,123 @@ sf_orthopoly_legendre_zeros !n
     --}
 \end{code}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Gegenbauer (ultraspherical) Polynomials}
+
+
+Compute the coefficients of the $n$'th Gegenbauer (ultraspherical) polynomial
+(or its $k$'th derivative):
+$C^{(\lambda)}_n(z) = a_1 + a_2x + \cdots + a_{n+1}x^n$,
+$n=0, 1, 2, \dots$, $\lambda>-1/2, \lambda\neq0$
+\begin{code}
+sf_orthopoly_gegenbauer_coeffs_dx :: Double -> Int -> Int -> [Double]
+sf_orthopoly_gegenbauer_coeffs_dx !lambda !n !k
+  -- if (!sf_is_nonnegint(k)) print_usage; endif
+  | k==0      = sf_orthopoly_gegenbauer_coeffs lambda n
+  | k>n       = [0]
+  | otherwise = (2*lambda) P.*. (sf_orthopoly_gegenbauer_coeffs_dx (lambda+1) (n-1) (k-1))
+
+sf_orthopoly_gegenbauer_coeffs :: Double -> Int -> [Double]
+sf_orthopoly_gegenbauer_coeffs !lambda !n = P.coeffs $ recur_coeffs
+  -- if (!sf_is_nonnegint(n) || !(a>-1/2) || a==0) print_usage; endif
+  (P.Poly [1]) (P.Poly [0, 2*lambda])
+  (\j -> 2*(j#+lambda)/((#)$j+1))
+  (const 0)
+  (\j -> (j#+2*lambda-1)/((#)$j+1))
+  n
+\end{code}
+
+Compute the scale-factor to normalize the $n$'th Gegenbauer (ultraspherical) polynomial: $C^{(\lambda)}_n(z)$,
+$n=0, 1, 2, \dots$, $\lambda>-1/2, \lambda\neq0$
+\begin{code}
+sf_orthopoly_gegenbauer_scale a n = undefined
+{--
+  -- if (!sf_is_nonnegint(n) || !(a>-1/2) || a==0) print_usage; endif
+  (sf_pochhammer (a+1/2) n)*(sf_sqrt(2*(n+a)*(sf_factorial n)*(sf_gamma$n+2*a)))/(sf_pochhammer (2*a) n)/2^a/(sf_gamma $ n+a+1/2)
+--}
+\end{code}
+
+Compute the value of the $n$'th Gegenbauer (ultraspherical) polynomial: $C^{(\lambda)}_n(z)$,
+(or its $k$'th derivative)
+$n=0, 1, 2, \dots$, $\lambda>-1/2, \lambda\neq0$, typically $z\in[-1,1]$
+\begin{code}
+sf_orthopoly_gegenbauer_value_dx :: Double -> Int -> Int -> Double -> Double
+sf_orthopoly_gegenbauer_value_dx !lambda !n !k !z
+  -- if (!sf_is_nonnegint(k)) print_usage; endif
+  | k==0 = sf_orthopoly_gegenbauer_value lambda n z
+  | k>n = 0
+  | otherwise = (2*lambda) * (sf_orthopoly_gegenbauer_value_dx (lambda+1) (n-1) (k-1) z)
+
+-- if (!sf_is_nonnegint(n) || !(a>-1/2) || a==0) print_usage; endif
+sf_orthopoly_gegenbauer_value_accum :: (Double -> t -> t) -> t -> Double -> Int -> Double -> t
+sf_orthopoly_gegenbauer_value_accum !k1 !k0 !lambda !n !z
+  | n==0 = 1 `k1` k0
+  | n==1 = (2*lambda*z) `k1` (1 `k1` k0)
+  | otherwise = iter 2 1 (2*lambda*z) ((2*lambda*z) `k1` (1 `k1` k0))
+  where
+    iter !k !rm2 !rm1 !acc =
+      let !rm0 = (2*z*((#)k+lambda-1)*rm1 - ((#)k+2*lambda-2)*rm2)/#k
+      in if k==n then (rm0 `k1` acc)
+         else iter (k+1) rm1 rm0 (rm0 `k1` acc)
+
+sf_orthopoly_gegenbauer_value  :: Double -> Int -> Double -> Double
+sf_orthopoly_gegenbauer_value  = sf_orthopoly_gegenbauer_value_accum const 0
+sf_orthopoly_gegenbauer_values :: Double -> Int -> Double -> [Double]
+sf_orthopoly_gegenbauer_values = sf_orthopoly_gegenbauer_value_accum (:)   []
+\end{code}
+
+Compute the Gaussian quadrature weights of the $n$'th Gegenbauer (ultraspherical) polynomial: $C^{(\lambda)}_n(z)$
+$n=0, 1, 2, \dots$, $\lambda>-1/2, \lambda\neq0$
+\begin{code}
+-- if (!sf_is_nonnegint(n) || !(a>-1/2) || a==0) print_usage; endif
+sf_orthopoly_gegenbauer_weights lambda n
+  | n==0 = []
+  | n==1 = [1]
+  | otherwise =
+    let !zs = sf_orthopoly_gegenbauer_zeros lambda n
+        -- need ortho_normal_ polynomials here
+        jth j =
+          let !jvs = map (sf_orthopoly_gegenbauer_value lambda j) zs
+              !nj = sf_orthopoly_gegenbauer_scale lambda j
+          in map (\x->(x*nj)^2) jvs
+        !ires = foldl (P..+.) (replicate n 0) (map jth [0..(n-1)])
+        !res = map (1/) ires
+    in res
+\end{code}
+
+\begin{code}
+sf_orthopoly_gegenbauer_zeros :: Double -> Int -> [Double]
+sf_orthopoly_gegenbauer_zeros lambda n = undefined
+{--
+## -*- texinfo -*-
+## @deftypefn {Function File} {@var{res} =} sf_orthpoly_gegenbauer_zeros (@var{n}, @var{alpha})
+## Compute the zeros of the $n$'th Gegenbauer (ultraspherical) polynomial: $C^(\alpha)_n(z)$
+## $n=0, 1, 2, ...$, $\alpha>-1/2, \alpha!=0$
+## @end deftypefn
+
+function res = sf_orthpoly_gegenbauer_zeros(n, a)
+  if (nargin < 2) print_usage; endif
+  if (!sf_is_nonnegint(n) || !(a>-1/2) || a==0) print_usage; endif
+  if (n==0)
+    res = [];
+  elseif (n==1)
+    res = [0];
+  else
+    m = zeros(n);
+    m(1,1+1) = m(1+1,1) = sf_sqrt(1/(2+2*a));
+    for k=2:n-1
+      m(k,k+1) = m(k+1,k) ...
+               = 2/(2*k+2*a-1) * sf_sqrt((k*(k+a-1/2)^2*(k+2*a-1))/((2*k+2*a)*(2*k+2*a-2)));
+    endfor
+    res = sort(eig(m));
+
+    # "polish" the results
+    fx = sf_orthpoly_gegenbauer_value(n, a, res);
+    dfx = sf_orthpoly_gegenbauer_value(n, a, res, [], 1);
+    nwt = res - fx./dfx;
+    #nrs = sf_orthpoly_gegenbauer_value(n, a, nwt)
+    res = nwt;
+  endif
+endfunction
+--}
+\end{code}

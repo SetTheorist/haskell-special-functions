@@ -110,15 +110,26 @@ indices (or other integral values) to our computation type.
 (#) :: (Integral a, Num b) => a -> b
 (#) = fromIntegral
 
+infixl 6 +#
+infixl 6 #+
 (+#) :: (Integral a, Num b) => b -> a -> b
 b +# a = b + (#)a
 (#+) :: (Integral a, Num b) => a -> b -> b
 a #+ b = (#)a + b
 
+infixl 7 *#
+infixl 7 #*
 (*#) :: (Integral a, Num b) => b -> a -> b
 b *# a = b * (#)a
 (#*) :: (Integral a, Num b) => a -> b -> b
 a #* b = (#)a * b
+
+infixl 7 /#
+infixl 7 #/
+(/#) :: (Integral a, Fractional b) => b -> a -> b
+b /# a = b / (#)a
+(#/) :: (Integral a, Fractional b) => a -> b -> b
+a #/ b = (#)a / b
 \end{code}
 
 A version of \verb|iterate| which passes along an index also

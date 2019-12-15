@@ -6,6 +6,7 @@ This is mainly intended for internal use.
 \section{Preamble}
 
 \begin{code}
+{-# Language BangPatterns #-}
 -- {-# Language InstanceSigs #-}
 module Polynomial where
 \end{code}
@@ -107,10 +108,21 @@ instance (Eq a, Num a) => Num (Poly a) where
   fromInteger 0 = Poly []
   fromInteger i = Poly [fromInteger i]
 
+(Poly as) +> sb = Poly $ zipWith (+) as [sb]
+sa <+ (Poly bs) = Poly $ zipWith (+) [sa] bs
+
 (Poly as) *> sb = Poly $ as .* sb
 sa <* (Poly bs) = Poly $ sa *. bs
 
 (Poly as) /> sb = Poly $ as ./ sb
+\end{code}
+
+
+
+Divides polynomials.
+\begin{code}
+divide_ :: (Fractional a) => [a] -> [a] -> ([a], [a])
+divide_ pn pd = undefined
 \end{code}
 
 
